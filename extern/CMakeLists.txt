@@ -65,6 +65,9 @@ endif()
 
 if(WITH_GAMEENGINE)
 	add_subdirectory(recastnavigation)
+	if(WITH_ENET)
+		add_subdirectory(enet)
+	endif()
 endif()
 
 if(WITH_IMAGE_OPENJPEG AND (NOT WITH_SYSTEM_OPENJPEG))
