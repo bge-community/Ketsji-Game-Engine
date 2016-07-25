@@ -81,6 +81,11 @@ if(WITH_GAMEENGINE)
 	add_definitions(-DWITH_GAMEENGINE)
 endif()
 
+if(WITH_GAMEENGINE_ENET)
+	blender_include_dirs(../../extern/enet/include)
+	add_definitions(-DWITH_GAMEENGINE_ENET)
+endif()
+
 if(WITH_SDL)
 	if(WITH_SDL_DYNLOAD)
 		add_definitions(-DWITH_SDL_DYNLOAD)

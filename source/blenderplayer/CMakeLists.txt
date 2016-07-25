@@ -232,6 +232,10 @@ endif()
 		list(APPEND BLENDER_SORTED_LIBS bf_intern_spindle)
 	endif()
 
+	if(WITH_GAMEENGINE_ENET)
+		list(APPEND BLENDER_SORTED_LIBS extern_enet)
+	endif()
+
 	if(WIN32)
 		list(APPEND BLENDER_SORTED_LIBS bf_intern_gpudirect)
 	endif()
