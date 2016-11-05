@@ -45,7 +45,7 @@ class SCA_VisibilityActuator : public SCA_IActuator
 	bool m_recursive;
 
  public:
-	
+
 	SCA_VisibilityActuator(SCA_IObject *gameobj, bool visible, bool occlusion, bool recursive);
 
 	virtual ~SCA_VisibilityActuator(void);
