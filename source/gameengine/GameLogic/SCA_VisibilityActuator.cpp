@@ -115,7 +115,7 @@ PyAttributeDef SCA_VisibilityActuator::Attributes[] = {
 	KX_PYATTRIBUTE_BOOL_RW("visibility", SCA_VisibilityActuator, m_visible),
 	KX_PYATTRIBUTE_BOOL_RW("useOcclusion", SCA_VisibilityActuator, m_occlusion),
 	KX_PYATTRIBUTE_BOOL_RW("useRecursion", SCA_VisibilityActuator, m_recursive),
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_PYATTRIBUTE_NULL //Sentinel
 };
 
 #endif // WITH_PYTHON
