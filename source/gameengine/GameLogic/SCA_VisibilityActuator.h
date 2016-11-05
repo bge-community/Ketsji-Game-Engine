@@ -25,17 +25,17 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_VisibilityActuator.h
- *  \ingroup ketsji
+/** \file SCA_VisibilityActuator.h
+ *  \ingroup gamelogic
  *  \brief Actuator to toggle visibility/invisibility of objects
  */
 
-#ifndef __KX_VISIBILITYACTUATOR_H__
-#define __KX_VISIBILITYACTUATOR_H__
+#ifndef __SCA_VISIBILITYACTUATOR_H__
+#define __SCA_VISIBILITYACTUATOR_H__
 
 #include "SCA_IActuator.h"
 
-class KX_VisibilityActuator : public SCA_IActuator
+class SCA_VisibilityActuator : public SCA_IActuator
 {
 	Py_Header
 
@@ -46,24 +46,13 @@ class KX_VisibilityActuator : public SCA_IActuator
 
  public:
 	
-	KX_VisibilityActuator(
-		SCA_IObject* gameobj,
-		bool visible,
-		bool occlusion,
-		bool recursive);
+	SCA_VisibilityActuator(SCA_IObject* gameobj, bool visible, bool occlusion, bool recursive);
 
-	virtual
-		~KX_VisibilityActuator(
-			void
-			);
+	virtual ~SCA_VisibilityActuator(void);
 
-	virtual CValue*
-		GetReplica(
-			void
-			);
+	virtual CValue *GetReplica(void);
 
-	virtual bool
-		Update();
+	virtual bool Update();
 
 	/* --------------------------------------------------------------------- */
 	/* Python interface ---------------------------------------------------- */
