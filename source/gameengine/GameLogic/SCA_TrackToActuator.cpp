@@ -25,8 +25,8 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file gameengine/Ketsji/KX_TrackToActuator.cpp
- *  \ingroup ketsji
+/** \file gameengine/GameLogic/SCA_TrackToActuator.cpp
+ *  \ingroup gamelogic
  *
  * Replace the mesh for this actuator's parent
  */
@@ -37,7 +37,7 @@
 
 #include "MT_Scalar.h"
 #include "SCA_IActuator.h"
-#include "KX_TrackToActuator.h"
+#include "SCA_TrackToActuator.h"
 #include "SCA_IScene.h"
 #include "SCA_LogicManager.h"
 #include <math.h>
@@ -50,7 +50,7 @@
 /* Native functions                                                          */
 /* ------------------------------------------------------------------------- */
 
-KX_TrackToActuator::KX_TrackToActuator(SCA_IObject *gameobj, 
+SCA_TrackToActuator::SCA_TrackToActuator(SCA_IObject *gameobj,
                                        SCA_IObject *ob,
                                        int time,
                                        bool allow3D,
@@ -70,8 +70,8 @@ KX_TrackToActuator::KX_TrackToActuator(SCA_IObject *gameobj,
 
 	{
 		// if the object is vertex parented, don't check parent orientation as the link is broken
-		if (!((KX_GameObject*)gameobj)->IsVertexParent()) {
-			m_parentobj = ((KX_GameObject*)gameobj)->GetParent(); // check if the object is parented 
+		if (!((KX_GameObject *)gameobj)->IsVertexParent()) {
+			m_parentobj = ((KX_GameObject *)gameobj)->GetParent(); // check if the object is parented
 			if (m_parentobj) {  
 				// if so, store the initial local rotation
 				// this is needed to revert the effect of the parent inverse node (TBC)
@@ -248,7 +248,7 @@ static MT_Matrix3x3 vectomat(MT_Vector3 vec, short axis, short upflag, short thr
 	return mat;
 }
 
-KX_TrackToActuator::~KX_TrackToActuator()
+SCA_TrackToActuator::~SCA_TrackToActuator()
 {
 	if (m_object)
 		m_object->UnregisterActuator(this);
@@ -256,7 +256,7 @@ KX_TrackToActuator::~KX_TrackToActuator()
 		m_parentobj->UnregisterActuator(this);
 } /* end of destructor */
 
-void KX_TrackToActuator::ProcessReplica()
+void SCA_TrackToActuator::ProcessReplica()
 {
 	// the replica is tracking the same object => register it
 	if (m_object)
@@ -267,23 +267,21 @@ void KX_TrackToActuator::ProcessReplica()
 }
 
 
-bool KX_TrackToActuator::UnlinkObject(SCA_IObject* clientobj)
+bool SCA_TrackToActuator::UnlinkObject(SCA_IObject* clientobj)
 {
-	if (clientobj == m_object)
-	{
+	if (clientobj == m_object) {
 		// this object is being deleted, we cannot continue to track it.
 		m_object = NULL;
 		return true;
 	}
-	if (clientobj == m_parentobj)
-	{
+	if (clientobj == m_parentobj) {
 		m_parentobj = NULL;
 		return true;
 	}
 	return false;
 }
 
-void KX_TrackToActuator::Relink(std::map<void *, void *>& obj_map)
+void SCA_TrackToActuator::Relink(std::map<void *, void *>& obj_map)
 {
 	void *h_obj = obj_map[m_object];
 	if (h_obj) {
@@ -303,20 +301,18 @@ void KX_TrackToActuator::Relink(std::map<void *, void *>& obj_map)
 }
 
 
-bool KX_TrackToActuator::Update(double curtime, bool frame)
+bool SCA_TrackToActuator::Update(double curtime, bool frame)
 {
 	bool result = false;
 	bool bNegativeEvent = IsNegativeEvent();
 	RemoveAllEvents();
 
-	if (bNegativeEvent)
-	{
+	if (bNegativeEvent) {
 		// do nothing on negative events
 	}
-	else if (m_object)
-	{
-		KX_GameObject* curobj = (KX_GameObject*) GetParent();
-		MT_Vector3 dir = curobj->NodeGetWorldPosition() - ((KX_GameObject*)m_object)->NodeGetWorldPosition();
+	else if (m_object) {
+		KX_GameObject *curobj = (KX_GameObject *) GetParent();
+		MT_Vector3 dir = curobj->NodeGetWorldPosition() - ((KX_GameObject *)m_object)->NodeGetWorldPosition();
 		MT_Matrix3x3 mat;
 		MT_Matrix3x3 oldmat;
 
@@ -361,9 +357,9 @@ bool KX_TrackToActuator::Update(double curtime, bool frame)
 /* ------------------------------------------------------------------------- */
 
 /* Integration hooks ------------------------------------------------------- */
-PyTypeObject KX_TrackToActuator::Type = {
+PyTypeObject SCA_TrackToActuator::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
-	"KX_TrackToActuator",
+	"SCA_TrackToActuator",
 	sizeof(PyObjectPlus_Proxy),
 	0,
 	py_base_dealloc,
@@ -383,48 +379,45 @@ PyTypeObject KX_TrackToActuator::Type = {
 	py_base_new
 };
 
-PyMethodDef KX_TrackToActuator::Methods[] = {
+PyMethodDef SCA_TrackToActuator::Methods[] = {
 	{NULL,NULL} //Sentinel
 };
 
-PyAttributeDef KX_TrackToActuator::Attributes[] = {
-	KX_PYATTRIBUTE_INT_RW("time",0,1000,true,KX_TrackToActuator,m_time),
-	KX_PYATTRIBUTE_BOOL_RW("use3D",KX_TrackToActuator,m_allow3D),
-	KX_PYATTRIBUTE_INT_RW("upAxis", 0, 2, true, KX_TrackToActuator,m_upflag),
-	KX_PYATTRIBUTE_INT_RW("trackAxis", 0, 5, true, KX_TrackToActuator,m_trackflag),
-	KX_PYATTRIBUTE_RW_FUNCTION("object", KX_TrackToActuator, pyattr_get_object, pyattr_set_object),
-
+PyAttributeDef SCA_TrackToActuator::Attributes[] = {
+	KX_PYATTRIBUTE_INT_RW("time", 0, 1000, true, SCA_TrackToActuator, m_time),
+	KX_PYATTRIBUTE_BOOL_RW("use3D", SCA_TrackToActuator, m_allow3D),
+	KX_PYATTRIBUTE_INT_RW("upAxis", 0, 2, true, SCA_TrackToActuator, m_upflag),
+	KX_PYATTRIBUTE_INT_RW("trackAxis", 0, 5, true, SCA_TrackToActuator, m_trackflag),
+	KX_PYATTRIBUTE_RW_FUNCTION("object", SCA_TrackToActuator, pyattr_get_object, pyattr_set_object),
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
-PyObject *KX_TrackToActuator::pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_TrackToActuator::pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
 {
-	KX_TrackToActuator* actuator = static_cast<KX_TrackToActuator*>(self);
+	SCA_TrackToActuator *actuator = static_cast<SCA_TrackToActuator *>(self);
 	if (!actuator->m_object)
 		Py_RETURN_NONE;
 	else
 		return actuator->m_object->GetProxy();
 }
 
-int KX_TrackToActuator::pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int SCA_TrackToActuator::pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
-	KX_TrackToActuator* actuator = static_cast<KX_TrackToActuator*>(self);
+	SCA_TrackToActuator *actuator = static_cast<SCA_TrackToActuator *>(self);
 	KX_GameObject *gameobj;
-		
-	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: KX_TrackToActuator"))
+
+	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: SCA_TrackToActuator"))
 		return PY_SET_ATTR_FAIL; // ConvertPythonToGameObject sets the error
-		
+
 	if (actuator->m_object != NULL)
 		actuator->m_object->UnregisterActuator(actuator);
 
-	actuator->m_object = (SCA_IObject*) gameobj;
-		
+	actuator->m_object = (SCA_IObject *) gameobj;
+
 	if (actuator->m_object)
 		actuator->m_object->RegisterActuator(actuator);
-		
+
 	return PY_SET_ATTR_SUCCESS;
 }
 
 #endif // WITH_PYTHON
-
-/* eof */
