@@ -389,7 +389,7 @@ PyAttributeDef SCA_TrackToActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("upAxis", 0, 2, true, SCA_TrackToActuator, m_upflag),
 	KX_PYATTRIBUTE_INT_RW("trackAxis", 0, 5, true, SCA_TrackToActuator, m_trackflag),
 	KX_PYATTRIBUTE_RW_FUNCTION("object", SCA_TrackToActuator, pyattr_get_object, pyattr_set_object),
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_PYATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *SCA_TrackToActuator::pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
