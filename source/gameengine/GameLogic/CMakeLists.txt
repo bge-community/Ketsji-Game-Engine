@@ -30,6 +30,8 @@ set(INC
 	../Expressions
 	../Rasterizer
 	../SceneGraph
+	../Ketsji
+	../../blender/makesdna
 	../../blender/blenlib
 	../../../intern/string
 	../../../intern/termcolor
