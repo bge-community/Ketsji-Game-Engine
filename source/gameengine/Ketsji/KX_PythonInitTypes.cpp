@@ -74,7 +74,7 @@
 #include "KX_SceneActuator.h"
 #include "KX_StateActuator.h"
 #include "KX_SteeringActuator.h"
-#include "KX_TrackToActuator.h"
+
 #include "KX_VehicleWrapper.h"
 #include "KX_VertexProxy.h"
 #include "SCA_2DFilterActuator.h"
@@ -90,6 +90,7 @@
 #include "SCA_NORController.h"
 #include "SCA_ORController.h"
 #include "SCA_RandomSensor.h"
+#include "SCA_TrackToActuator.h"
 #include "SCA_XNORController.h"
 #include "SCA_XORController.h"
 #include "SCA_PythonJoystick.h"
@@ -102,7 +103,7 @@
 #include "KX_SCA_DynamicActuator.h"
 #include "KX_SoundActuator.h"
 #include "KX_CollisionSensor.h"
-#include "KX_VisibilityActuator.h"
+#include "SCA_VisibilityActuator.h"
 #include "SCA_PropertySensor.h"
 #include "SCA_PythonController.h"
 #include "SCA_RandomActuator.h"
@@ -258,10 +259,8 @@ PyMODINIT_FUNC initGameTypesPythonBinding(void)
 		PyType_Ready_Attr(dict, KX_StateActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_SteeringActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_CollisionSensor, init_getset);
-		PyType_Ready_Attr(dict, KX_TrackToActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_VehicleWrapper, init_getset);
 		PyType_Ready_Attr(dict, KX_VertexProxy, init_getset);
-		PyType_Ready_Attr(dict, KX_VisibilityActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_MouseActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_CollisionContactPoint, init_getset);
 		PyType_Ready_Attr(dict, PyObjectPlus, init_getset);
@@ -286,7 +285,9 @@ PyMODINIT_FUNC initGameTypesPythonBinding(void)
 		PyType_Ready_Attr(dict, SCA_PythonController, init_getset);
 		PyType_Ready_Attr(dict, SCA_RandomActuator, init_getset);
 		PyType_Ready_Attr(dict, SCA_RandomSensor, init_getset);
+		PyType_Ready_Attr(dict, SCA_TrackToActuator, init_getset);
 		PyType_Ready_Attr(dict, SCA_VibrationActuator, init_getset);
+		PyType_Ready_Attr(dict, SCA_VisibilityActuator, init_getset);
 		PyType_Ready_Attr(dict, SCA_XNORController, init_getset);
 		PyType_Ready_Attr(dict, SCA_XORController, init_getset);
 		PyType_Ready_Attr(dict, SCA_IController, init_getset);

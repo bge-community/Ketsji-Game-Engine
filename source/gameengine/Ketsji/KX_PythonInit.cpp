@@ -90,7 +90,7 @@ extern "C" {
 #include "KX_SteeringActuator.h"
 #include "KX_NavMeshObject.h"
 #include "KX_MouseActuator.h"
-#include "KX_TrackToActuator.h"
+#include "SCA_TrackToActuator.h"
 
 #include "SCA_IInputDevice.h"
 #include "SCA_PropertySensor.h"
@@ -1649,15 +1649,15 @@ PyMODINIT_FUNC initGameLogicPythonBinding()
 	KX_MACRO_addTypesToDict(d, KX_MOVEMENT_ALL_AXIS, KX_MovementSensor::KX_MOVEMENT_ALL_AXIS);
 
 	/* TrackTo Actuator */
-	KX_MACRO_addTypesToDict(d, KX_TRACK_UPAXIS_POS_X, KX_TrackToActuator::KX_TRACK_UPAXIS_POS_X);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_UPAXIS_POS_Y, KX_TrackToActuator::KX_TRACK_UPAXIS_POS_Y);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_UPAXIS_POS_Z, KX_TrackToActuator::KX_TRACK_UPAXIS_POS_Z);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_POS_X, KX_TrackToActuator::KX_TRACK_TRAXIS_POS_X);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_POS_Y, KX_TrackToActuator::KX_TRACK_TRAXIS_POS_Y);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_POS_Z, KX_TrackToActuator::KX_TRACK_TRAXIS_POS_Z);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_NEG_X, KX_TrackToActuator::KX_TRACK_TRAXIS_NEG_X);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_NEG_Y, KX_TrackToActuator::KX_TRACK_TRAXIS_NEG_Y);
-	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_NEG_Z, KX_TrackToActuator::KX_TRACK_TRAXIS_NEG_Z);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_UPAXIS_POS_X, SCA_TrackToActuator::KX_TRACK_UPAXIS_POS_X);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_UPAXIS_POS_Y, SCA_TrackToActuator::KX_TRACK_UPAXIS_POS_Y);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_UPAXIS_POS_Z, SCA_TrackToActuator::KX_TRACK_UPAXIS_POS_Z);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_POS_X, SCA_TrackToActuator::KX_TRACK_TRAXIS_POS_X);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_POS_Y, SCA_TrackToActuator::KX_TRACK_TRAXIS_POS_Y);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_POS_Z, SCA_TrackToActuator::KX_TRACK_TRAXIS_POS_Z);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_NEG_X, SCA_TrackToActuator::KX_TRACK_TRAXIS_NEG_X);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_NEG_Y, SCA_TrackToActuator::KX_TRACK_TRAXIS_NEG_Y);
+	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_NEG_Z, SCA_TrackToActuator::KX_TRACK_TRAXIS_NEG_Z);
 
 	/* Dynamic actuator */
 	KX_MACRO_addTypesToDict(d, KX_DYN_RESTORE_DYNAMICS, KX_SCA_DynamicActuator::KX_DYN_RESTORE_DYNAMICS);

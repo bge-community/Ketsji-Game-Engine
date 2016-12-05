@@ -50,7 +50,9 @@
 #include "SCA_PropertyActuator.h"
 #include "SCA_LogicManager.h"
 #include "SCA_RandomActuator.h"
+#include "SCA_TrackToActuator.h"
 #include "SCA_VibrationActuator.h"
+#include "SCA_VisibilityActuator.h"
 #include "SCA_2DFilterActuator.h"
 
 #include "RAS_2DFilterManager.h" // for filter type.
@@ -59,12 +61,10 @@
 #include "KX_SceneActuator.h"
 #include "KX_SoundActuator.h"
 #include "KX_ObjectActuator.h"
-#include "KX_TrackToActuator.h"
 #include "KX_ConstraintActuator.h"
 #include "KX_CameraActuator.h"
 #include "KX_GameActuator.h"
 #include "KX_StateActuator.h"
-#include "KX_VisibilityActuator.h"
 #include "KX_SCA_AddObjectActuator.h"
 #include "KX_SCA_EndObjectActuator.h"
 #include "KX_SCA_ReplaceMeshActuator.h"
@@ -486,7 +486,7 @@ void BL_ConvertActuators(const char* maggiename,
 						if (editobact->ob)
 							originalval = converter->FindGameObject(editobact->ob);
 							
-						KX_TrackToActuator* tmptrackact = new KX_TrackToActuator(
+						SCA_TrackToActuator* tmptrackact = new SCA_TrackToActuator(
 						            gameobj,
 						            originalval,
 						            editobact->time,
@@ -881,12 +881,12 @@ void BL_ConvertActuators(const char* maggiename,
 		case ACT_VISIBILITY:
 		{
 			bVisibilityActuator *vis_act = (bVisibilityActuator *) bact->data;
-			KX_VisibilityActuator * tmp_vis_act = NULL;
+			SCA_VisibilityActuator * tmp_vis_act = NULL;
 			bool v = ((vis_act->flag & ACT_VISIBILITY_INVISIBLE) != 0);
 			bool o = ((vis_act->flag & ACT_VISIBILITY_OCCLUSION) != 0);
 			bool recursive = ((vis_act->flag & ACT_VISIBILITY_RECURSIVE) != 0);
 
-			tmp_vis_act = new KX_VisibilityActuator(gameobj, !v, o, recursive);
+			tmp_vis_act = new SCA_VisibilityActuator(gameobj, !v, o, recursive);
 			
 			baseact = tmp_vis_act;
 		}
