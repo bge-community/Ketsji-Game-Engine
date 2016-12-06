@@ -49,7 +49,7 @@ class SCA_SceneActuator : public SCA_IActuator
 	class KX_KetsjiEngine *m_KetsjiEngine;
 	/** The scene to switch to. */
 	std::string m_nextSceneName;
-	
+
 	// (Set Camera) Object
 	class KX_Camera *m_camera;
 
@@ -70,19 +70,11 @@ class SCA_SceneActuator : public SCA_IActuator
 	
 	SCA_SceneActuator(SCA_IObject *gameobj,
 					 int mode,
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SceneActuator.h
-					 KX_Scene* scene,
-					 KX_KetsjiEngine* ketsjiEngine,
-					 const std::string& nextSceneName,
-					 KX_Camera* camera);
-	virtual ~KX_SceneActuator();
-=======
 					 KX_Scene *scene,
 					 KX_KetsjiEngine *ketsjiEngine,
-					 const STR_String &nextSceneName,
+					 const std::string &nextSceneName,
 					 KX_Camera *camera);
 	virtual ~SCA_SceneActuator();
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SceneActuator.h
 
 	virtual CValue *GetReplica();
 	virtual void ProcessReplica();

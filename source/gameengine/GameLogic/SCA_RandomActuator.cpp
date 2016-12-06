@@ -48,6 +48,7 @@
 /* Native functions                                                          */
 /* ------------------------------------------------------------------------- */
 
+
 SCA_RandomActuator::SCA_RandomActuator(SCA_IObject *gameobj, 
                                        long seed,
                                        SCA_RandomActuator::KX_RANDOMACT_MODE mode,

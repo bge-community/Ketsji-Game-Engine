@@ -45,7 +45,11 @@ class SCA_VisibilityActuator : public SCA_IActuator
 	bool m_recursive;
 
  public:
+<<<<<<< 0f6d42c75b6d0213e35d5d5b940c9bd1cfc8dbb3
 
+=======
+	
+>>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators
 	SCA_VisibilityActuator(SCA_IObject *gameobj, bool visible, bool occlusion, bool recursive);
 
 	virtual ~SCA_VisibilityActuator(void);

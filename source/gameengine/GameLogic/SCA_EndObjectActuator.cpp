@@ -39,7 +39,7 @@
 SCA_EndObjectActuator::SCA_EndObjectActuator(SCA_IObject *gameobj,
                                              SCA_IScene *scene)
 	: SCA_IActuator(gameobj, SCA_ACT_END_OBJECT),
-	m_scene(scene)
+      m_scene(scene)
 {
 	// intentionally empty
 }

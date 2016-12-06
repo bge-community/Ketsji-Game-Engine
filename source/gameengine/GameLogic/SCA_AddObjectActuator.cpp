@@ -26,7 +26,6 @@
  * Add an object when this actuator is triggered
  */
 
-
 #include "SCA_AddObjectActuator.h"
 #include "SCA_IScene.h"
 #include "KX_GameObject.h"

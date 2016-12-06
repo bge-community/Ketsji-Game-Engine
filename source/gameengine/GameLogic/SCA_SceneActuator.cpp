@@ -48,17 +48,10 @@
 SCA_SceneActuator::SCA_SceneActuator(SCA_IObject *gameobj,
 								   int mode,
 								   KX_Scene *scene,
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SceneActuator.cpp
-								   KX_KetsjiEngine* ketsjiEngine,
-								   const std::string& nextSceneName,
-								   KX_Camera* camera)
-								   : SCA_IActuator(gameobj, KX_ACT_SCENE)
-=======
 								   KX_KetsjiEngine *ketsjiEngine,
-								   const STR_String &nextSceneName,
+								   const std::string &nextSceneName,
 								   KX_Camera *camera)
 								   : SCA_IActuator(gameobj, SCA_ACT_SCENE)
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SceneActuator.cpp
 {
 	m_mode = mode;
 	m_scene = scene;

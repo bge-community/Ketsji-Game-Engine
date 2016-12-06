@@ -44,6 +44,7 @@
 /* Native functions                                                          */
 /* ------------------------------------------------------------------------- */
 
+
 SCA_PropertyActuator::SCA_PropertyActuator(SCA_IObject *gameobj,
                                            SCA_IObject *sourceObj,
                                            const std::string &propname,

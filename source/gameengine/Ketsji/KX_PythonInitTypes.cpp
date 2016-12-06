@@ -75,7 +75,6 @@
 #include "SCA_StateActuator.h"
 #include "SCA_SteeringActuator.h"
 
-
 #include "KX_VehicleWrapper.h"
 #include "KX_VertexProxy.h"
 #include "SCA_2DFilterActuator.h"

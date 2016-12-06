@@ -42,15 +42,12 @@ SCA_DynamicActuator::SCA_DynamicActuator(SCA_IObject *gameobj,
 	m_dyn_operation(dyn_operation),
 	m_setmass(setmass)
 {
-
 }
 
 SCA_DynamicActuator::~SCA_DynamicActuator()
 { 
 	// there's nothing to be done here, really....
 }
-
-
 
 bool SCA_DynamicActuator::Update()
 {

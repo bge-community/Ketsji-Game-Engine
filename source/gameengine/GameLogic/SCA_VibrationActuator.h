@@ -37,7 +37,6 @@ class SCA_VibrationActuator : public SCA_IActuator
 	Py_Header
 
 private:
-
 	int m_joyindex;
 	float m_strength;
 	int m_duration;
@@ -46,11 +45,9 @@ private:
 public:
 
 	SCA_VibrationActuator(SCA_IObject *gameobj, int joyindex, float strength, int duration);
-
 	virtual	~SCA_VibrationActuator(void);
 
 	virtual CValue*	GetReplica(void);
-
 	virtual bool Update();
 };
 

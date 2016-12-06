@@ -159,4 +159,5 @@ PyAttributeDef SCA_StateActuator::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
+
 #endif // WITH_PYTHON

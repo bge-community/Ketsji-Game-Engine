@@ -386,19 +386,13 @@ KX_PYMETHODDEF_DOC_NOARGS(SCA_SoundActuator, stopSound,
 /* Atribute setting and getting -------------------------------------------- */
 PyObject *SCA_SoundActuator::pyattr_get_3d_property(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
 {
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-	KX_SoundActuator * actuator = static_cast<KX_SoundActuator *> (self);
-	const std::string& prop = attrdef->m_name;
-=======
 	SCA_SoundActuator *actuator = static_cast<SCA_SoundActuator *> (self);
-	const char* prop = attrdef->m_name;
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	const std::string& prop = attrdef->m_name;
 	float result_value = 0.0f;
 
 	if (prop == "volume_maximum") {
 		result_value = actuator->m_3d.max_gain;
 	}
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
 	else if (prop == "volume_minimum") {
 		result_value = actuator->m_3d.min_gain;
 	}
@@ -418,27 +412,6 @@ PyObject *SCA_SoundActuator::pyattr_get_3d_property(void *self, const struct KX_
 		result_value = actuator->m_3d.cone_outer_angle;
 	}
 	else if (prop == "cone_volume_outer") {
-=======
-	else if (!strcmp(prop, "volume_minimum")) {
-		result_value = actuator->m_3d.min_gain;
-	}
-	else if (!strcmp(prop, "distance_reference")) {
-		result_value = actuator->m_3d.reference_distance;
-	}
-	else if (!strcmp(prop, "distance_maximum")) {
-		result_value = actuator->m_3d.max_distance;
-	}
-	else if (!strcmp(prop, "attenuation")) {
-		result_value = actuator->m_3d.rolloff_factor;
-	}
-	else if (!strcmp(prop, "cone_angle_inner")) {
-		result_value = actuator->m_3d.cone_inner_angle;
-	}
-	else if (!strcmp(prop, "cone_angle_outer")) {
-		result_value = actuator->m_3d.cone_outer_angle;
-	}
-	else if (!strcmp(prop, "cone_volume_outer")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
 		result_value = actuator->m_3d.cone_outer_gain;
 	}
 	else {
@@ -500,13 +473,8 @@ PyObject *SCA_SoundActuator::pyattr_get_sound(void *self, const struct KX_PYATTR
 
 int SCA_SoundActuator::pyattr_set_3d_property(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-	KX_SoundActuator * actuator = static_cast<KX_SoundActuator *> (self);
-	const std::string& prop = attrdef->m_name;
-=======
 	SCA_SoundActuator *actuator = static_cast<SCA_SoundActuator *> (self);
-	const char *prop = attrdef->m_name;
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	const std::string& prop = attrdef->m_name;
 	float prop_value = 0.0f;
 
 	if (!PyArg_Parse(value, "f", &prop_value))
@@ -522,85 +490,53 @@ int SCA_SoundActuator::pyattr_set_3d_property(void *self, const struct KX_PYATTR
 		if (actuator->m_handle)
 			AUD_Handle_setVolumeMaximum(actuator->m_handle, prop_value);
 #endif  // WITH_AUDASPACE
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-
-	} else if (prop == "volume_minimum") {
-=======
 	}
-	else if (!strcmp(prop, "volume_minimum")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	else if (prop == "volume_minimum") {
 		actuator->m_3d.min_gain = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)
 			AUD_Handle_setVolumeMinimum(actuator->m_handle, prop_value);
 #endif  // WITH_AUDASPACE
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-
-	} else if (prop == "distance_reference") {
-=======
 	}
-	else if (!strcmp(prop, "distance_reference")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	else if (prop == "distance_reference") {
 		actuator->m_3d.reference_distance = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)
 			AUD_Handle_setDistanceReference(actuator->m_handle, prop_value);
 #endif  // WITH_AUDASPACE
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-
-	} else if (prop == "distance_maximum") {
-=======
 	}
-	else if (!strcmp(prop, "distance_maximum")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	else if (prop == "distance_maximum") {
 		actuator->m_3d.max_distance = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)
 			AUD_Handle_setDistanceMaximum(actuator->m_handle, prop_value);
 #endif  // WITH_AUDASPACE
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-
-	} else if (prop == "attenuation") {
-=======
 	}
-	else if (!strcmp(prop, "attenuation")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	else if (prop == "attenuation") {
 		actuator->m_3d.rolloff_factor = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)
 			AUD_Handle_setAttenuation(actuator->m_handle, prop_value);
 #endif  // WITH_AUDASPACE
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-
-	} else if (prop == "cone_angle_inner") {
+	}
+	else if (prop == "cone_angle_inner") {
 =======
 	}
 	else if (!strcmp(prop, "cone_angle_inner")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
 		actuator->m_3d.cone_inner_angle = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)
 			AUD_Handle_setConeAngleInner(actuator->m_handle, prop_value);
 #endif  // WITH_AUDASPACE
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-
-	} else if (prop == "cone_angle_outer") {
-=======
 	}
-	else if (!strcmp(prop, "cone_angle_outer")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	else if (prop == "cone_angle_outer") {
 		actuator->m_3d.cone_outer_angle = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)
 			AUD_Handle_setConeAngleOuter(actuator->m_handle, prop_value);
 #endif  // WITH_AUDASPACE
-<<<<<<< bb690a0bc3ef0ccb201775387de83bf54b78cd31:source/gameengine/Ketsji/KX_SoundActuator.cpp
-
-	} else if (prop == "cone_volume_outer") {
-=======
 	}
-	else if (!strcmp(prop, "cone_volume_outer")) {
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators:source/gameengine/GameLogic/SCA_SoundActuator.cpp
+	else if (prop == "cone_volume_outer") {
 		actuator->m_3d.cone_outer_gain = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)
