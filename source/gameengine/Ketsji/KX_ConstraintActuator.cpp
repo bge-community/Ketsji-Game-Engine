@@ -59,7 +59,7 @@ KX_ConstraintActuator::KX_ConstraintActuator(SCA_IObject *gameobj,
 											 int time,
 											 int option,
 											 char *property) :
-	SCA_IActuator(gameobj, KX_ACT_CONSTRAINT),
+	SCA_IActuator(gameobj, SCA_ACT_CONSTRAINT),
 	m_refDirVector(refDir),
 	m_currentTime(0)
 {

@@ -83,11 +83,11 @@ extern "C" {
 #include "KX_RaySensor.h"
 #include "KX_MovementSensor.h"
 #include "KX_ArmatureSensor.h"
-#include "KX_SceneActuator.h"
+#include "SCA_SceneActuator.h"
 #include "KX_GameActuator.h"
 #include "KX_ParentActuator.h"
 #include "KX_SCA_DynamicActuator.h"
-#include "KX_SteeringActuator.h"
+#include "SCA_SteeringActuator.h"
 #include "KX_NavMeshObject.h"
 #include "KX_MouseActuator.h"
 #include "SCA_TrackToActuator.h"
@@ -101,8 +101,8 @@ extern "C" {
 #include "SCA_PythonMouse.h"
 #include "SCA_2DFilterActuator.h"
 #include "KX_ConstraintActuator.h"
-#include "KX_SoundActuator.h"
-#include "KX_StateActuator.h"
+#include "SCA_SoundActuator.h"
+#include "SCA_StateActuator.h"
 #include "BL_ActionActuator.h"
 #include "BL_ArmatureObject.h"
 #include "RAS_IRasterizer.h"
@@ -1531,12 +1531,12 @@ PyMODINIT_FUNC initGameLogicPythonBinding()
 	KX_MACRO_addTypesToDict(d, KX_RANDOMACT_FLOAT_NEGATIVE_EXPONENTIAL, SCA_RandomActuator::KX_RANDOMACT_FLOAT_NEGATIVE_EXPONENTIAL);
 
 	/* 5. Sound actuator                                                      */
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYSTOP,              KX_SoundActuator::KX_SOUNDACT_PLAYSTOP);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYEND,               KX_SoundActuator::KX_SOUNDACT_PLAYEND);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPSTOP,              KX_SoundActuator::KX_SOUNDACT_LOOPSTOP);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPEND,               KX_SoundActuator::KX_SOUNDACT_LOOPEND);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL,     KX_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP,     KX_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYSTOP,              SCA_SoundActuator::KX_SOUNDACT_PLAYSTOP);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYEND,               SCA_SoundActuator::KX_SOUNDACT_PLAYEND);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPSTOP,              SCA_SoundActuator::KX_SOUNDACT_LOOPSTOP);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPEND,               SCA_SoundActuator::KX_SOUNDACT_LOOPEND);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL,     SCA_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP,     SCA_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP);
 
 	/* 6. Action actuator													   */
 	KX_MACRO_addTypesToDict(d, KX_ACTIONACT_PLAY,        ACT_ACTION_PLAY);
@@ -1687,18 +1687,18 @@ PyMODINIT_FUNC initGameLogicPythonBinding()
 	KX_MACRO_addTypesToDict(d, RAS_2DFILTER_CUSTOMFILTER, RAS_2DFilterManager::FILTER_CUSTOMFILTER);
 
 	/* Sound Actuator */
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYSTOP, KX_SoundActuator::KX_SOUNDACT_PLAYSTOP);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYEND, KX_SoundActuator::KX_SOUNDACT_PLAYEND);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPSTOP, KX_SoundActuator::KX_SOUNDACT_LOOPSTOP);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPEND, KX_SoundActuator:: KX_SOUNDACT_LOOPEND);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL, KX_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL);
-	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP, KX_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYSTOP, SCA_SoundActuator::KX_SOUNDACT_PLAYSTOP);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_PLAYEND, SCA_SoundActuator::KX_SOUNDACT_PLAYEND);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPSTOP, SCA_SoundActuator::KX_SOUNDACT_LOOPSTOP);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPEND, SCA_SoundActuator:: KX_SOUNDACT_LOOPEND);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL, SCA_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL);
+	KX_MACRO_addTypesToDict(d, KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP, SCA_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP);
 
 	/* State Actuator */
-	KX_MACRO_addTypesToDict(d, KX_STATE_OP_CPY, KX_StateActuator::OP_CPY);
-	KX_MACRO_addTypesToDict(d, KX_STATE_OP_SET, KX_StateActuator::OP_SET);
-	KX_MACRO_addTypesToDict(d, KX_STATE_OP_CLR, KX_StateActuator::OP_CLR);
-	KX_MACRO_addTypesToDict(d, KX_STATE_OP_NEG, KX_StateActuator::OP_NEG);
+	KX_MACRO_addTypesToDict(d, KX_STATE_OP_CPY, SCA_StateActuator::OP_CPY);
+	KX_MACRO_addTypesToDict(d, KX_STATE_OP_SET, SCA_StateActuator::OP_SET);
+	KX_MACRO_addTypesToDict(d, KX_STATE_OP_CLR, SCA_StateActuator::OP_CLR);
+	KX_MACRO_addTypesToDict(d, KX_STATE_OP_NEG, SCA_StateActuator::OP_NEG);
 
 	/* Game Actuator Modes */
 	KX_MACRO_addTypesToDict(d, KX_GAME_LOAD, KX_GameActuator::KX_GAME_LOAD);
@@ -1710,14 +1710,14 @@ PyMODINIT_FUNC initGameLogicPythonBinding()
 	KX_MACRO_addTypesToDict(d, KX_GAME_SCREENSHOT, KX_GameActuator::KX_GAME_SCREENSHOT);
 
 	/* Scene Actuator Modes */
-	KX_MACRO_addTypesToDict(d, KX_SCENE_RESTART, KX_SceneActuator::KX_SCENE_RESTART);
-	KX_MACRO_addTypesToDict(d, KX_SCENE_SET_SCENE, KX_SceneActuator::KX_SCENE_SET_SCENE);
-	KX_MACRO_addTypesToDict(d, KX_SCENE_SET_CAMERA, KX_SceneActuator::KX_SCENE_SET_CAMERA);
-	KX_MACRO_addTypesToDict(d, KX_SCENE_ADD_FRONT_SCENE, KX_SceneActuator::KX_SCENE_ADD_FRONT_SCENE);
-	KX_MACRO_addTypesToDict(d, KX_SCENE_ADD_BACK_SCENE, KX_SceneActuator::KX_SCENE_ADD_BACK_SCENE);
-	KX_MACRO_addTypesToDict(d, KX_SCENE_REMOVE_SCENE, KX_SceneActuator::KX_SCENE_REMOVE_SCENE);
-	KX_MACRO_addTypesToDict(d, KX_SCENE_SUSPEND, KX_SceneActuator::KX_SCENE_SUSPEND);
-	KX_MACRO_addTypesToDict(d, KX_SCENE_RESUME, KX_SceneActuator::KX_SCENE_RESUME);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_RESTART, SCA_SceneActuator::KX_SCENE_RESTART);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_SET_SCENE, SCA_SceneActuator::KX_SCENE_SET_SCENE);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_SET_CAMERA, SCA_SceneActuator::KX_SCENE_SET_CAMERA);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_ADD_FRONT_SCENE, SCA_SceneActuator::KX_SCENE_ADD_FRONT_SCENE);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_ADD_BACK_SCENE, SCA_SceneActuator::KX_SCENE_ADD_BACK_SCENE);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_REMOVE_SCENE, SCA_SceneActuator::KX_SCENE_REMOVE_SCENE);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_SUSPEND, SCA_SceneActuator::KX_SCENE_SUSPEND);
+	KX_MACRO_addTypesToDict(d, KX_SCENE_RESUME, SCA_SceneActuator::KX_SCENE_RESUME);
 
 	/* Parent Actuator Modes */
 	KX_MACRO_addTypesToDict(d, KX_PARENT_SET, KX_ParentActuator::KX_PARENT_SET);
@@ -1772,9 +1772,9 @@ PyMODINIT_FUNC initGameLogicPythonBinding()
 	KX_MACRO_addTypesToDict(d, ROT_MODE_ZYX, ROT_MODE_ZYX);
 
 	/* Steering actuator */
-	KX_MACRO_addTypesToDict(d, KX_STEERING_SEEK, KX_SteeringActuator::KX_STEERING_SEEK);
-	KX_MACRO_addTypesToDict(d, KX_STEERING_FLEE, KX_SteeringActuator::KX_STEERING_FLEE);
-	KX_MACRO_addTypesToDict(d, KX_STEERING_PATHFOLLOWING, KX_SteeringActuator::KX_STEERING_PATHFOLLOWING);
+	KX_MACRO_addTypesToDict(d, KX_STEERING_SEEK, SCA_SteeringActuator::KX_STEERING_SEEK);
+	KX_MACRO_addTypesToDict(d, KX_STEERING_FLEE, SCA_SteeringActuator::KX_STEERING_FLEE);
+	KX_MACRO_addTypesToDict(d, KX_STEERING_PATHFOLLOWING, SCA_SteeringActuator::KX_STEERING_PATHFOLLOWING);
 
 	/* KX_NavMeshObject render mode */
 	KX_MACRO_addTypesToDict(d, RM_WALLS, KX_NavMeshObject::RM_WALLS);

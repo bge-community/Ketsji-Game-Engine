@@ -55,7 +55,7 @@ BL_ArmatureActuator::BL_ArmatureActuator(SCA_IObject* obj,
 						KX_GameObject* subtargetobj,
 						float weight,
 						float influence) :
-	SCA_IActuator(obj, KX_ACT_ARMATURE),
+	SCA_IActuator(obj, SCA_ACT_ARMATURE),
 	m_constraint(NULL),
 	m_gametarget(targetobj),
 	m_gamesubtarget(subtargetobj),

@@ -48,7 +48,7 @@ KX_ParentActuator::KX_ParentActuator(SCA_IObject *gameobj,
 									 bool addToCompound,
 									 bool ghost,
 									 SCA_IObject *ob)
-	: SCA_IActuator(gameobj, KX_ACT_PARENT),
+	: SCA_IActuator(gameobj, SCA_ACT_PARENT),
 	  m_mode(mode),
 	  m_addToCompound(addToCompound),
 	  m_ghost(ghost),

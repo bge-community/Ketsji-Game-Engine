@@ -25,33 +25,33 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_SceneActuator.h
- *  \ingroup ketsji
+/** \file SCA_SceneActuator.h
+ *  \ingroup gamelogic
  */
 
-#ifndef __KX_SCENEACTUATOR_H__
-#define __KX_SCENEACTUATOR_H__
+#ifndef __SCA_SCENEACTUATOR_H__
+#define __SCA_SCENEACTUATOR_H__
 
 #include "SCA_IActuator.h"
 #include "SCA_IScene.h" /* Replace_IScene only */
 #include "KX_Scene.h" /* Replace_IScene only */
 
-class KX_SceneActuator : public SCA_IActuator
+class SCA_SceneActuator : public SCA_IActuator
 {
 	Py_Header
 	
-	int							m_mode;
+	int m_mode;
 	// (restart) has become a toggle internally... not in the interface though
-	bool						m_restart;
+	bool m_restart;
 	// (set Scene) Scene
 	/** The current scene. */
-	class	KX_Scene*			m_scene;
-	class	KX_KetsjiEngine*	m_KetsjiEngine;
+	class KX_Scene *m_scene;
+	class KX_KetsjiEngine *m_KetsjiEngine;
 	/** The scene to switch to. */
-	STR_String					m_nextSceneName;
+	STR_String m_nextSceneName;
 	
 	// (Set Camera) Object
-	class KX_Camera*			m_camera;
+	class KX_Camera *m_camera;
 
  public:
 	enum SCA_SceneActuatorMode
@@ -68,18 +68,18 @@ class KX_SceneActuator : public SCA_IActuator
 		KX_SCENE_MAX
 	};
 	
-	KX_SceneActuator(SCA_IObject* gameobj,
+	SCA_SceneActuator(SCA_IObject *gameobj,
 					 int mode,
-					 KX_Scene* scene,
-					 KX_KetsjiEngine* ketsjiEngine,
-					 const STR_String& nextSceneName,
-					 KX_Camera* camera);
-	virtual ~KX_SceneActuator();
+					 KX_Scene *scene,
+					 KX_KetsjiEngine *ketsjiEngine,
+					 const STR_String &nextSceneName,
+					 KX_Camera *camera);
+	virtual ~SCA_SceneActuator();
 
-	virtual CValue* GetReplica();
+	virtual CValue *GetReplica();
 	virtual void ProcessReplica();
-	virtual bool UnlinkObject(SCA_IObject* clientobj);
-	virtual void Relink(std::map<void *, void *>& obj_map);
+	virtual bool UnlinkObject(SCA_IObject *clientobj);
+	virtual void Relink(std::map<void *, void *> &obj_map);
 
 	virtual bool Update();
 	
@@ -99,6 +99,6 @@ class KX_SceneActuator : public SCA_IActuator
 
 #endif  /* WITH_PYTHON */
 
-}; /* end of class KXSceneActuator */
+}; /* end of class SCA_SceneActuator */
 
 #endif
