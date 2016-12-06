@@ -75,7 +75,7 @@ BL_ActionActuator::BL_ActionActuator(SCA_IObject *gameobj,
 					short	ipo_flags,
 					short	end_reset,
 					float	stride) 
-	: SCA_IActuator(gameobj, KX_ACT_ACTION),
+	: SCA_IActuator(gameobj, SCA_ACT_ACTION),
 		
 	m_lastpos(0, 0, 0),
 	m_blendframe(0),

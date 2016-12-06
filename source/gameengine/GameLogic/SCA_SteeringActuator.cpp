@@ -29,7 +29,7 @@
  */
 
 #include "BLI_math.h"
-#include "KX_SteeringActuator.h"
+#include "SCA_SteeringActuator.h"
 #include "KX_GameObject.h"
 #include "KX_NavMeshObject.h"
 #include "KX_ObstacleSimulation.h"
@@ -43,7 +43,7 @@
 /* Native functions                                                          */
 /* ------------------------------------------------------------------------- */
 
-KX_SteeringActuator::KX_SteeringActuator(SCA_IObject *gameobj,
+SCA_SteeringActuator::SCA_SteeringActuator(SCA_IObject *gameobj,
                                          int mode,
                                          KX_GameObject *target,
                                          KX_GameObject *navmesh,
@@ -53,12 +53,12 @@ KX_SteeringActuator::KX_SteeringActuator(SCA_IObject *gameobj,
                                          float turnspeed,
                                          bool  isSelfTerminated,
                                          int pathUpdatePeriod,
-                                         KX_ObstacleSimulation* simulation,
+                                         KX_ObstacleSimulation *simulation,
                                          short facingmode,
                                          bool normalup,
                                          bool enableVisualization,
                                          bool lockzvel)
-    : SCA_IActuator(gameobj, KX_ACT_STEERING),
+    : SCA_IActuator(gameobj, SCA_ACT_STEERING),
       m_target(target),
       m_mode(mode),
       m_distance(distance),
@@ -79,24 +79,27 @@ KX_SteeringActuator::KX_SteeringActuator(SCA_IObject *gameobj,
       m_wayPointIdx(-1),
       m_steerVec(MT_Vector3(0, 0, 0))
 {
-	m_navmesh = static_cast<KX_NavMeshObject*>(navmesh);
+	m_navmesh = static_cast<KX_NavMeshObject *>(navmesh);
 	if (m_navmesh)
 		m_navmesh->RegisterActuator(this);
+
 	if (m_target)
 		m_target->RegisterActuator(this);
 	
 	if (m_simulation)
-		m_obstacle = m_simulation->GetObstacle((KX_GameObject*)gameobj);
-	KX_GameObject* parent = ((KX_GameObject*)gameobj)->GetParent();
-	if (m_facingMode>0 && parent)
-	{
+		m_obstacle = m_simulation->GetObstacle((KX_GameObject *)gameobj);
+
+	KX_GameObject* parent = ((KX_GameObject *)gameobj)->GetParent();
+
+	if (m_facingMode>0 && parent) {
 		m_parentlocalmat = parent->GetSGNode()->GetLocalOrientation();
 	}
-	else
+	else {
 		m_parentlocalmat.setIdentity();
+	}
 } 
 
-KX_SteeringActuator::~KX_SteeringActuator()
+SCA_SteeringActuator::~SCA_SteeringActuator()
 {
 	if (m_navmesh)
 		m_navmesh->UnregisterActuator(this);
@@ -104,15 +107,15 @@ KX_SteeringActuator::~KX_SteeringActuator()
 		m_target->UnregisterActuator(this);
 } 
 
-CValue* KX_SteeringActuator::GetReplica()
+CValue *SCA_SteeringActuator::GetReplica()
 {
-	KX_SteeringActuator* replica = new KX_SteeringActuator(*this);
+	SCA_SteeringActuator *replica = new SCA_SteeringActuator(*this);
 	// replication just copy the m_base pointer => common random generator
 	replica->ProcessReplica();
 	return replica;
 }
 
-void KX_SteeringActuator::ProcessReplica()
+void SCA_SteeringActuator::ProcessReplica()
 {
 	if (m_target)
 		m_target->RegisterActuator(this);
@@ -121,29 +124,27 @@ void KX_SteeringActuator::ProcessReplica()
 	SCA_IActuator::ProcessReplica();
 }
 
-void KX_SteeringActuator::ReParent(SCA_IObject* parent)
+void SCA_SteeringActuator::ReParent(SCA_IObject *parent)
 {
 	SCA_IActuator::ReParent(parent);
 	if (m_simulation)
-		m_obstacle = m_simulation->GetObstacle((KX_GameObject*)m_gameobj);
+		m_obstacle = m_simulation->GetObstacle((KX_GameObject *)m_gameobj);
 }
 
-bool KX_SteeringActuator::UnlinkObject(SCA_IObject* clientobj)
+bool SCA_SteeringActuator::UnlinkObject(SCA_IObject *clientobj)
 {
-	if (clientobj == m_target)
-	{
+	if (clientobj == m_target) {
 		m_target = NULL;
 		return true;
 	}
-	else if (clientobj == m_navmesh)
-	{
+	else if (clientobj == m_navmesh) {
 		m_navmesh = NULL;
 		return true;
 	}
 	return false;
 }
 
-void KX_SteeringActuator::Relink(std::map<void *, void *>& obj_map)
+void SCA_SteeringActuator::Relink(std::map<void *, void *> &obj_map)
 {
 	void *h_obj = obj_map[m_target];
 	if (h_obj) {
@@ -162,15 +163,13 @@ void KX_SteeringActuator::Relink(std::map<void *, void *>& obj_map)
 	}
 }
 
-bool KX_SteeringActuator::Update(double curtime, bool frame)
+bool SCA_SteeringActuator::Update(double curtime, bool frame)
 {
-	if (frame)
-	{
+	if (frame) {
 		double delta =  curtime - m_updateTime;
 		m_updateTime = curtime;
 		
-		if (m_posevent && !m_isActive)
-		{
+		if (m_posevent && !m_isActive) {
 			delta = 0.0;
 			m_pathUpdateTime = -1.0;
 			m_updateTime = curtime;
@@ -188,9 +187,9 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 		if (bNegativeEvent || !m_target)
 			return false; // do nothing on negative events
 
-		KX_GameObject *obj = (KX_GameObject*) GetParent();
-		const MT_Vector3& mypos = obj->NodeGetWorldPosition();
-		const MT_Vector3& targpos = m_target->NodeGetWorldPosition();
+		KX_GameObject *obj = (KX_GameObject *) GetParent();
+		const MT_Vector3 &mypos = obj->NodeGetWorldPosition();
+		const MT_Vector3 &targpos = m_target->NodeGetWorldPosition();
 		MT_Vector3 vectotarg = targpos - mypos;
 		MT_Vector3 vectotarg2d = vectotarg;
 		vectotarg2d.z() = 0.0f;
@@ -200,8 +199,7 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 
 		switch (m_mode) {
 			case KX_STEERING_SEEK:
-				if (vectotarg2d.length2()>m_distance*m_distance)
-				{
+				if (vectotarg2d.length2() > m_distance * m_distance) {
 					terminate = false;
 					m_steerVec = vectotarg;
 					m_steerVec.normalize();
@@ -209,8 +207,7 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 				}
 				break;
 			case KX_STEERING_FLEE:
-				if (vectotarg2d.length2()<m_distance*m_distance)
-				{
+				if (vectotarg2d.length2() < m_distance * m_distance) {
 					terminate = false;
 					m_steerVec = -vectotarg;
 					m_steerVec.normalize();
@@ -218,28 +215,25 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 				}
 				break;
 			case KX_STEERING_PATHFOLLOWING:
-				if (m_navmesh && vectotarg.length2()>m_distance*m_distance)
-				{
+				if (m_navmesh && vectotarg.length2() > m_distance * m_distance) {
 					terminate = false;
 
 					static const MT_Scalar WAYPOINT_RADIUS(0.25f);
 
-					if (m_pathUpdateTime<0 || (m_pathUpdatePeriod>=0 && 
-												curtime - m_pathUpdateTime>((double)m_pathUpdatePeriod/1000.0)))
+					if (m_pathUpdateTime<0 ||
+					   (m_pathUpdatePeriod>=0 &&
+					    curtime - m_pathUpdateTime > ((double)m_pathUpdatePeriod / 1000.0)))
 					{
 						m_pathUpdateTime = curtime;
 						m_pathLen = m_navmesh->FindPath(mypos, targpos, m_path, MAX_PATH_LENGTH);
 						m_wayPointIdx = m_pathLen > 1 ? 1 : -1;
 					}
 
-					if (m_wayPointIdx>0)
-					{
+					if (m_wayPointIdx>0) {
 						MT_Vector3 waypoint(&m_path[3*m_wayPointIdx]);
-						if ((waypoint-mypos).length2()<WAYPOINT_RADIUS*WAYPOINT_RADIUS)
-						{
+						if ((waypoint-mypos).length2()<WAYPOINT_RADIUS*WAYPOINT_RADIUS) {
 							m_wayPointIdx++;
-							if (m_wayPointIdx>=m_pathLen)
-							{
+							if (m_wayPointIdx>=m_pathLen) {
 								m_wayPointIdx = -1;
 								terminate = true;
 							}
@@ -251,8 +245,7 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 						apply_steerforce = true;
 
 						
-						if (m_enableVisualization)
-						{
+						if (m_enableVisualization) {
 							//debug draw
 							static const MT_Vector4 PATH_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
 							m_navmesh->DrawPath(m_path, m_pathLen, PATH_COLOR);
@@ -263,8 +256,7 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 				break;
 		}
 
-		if (apply_steerforce)
-		{
+		if (apply_steerforce) {
 			bool isdyna = obj->IsDynamic();
 			if (isdyna)
 				m_steerVec.z() = 0;
@@ -273,19 +265,18 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 			MT_Vector3 newvel = m_velocity * m_steerVec;
 
 			//adjust velocity to avoid obstacles
-			if (m_simulation && m_obstacle /*&& !newvel.fuzzyZero()*/)
-			{
+			if (m_simulation && m_obstacle /*&& !newvel.fuzzyZero()*/) {
 				if (m_enableVisualization)
 					KX_RasterizerDrawDebugLine(mypos, mypos + newvel, MT_Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-				m_simulation->AdjustObstacleVelocity(m_obstacle, m_mode!=KX_STEERING_PATHFOLLOWING ? m_navmesh : NULL,
-								newvel, m_acceleration*(float)delta, m_turnspeed/(180.0f*(float)(M_PI*delta)));
+				m_simulation->AdjustObstacleVelocity(m_obstacle, m_mode != KX_STEERING_PATHFOLLOWING ? m_navmesh : NULL,
+				                                     newvel, m_acceleration * (float)delta,
+				                                     m_turnspeed / (180.0f * (float)(M_PI * delta)));
 				if (m_enableVisualization)
 					KX_RasterizerDrawDebugLine(mypos, mypos + newvel, MT_Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 			}
 
 			HandleActorFace(newvel);
-			if (isdyna)
-			{
+			if (isdyna) {
 				//temporary solution: set 2D steering velocity directly to obj
 				//correct way is to apply physical force
 				MT_Vector3 curvel = obj->GetLinearVelocity();
@@ -297,18 +288,15 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 
 				obj->setLinearVelocity(newvel, false);
 			}
-			else
-			{
+			else {
 				MT_Vector3 movement = delta*newvel;
 				obj->ApplyMovement(movement, false);
 			}
 		}
-		else
-		{
-			if (m_simulation && m_obstacle)
-			{
-				m_obstacle->dvel[0] = 0.f;
-				m_obstacle->dvel[1] = 0.f;
+		else {
+			if (m_simulation && m_obstacle) {
+				m_obstacle->dvel[0] = 0.0f;
+				m_obstacle->dvel[1] = 0.0f;
 			}
 			
 		}
@@ -320,7 +308,7 @@ bool KX_SteeringActuator::Update(double curtime, bool frame)
 	return true;
 }
 
-const MT_Vector3& KX_SteeringActuator::GetSteeringVec()
+const MT_Vector3 &SCA_SteeringActuator::GetSteeringVec()
 {
 	static MT_Vector3 ZERO_VECTOR(0, 0, 0);
 	if (m_isActive)
@@ -329,11 +317,12 @@ const MT_Vector3& KX_SteeringActuator::GetSteeringVec()
 		return ZERO_VECTOR;
 }
 
-inline float vdot2(const float* a, const float* b)
+inline float vdot2(const float *a, const float *b)
 {
-	return a[0]*b[0] + a[2]*b[2];
+	return a[0] * b[0] + a[2] * b[2];
 }
-static bool barDistSqPointToTri(const float* p, const float* a, const float* b, const float* c)
+
+static bool barDistSqPointToTri(const float *p, const float *a, const float *b, const float *c)
 {
 	float v0[3], v1[3], v2[3];
 	rcVsub(v0, c,a);
@@ -351,17 +340,17 @@ static bool barDistSqPointToTri(const float* p, const float* a, const float* b, 
 	float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
 	float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
-	float ud = u<0.f ? -u : (u>1.f ? u-1.f : 0.f);
-	float vd = v<0.f ? -v : (v>1.f ? v-1.f : 0.f);
+	float ud = u < 0.0f ? -u : (u > 1.0f ? u - 1.0f : 0.f);
+	float vd = v < 0.0f ? -v : (v > 1.0f ? v - 1.0f : 0.0f);
 	return ud * ud + vd * vd;
 }
 
-inline void flipAxes(float* vec)
+inline void flipAxes(float *vec)
 {
-	std::swap(vec[1],vec[2]);
+	std::swap(vec[1], vec[2]);
 }
 
-static bool getNavmeshNormal(dtStatNavMesh* navmesh, const MT_Vector3& pos, MT_Vector3& normal)
+static bool getNavmeshNormal(dtStatNavMesh *navmesh, const MT_Vector3 &pos, MT_Vector3 &normal)
 {
 	static const float polyPickExt[3] = {2, 4, 2};
 	float spos[3];
@@ -370,36 +359,32 @@ static bool getNavmeshNormal(dtStatNavMesh* navmesh, const MT_Vector3& pos, MT_V
 	dtStatPolyRef sPolyRef = navmesh->findNearestPoly(spos, polyPickExt);
 	if (sPolyRef == 0)
 		return false;
-	const dtStatPoly* p = navmesh->getPoly(sPolyRef-1);
-	const dtStatPolyDetail* pd = navmesh->getPolyDetail(sPolyRef-1);
+	const dtStatPoly *p = navmesh->getPoly(sPolyRef-1);
+	const dtStatPolyDetail *pd = navmesh->getPolyDetail(sPolyRef - 1);
 
 	float distMin = FLT_MAX;
 	int idxMin = -1;
 	for (int i = 0; i < pd->ntris; ++i)
 	{
-		const unsigned char* t = navmesh->getDetailTri(pd->tbase+i);
-		const float* v[3];
-		for (int j = 0; j < 3; ++j)
-		{
+		const unsigned char *t = navmesh->getDetailTri(pd->tbase+i);
+		const float *v[3];
+		for (int j = 0; j < 3; ++j) {
 			if (t[j] < p->nv)
 				v[j] = navmesh->getVertex(p->v[t[j]]);
 			else
 				v[j] = navmesh->getDetailVertex(pd->vbase+(t[j]-p->nv));
 		}
 		float dist = barDistSqPointToTri(spos, v[0], v[1], v[2]);
-		if (dist<distMin)
-		{
+		if (dist<distMin) {
 			distMin = dist;
 			idxMin = i;
 		}
 	}
 
-	if (idxMin>=0)
-	{
-		const unsigned char* t = navmesh->getDetailTri(pd->tbase+idxMin);
-		const float* v[3];
-		for (int j = 0; j < 3; ++j)
-		{
+	if (idxMin>=0) {
+		const unsigned char *t = navmesh->getDetailTri(pd->tbase+idxMin);
+		const float *v[3];
+		for (int j = 0; j < 3; ++j) {
 			if (t[j] < p->nv)
 				v[j] = navmesh->getVertex(p->v[t[j]]);
 			else
@@ -409,8 +394,8 @@ static bool getNavmeshNormal(dtStatNavMesh* navmesh, const MT_Vector3& pos, MT_V
 		for (size_t j=0; j<3; j++)
 			tri[j].setValue(v[j][0],v[j][2],v[j][1]);
 		MT_Vector3 a,b;
-		a = tri[1]-tri[0];
-		b = tri[2]-tri[0];
+		a = tri[1] - tri[0];
+		b = tri[2] - tri[0];
 		normal = b.cross(a).safe_normalized();
 		return true;
 	}
@@ -418,11 +403,11 @@ static bool getNavmeshNormal(dtStatNavMesh* navmesh, const MT_Vector3& pos, MT_V
 	return false;
 }
 
-void KX_SteeringActuator::HandleActorFace(MT_Vector3& velocity)
+void SCA_SteeringActuator::HandleActorFace(MT_Vector3 &velocity)
 {
 	if (m_facingMode==0 && (!m_navmesh || !m_normalUp))
 		return;
-	KX_GameObject* curobj = (KX_GameObject*) GetParent();
+	KX_GameObject *curobj = (KX_GameObject *) GetParent();
 	MT_Vector3 dir = m_facingMode==0 ?  curobj->NodeGetLocalOrientation().getColumn(1) : velocity;
 	if (dir.fuzzyZero())
 		return;
@@ -431,35 +416,30 @@ void KX_SteeringActuator::HandleActorFace(MT_Vector3& velocity)
 	MT_Vector3 left;
 	MT_Matrix3x3 mat;
 	
-	if (m_navmesh && m_normalUp)
-	{
-		dtStatNavMesh* navmesh =  m_navmesh->GetNavMesh();
+	if (m_navmesh && m_normalUp) {
+		dtStatNavMesh *navmesh =  m_navmesh->GetNavMesh();
 		MT_Vector3 normal;
 		MT_Vector3 trpos = m_navmesh->TransformToLocalCoords(curobj->NodeGetWorldPosition());
-		if (getNavmeshNormal(navmesh, trpos, normal))
-		{
-
+		if (getNavmeshNormal(navmesh, trpos, normal)) {
 			left = (dir.cross(up)).safe_normalized();
 			dir = (-left.cross(normal)).safe_normalized();
 			up = normal;
 		}
 	}
 
-	switch (m_facingMode)
-	{
-	case 1: // TRACK X
+	switch (m_facingMode) {
+		case 1: // TRACK X
 		{
 			left  = dir.safe_normalized();
 			dir = -(left.cross(up)).safe_normalized();
 			break;
-		};
-	case 2:	// TRACK Y
+		}
+		case 2:	// TRACK Y
 		{
 			left  = (dir.cross(up)).safe_normalized();
 			break;
 		}
-
-	case 3: // track Z
+		case 3: // track Z
 		{
 			left = up.safe_normalized();
 			up = dir.safe_normalized();
@@ -467,20 +447,19 @@ void KX_SteeringActuator::HandleActorFace(MT_Vector3& velocity)
 			left  = (dir.cross(up)).safe_normalized();
 			break;
 		}
-
-	case 4: // TRACK -X
+		case 4: // TRACK -X
 		{
 			left  = -dir.safe_normalized();
 			dir = -(left.cross(up)).safe_normalized();
 			break;
-		};
-	case 5: // TRACK -Y
+		}
+		case 5: // TRACK -Y
 		{
 			left  = (-dir.cross(up)).safe_normalized();
 			dir = -dir;
 			break;
 		}
-	case 6: // track -Z
+		case 6: // track -Z
 		{
 			left = up.safe_normalized();
 			up = -dir.safe_normalized();
@@ -498,20 +477,18 @@ void KX_SteeringActuator::HandleActorFace(MT_Vector3& velocity)
 
 	
 	
-	KX_GameObject* parentObject = curobj->GetParent();
-	if (parentObject)
-	{ 
+	KX_GameObject *parentObject = curobj->GetParent();
+	if (parentObject) {
 		MT_Vector3 localpos;
 		localpos = curobj->GetSGNode()->GetLocalPosition();
 		MT_Matrix3x3 parentmatinv;
-		parentmatinv = parentObject->NodeGetWorldOrientation ().inverse ();
+		parentmatinv = parentObject->NodeGetWorldOrientation().inverse();
 		mat = parentmatinv * mat;
 		mat = m_parentlocalmat * mat;
 		curobj->NodeSetLocalOrientation(mat);
 		curobj->NodeSetLocalPosition(localpos);
 	}
-	else
-	{
+	else {
 		curobj->NodeSetLocalOrientation(mat);
 	}
 
@@ -524,9 +501,9 @@ void KX_SteeringActuator::HandleActorFace(MT_Vector3& velocity)
 /* ------------------------------------------------------------------------- */
 
 /* Integration hooks ------------------------------------------------------- */
-PyTypeObject KX_SteeringActuator::Type = {
+PyTypeObject SCA_SteeringActuator::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
-	"KX_SteeringActuator",
+	"SCA_SteeringActuator",
 	sizeof(PyObjectPlus_Proxy),
 	0,
 	py_base_dealloc,
@@ -546,49 +523,49 @@ PyTypeObject KX_SteeringActuator::Type = {
 	py_base_new
 };
 
-PyMethodDef KX_SteeringActuator::Methods[] = {
+PyMethodDef SCA_SteeringActuator::Methods[] = {
 	{NULL,NULL} //Sentinel
 };
 
-PyAttributeDef KX_SteeringActuator::Attributes[] = {
-	KX_PYATTRIBUTE_INT_RW("behavior", KX_STEERING_NODEF+1, KX_STEERING_MAX-1, true, KX_SteeringActuator, m_mode),
-	KX_PYATTRIBUTE_RW_FUNCTION("target", KX_SteeringActuator, pyattr_get_target, pyattr_set_target),
-	KX_PYATTRIBUTE_RW_FUNCTION("navmesh", KX_SteeringActuator, pyattr_get_navmesh, pyattr_set_navmesh),
-	KX_PYATTRIBUTE_FLOAT_RW("distance", 0.0f, 1000.0f, KX_SteeringActuator, m_distance),
-	KX_PYATTRIBUTE_FLOAT_RW("velocity", 0.0f, 1000.0f, KX_SteeringActuator, m_velocity),
-	KX_PYATTRIBUTE_FLOAT_RW("acceleration", 0.0f, 1000.0f, KX_SteeringActuator, m_acceleration),
-	KX_PYATTRIBUTE_FLOAT_RW("turnspeed", 0.0f, 720.0f, KX_SteeringActuator, m_turnspeed),
-	KX_PYATTRIBUTE_BOOL_RW("selfterminated", KX_SteeringActuator, m_isSelfTerminated),
-	KX_PYATTRIBUTE_BOOL_RW("enableVisualization", KX_SteeringActuator, m_enableVisualization),
-	KX_PYATTRIBUTE_RO_FUNCTION("steeringVec", KX_SteeringActuator, pyattr_get_steeringVec),
-	KX_PYATTRIBUTE_SHORT_RW("facingMode", 0, 6, true, KX_SteeringActuator, m_facingMode),
-	KX_PYATTRIBUTE_INT_RW("pathUpdatePeriod", -1, 100000, true, KX_SteeringActuator, m_pathUpdatePeriod),
-	KX_PYATTRIBUTE_BOOL_RW("lockZVelocity", KX_SteeringActuator, m_lockzvel),
-	KX_PYATTRIBUTE_RO_FUNCTION("path", KX_SteeringActuator, pyattr_get_path),
+PyAttributeDef SCA_SteeringActuator::Attributes[] = {
+	KX_PYATTRIBUTE_INT_RW("behavior", KX_STEERING_NODEF+1, KX_STEERING_MAX-1, true, SCA_SteeringActuator, m_mode),
+	KX_PYATTRIBUTE_RW_FUNCTION("target", SCA_SteeringActuator, pyattr_get_target, pyattr_set_target),
+	KX_PYATTRIBUTE_RW_FUNCTION("navmesh", SCA_SteeringActuator, pyattr_get_navmesh, pyattr_set_navmesh),
+	KX_PYATTRIBUTE_FLOAT_RW("distance", 0.0f, 1000.0f, SCA_SteeringActuator, m_distance),
+	KX_PYATTRIBUTE_FLOAT_RW("velocity", 0.0f, 1000.0f, SCA_SteeringActuator, m_velocity),
+	KX_PYATTRIBUTE_FLOAT_RW("acceleration", 0.0f, 1000.0f, SCA_SteeringActuator, m_acceleration),
+	KX_PYATTRIBUTE_FLOAT_RW("turnspeed", 0.0f, 720.0f, SCA_SteeringActuator, m_turnspeed),
+	KX_PYATTRIBUTE_BOOL_RW("selfterminated", SCA_SteeringActuator, m_isSelfTerminated),
+	KX_PYATTRIBUTE_BOOL_RW("enableVisualization", SCA_SteeringActuator, m_enableVisualization),
+	KX_PYATTRIBUTE_RO_FUNCTION("steeringVec", SCA_SteeringActuator, pyattr_get_steeringVec),
+	KX_PYATTRIBUTE_SHORT_RW("facingMode", 0, 6, true, SCA_SteeringActuator, m_facingMode),
+	KX_PYATTRIBUTE_INT_RW("pathUpdatePeriod", -1, 100000, true, SCA_SteeringActuator, m_pathUpdatePeriod),
+	KX_PYATTRIBUTE_BOOL_RW("lockZVelocity", SCA_SteeringActuator, m_lockzvel),
+	KX_PYATTRIBUTE_RO_FUNCTION("path", SCA_SteeringActuator, pyattr_get_path),
 	{ NULL }	//Sentinel
 };
 
-PyObject *KX_SteeringActuator::pyattr_get_target(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_SteeringActuator::pyattr_get_target(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
 {
-	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
+	SCA_SteeringActuator *actuator = static_cast<SCA_SteeringActuator *>(self);
 	if (!actuator->m_target)
 		Py_RETURN_NONE;
 	else
 		return actuator->m_target->GetProxy();
 }
 
-int KX_SteeringActuator::pyattr_set_target(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int SCA_SteeringActuator::pyattr_set_target(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
-	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
+	SCA_SteeringActuator *actuator = static_cast<SCA_SteeringActuator *>(self);
 	KX_GameObject *gameobj;
 
-	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: KX_SteeringActuator"))
+	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: SCA_SteeringActuator"))
 		return PY_SET_ATTR_FAIL; // ConvertPythonToGameObject sets the error
 
 	if (actuator->m_target != NULL)
 		actuator->m_target->UnregisterActuator(actuator);
 
-	actuator->m_target = (KX_GameObject*) gameobj;
+	actuator->m_target = (KX_GameObject *) gameobj;
 
 	if (actuator->m_target)
 		actuator->m_target->RegisterActuator(actuator);
@@ -596,21 +573,21 @@ int KX_SteeringActuator::pyattr_set_target(void *self, const struct KX_PYATTRIBU
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_SteeringActuator::pyattr_get_navmesh(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_SteeringActuator::pyattr_get_navmesh(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
 {
-	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
+	SCA_SteeringActuator *actuator = static_cast<SCA_SteeringActuator *>(self);
 	if (!actuator->m_navmesh)
 		Py_RETURN_NONE;
 	else
 		return actuator->m_navmesh->GetProxy();
 }
 
-int KX_SteeringActuator::pyattr_set_navmesh(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int SCA_SteeringActuator::pyattr_set_navmesh(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
-	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
+	SCA_SteeringActuator *actuator = static_cast<SCA_SteeringActuator *>(self);
 	KX_GameObject *gameobj;
 
-	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: KX_SteeringActuator"))
+	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: SCA_SteeringActuator"))
 		return PY_SET_ATTR_FAIL; // ConvertPythonToGameObject sets the error
 
 	if (dynamic_cast<KX_NavMeshObject *>(gameobj) == NULL) {
@@ -621,7 +598,7 @@ int KX_SteeringActuator::pyattr_set_navmesh(void *self, const struct KX_PYATTRIB
 	if (actuator->m_navmesh != NULL)
 		actuator->m_navmesh->UnregisterActuator(actuator);
 
-	actuator->m_navmesh = static_cast<KX_NavMeshObject*>(gameobj);
+	actuator->m_navmesh = static_cast<KX_NavMeshObject *>(gameobj);
 
 	if (actuator->m_navmesh)
 		actuator->m_navmesh->RegisterActuator(actuator);
@@ -629,32 +606,32 @@ int KX_SteeringActuator::pyattr_set_navmesh(void *self, const struct KX_PYATTRIB
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_SteeringActuator::pyattr_get_steeringVec(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_SteeringActuator::pyattr_get_steeringVec(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
 {
-	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
-	const MT_Vector3& steeringVec = actuator->GetSteeringVec();
+	SCA_SteeringActuator *actuator = static_cast<SCA_SteeringActuator *>(self);
+	const MT_Vector3 &steeringVec = actuator->GetSteeringVec();
 	return PyObjectFrom(steeringVec);
 }
 
-static int kx_steering_actuator_get_path_size_cb(void *self)
+static int sca_steering_actuator_get_path_size_cb(void *self)
 {
-	return ((KX_SteeringActuator *)self)->m_pathLen;
+	return ((SCA_SteeringActuator *)self)->m_pathLen;
 }
 
-static PyObject *kx_steering_actuator_get_path_item_cb(void *self, int index)
+static PyObject *sca_steering_actuator_get_path_item_cb(void *self, int index)
 {
-	float *path = ((KX_SteeringActuator *)self)->m_path;
+	float *path = ((SCA_SteeringActuator *)self)->m_path;
 	MT_Vector3 point(&path[3*index]);
 	return PyObjectFrom(point);
 }
 
-PyObject *KX_SteeringActuator::pyattr_get_path(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_SteeringActuator::pyattr_get_path(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
 {
 	return (new CListWrapper(self,
-							((KX_SteeringActuator *)self)->GetProxy(),
+							((SCA_SteeringActuator *)self)->GetProxy(),
 							NULL,
-							kx_steering_actuator_get_path_size_cb,
-							kx_steering_actuator_get_path_item_cb,
+							sca_steering_actuator_get_path_size_cb,
+							sca_steering_actuator_get_path_item_cb,
 							NULL,
 							NULL))->NewProxy(true);
 }
