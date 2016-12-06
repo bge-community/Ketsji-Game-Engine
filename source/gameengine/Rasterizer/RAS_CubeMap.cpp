@@ -124,8 +124,8 @@ void RAS_CubeMap::AttachTexture()
 		m_rbs[i] = GPU_renderbuffer_create(GPU_texture_width(m_gpuTex), GPU_texture_height(m_gpuTex),
 										   0, GPU_HDR_NONE, GPU_RENDERBUFFER_DEPTH, NULL);
 
-		GPU_framebuffer_texture_attach_target(m_fbos[i], m_gpuTex, cubeMapTargets[i], 0, NULL);
-		GPU_framebuffer_renderbuffer_attach(m_fbos[i], m_rbs[i], 0, NULL);
+		GPU_framebuffer_texture_attach_target(m_fbos[i], m_gpuTex, cubeMapTargets[i], 0);
+		GPU_framebuffer_renderbuffer_attach(m_fbos[i], m_rbs[i], 0);
 	}
 }
 

@@ -43,118 +43,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CASE_CODE_RETURN_STR(code) case code: return #code;
+/* control whether we use older AMD_debug_output extension, or just the newer extensions
+ * TODO(merwin): determine whether all supported GPU + OS combos have newer extensions */
+#define LEGACY_DEBUG 0
 
-static const char *gpu_gl_error_symbol(GLenum err)
-{
-	switch (err) {
-		CASE_CODE_RETURN_STR(GL_NO_ERROR)
-		CASE_CODE_RETURN_STR(GL_INVALID_ENUM)
-		CASE_CODE_RETURN_STR(GL_INVALID_VALUE)
-		CASE_CODE_RETURN_STR(GL_INVALID_OPERATION)
-		CASE_CODE_RETURN_STR(GL_STACK_OVERFLOW)
-		CASE_CODE_RETURN_STR(GL_STACK_UNDERFLOW)
-		CASE_CODE_RETURN_STR(GL_OUT_OF_MEMORY)
-
-#if GL_ARB_imaging
-		CASE_CODE_RETURN_STR(GL_TABLE_TOO_LARGE)
-#endif
-
-#if defined(WITH_GLU)
-		CASE_CODE_RETURN_STR(GLU_INVALID_ENUM)
-		CASE_CODE_RETURN_STR(GLU_INVALID_VALUE)
-		CASE_CODE_RETURN_STR(GLU_OUT_OF_MEMORY)
-#endif
-
-		default:
-			return "<unknown error>";
-	}
-}
-
-#undef CASE_CODE_RETURN_STR
-
-
-static bool gpu_report_gl_errors(const char *file, int line, const char *str)
-{
-	GLenum gl_error = glGetError();
-
-	if (gl_error == GL_NO_ERROR) {
-		return true;
-	}
-	else {
-		/* glGetError should have cleared the error flag, so if we get the
-		 * same flag twice that means glGetError itself probably triggered
-		 * the error. This happens on Windows if the GL context is invalid.
-		 */
-		{
-			GLenum new_error = glGetError();
-			if (gl_error == new_error) {
-				fprintf(stderr, "GL: Possible context invalidation issue\n");
-				return false;
-			}
-		}
-
-		fprintf(stderr,
-		        "%s:%d: ``%s'' -> GL Error (0x%04X - %s): %s\n",
-		        file, line, str, gl_error,
-		        gpu_gl_error_symbol(gl_error),
-		        gpuErrorString(gl_error));
-
-		return false;
-	}
-}
-
-
-const char *gpuErrorString(GLenum err)
-{
-	switch (err) {
-		case GL_NO_ERROR:
-			return "No Error";
-
-		case GL_INVALID_ENUM:
-			return "Invalid Enumeration";
-
-		case GL_INVALID_VALUE:
-			return "Invalid Value";
-
-		case GL_INVALID_OPERATION:
-			return "Invalid Operation";
-
-		case GL_STACK_OVERFLOW:
-			return "Stack Overflow";
-
-		case GL_STACK_UNDERFLOW:
-			return "Stack Underflow";
-
-		case GL_OUT_OF_MEMORY:
-			return "Out of Memory";
-
-#if GL_ARB_imaging
-		case GL_TABLE_TOO_LARGE:
-			return "Table Too Large";
-#endif
-
-#if defined(WITH_GLU)
-		case GLU_INVALID_ENUM:
-			return "Invalid Enum (GLU)";
-
-		case GLU_INVALID_VALUE:
-			return "Invalid Value (GLU)";
-
-		case GLU_OUT_OF_MEMORY:
-			return "Out of Memory (GLU)";
-#endif
-
-		default:
-			return "<unknown error>";
-	}
-}
-
-
-/* Debug callbacks need the same calling convention as OpenGL functions.
- */
-#if defined(_WIN32) && !defined(_WIN32_WCE) && !defined(__SCITECH_SNAP__)
-    /* Win32 but not WinCE */
+/* Debug callbacks need the same calling convention as OpenGL functions. */
+#if defined(_WIN32)
 #   define APIENTRY __stdcall
 #else
 #   define APIENTRY
@@ -188,32 +82,11 @@ static const char* message_type_name(GLenum message)
 	}
 }
 
-static const char* category_name_amd(GLenum category)
-{
-	switch (category) {
-		case GL_DEBUG_CATEGORY_API_ERROR_AMD: return "API error";
-		case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD: return "window system";
-		case GL_DEBUG_CATEGORY_DEPRECATION_AMD: return "deprecated behavior";
-		case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD: return "undefined behavior";
-		case GL_DEBUG_CATEGORY_PERFORMANCE_AMD: return "performance";
-		case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD: return "shader compiler";
-		case GL_DEBUG_CATEGORY_APPLICATION_AMD: return "application";
-		case GL_DEBUG_CATEGORY_OTHER_AMD: return "other";
-		default: return "???";
-	}
-}
-
-
 static void APIENTRY gpu_debug_proc(
         GLenum source, GLenum type, GLuint UNUSED(id),
         GLenum severity, GLsizei UNUSED(length),
         const GLchar *message, const GLvoid *UNUSED(userParm))
 {
-	if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR) {
-		/* Blender 2.7x uses OpenGL 2.1, we don't care if features are deprecated */
-		return;
-	}
-
 	bool backtrace = false;
 
 	switch (severity) {
@@ -232,18 +105,28 @@ static void APIENTRY gpu_debug_proc(
 	}
 }
 
+#if LEGACY_DEBUG
 
-#ifndef GLEW_ES_ONLY
+static const char* category_name_amd(GLenum category)
+{
+	switch (category) {
+		case GL_DEBUG_CATEGORY_API_ERROR_AMD: return "API error";
+		case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD: return "window system";
+		case GL_DEBUG_CATEGORY_DEPRECATION_AMD: return "deprecated behavior";
+		case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD: return "undefined behavior";
+		case GL_DEBUG_CATEGORY_PERFORMANCE_AMD: return "performance";
+		case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD: return "shader compiler";
+		case GL_DEBUG_CATEGORY_APPLICATION_AMD: return "application";
+		case GL_DEBUG_CATEGORY_OTHER_AMD: return "other";
+		default: return "???";
+	}
+}
+
 static void APIENTRY gpu_debug_proc_amd(
         GLuint UNUSED(id), GLenum category,
         GLenum severity, GLsizei UNUSED(length),
         const GLchar *message,  GLvoid *UNUSED(userParm))
 {
-	if (category == GL_DEBUG_CATEGORY_DEPRECATION_AMD) {
-		/* Blender 2.7x uses OpenGL 2.1, we don't care if features are deprecated */
-		return;
-	}
-
 	bool backtrace = false;
 
 	switch (severity) {
@@ -260,8 +143,7 @@ static void APIENTRY gpu_debug_proc_amd(
 		fflush(stderr);
 	}
 }
-#endif
-
+#endif /* LEGACY_DEBUG */
 
 #undef APIENTRY
 
@@ -269,137 +151,67 @@ void gpu_debug_init(void)
 {
 	const char success[] = "Successfully hooked OpenGL debug callback.";
 
-#if !defined(WITH_GLEW_ES) && !defined(GLEW_ES_ONLY)
-	if (GLEW_VERSION_4_3) {
-		fprintf(stderr, "Using OpenGL 4.3 debug facilities\n");
+	if (GLEW_VERSION_4_3 || GLEW_KHR_debug) {
+		fprintf(stderr, "Using %s\n", GLEW_VERSION_4_3 ? "OpenGL 4.3 debug facilities" : "KHR_debug extension");
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback((GLDEBUGPROC)gpu_debug_proc, mxGetCurrentContext());
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 		GPU_string_marker(success);
-		return;
 	}
-#endif
-
-	if (GLEW_KHR_debug) {
-#ifndef GLEW_ES_ONLY
-		fprintf(stderr, "Using KHR_debug extension\n");
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback((GLDEBUGPROC)gpu_debug_proc, mxGetCurrentContext());
-		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-		GPU_string_marker(success);
-#endif
-		return;
-	}
-
-#ifndef GLEW_ES_ONLY
-	if (GLEW_ARB_debug_output) {
+	else if (GLEW_ARB_debug_output) {
 		fprintf(stderr, "Using ARB_debug_output extension\n");
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallbackARB((GLDEBUGPROCARB)gpu_debug_proc, mxGetCurrentContext());
 		glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 		GPU_string_marker(success);
-
-		return;
 	}
-
-	if (GLEW_AMD_debug_output) {
+#if LEGACY_DEBUG
+	else if (GLEW_AMD_debug_output) {
 		fprintf(stderr, "Using AMD_debug_output extension\n");
 		glDebugMessageCallbackAMD(gpu_debug_proc_amd, mxGetCurrentContext());
 		glDebugMessageEnableAMD(GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 		GPU_string_marker(success);
-
-		return;
 	}
 #endif
-
-	fprintf(stderr, "Failed to hook OpenGL debug callback.\n");
-
-	return;
+	else {
+		fprintf(stderr, "Failed to hook OpenGL debug callback.\n");
+	}
 }
 
 
 void gpu_debug_exit(void)
 {
-#ifndef WITH_GLEW_ES
-#ifndef GLEW_ES_ONLY
-	if (GLEW_VERSION_4_3) {
+	if (GLEW_VERSION_4_3 || GLEW_KHR_debug) {
 		glDebugMessageCallback(NULL, NULL);
-
-		return;
 	}
-#endif
-#endif
-
-	if (GLEW_KHR_debug) {
-#ifndef GLEW_ES_ONLY
-		glDebugMessageCallback(NULL, NULL);
-#endif
-		return;
-	}
-
-#ifndef GLEW_ES_ONLY
-	if (GLEW_ARB_debug_output) {
+	else if (GLEW_ARB_debug_output) {
 		glDebugMessageCallbackARB(NULL, NULL);
-
-		return;
 	}
-
-	if (GLEW_AMD_debug_output) {
+#if LEGACY_DEBUG
+	else if (GLEW_AMD_debug_output) {
 		glDebugMessageCallbackAMD(NULL, NULL);
-
-		return;
 	}
 #endif
-
-	return;
 }
 
 void GPU_string_marker(const char *buf)
 {
-#ifndef WITH_GLEW_ES
-#ifndef GLEW_ES_ONLY
-	if (GLEW_VERSION_4_3) {
+	if (GLEW_VERSION_4_3 || GLEW_KHR_debug) {
 		glDebugMessageInsert(
 		        GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0,
 		        GL_DEBUG_SEVERITY_NOTIFICATION, -1, buf);
-
-		return;
 	}
-#endif
-#endif
-
-	if (GLEW_KHR_debug) {
-#ifndef GLEW_ES_ONLY
-		glDebugMessageInsert(
-		        GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0,
-		        GL_DEBUG_SEVERITY_NOTIFICATION, -1, buf);
-#endif
-		return;
-	}
-
-#ifndef GLEW_ES_ONLY
-	if (GLEW_ARB_debug_output) {
+	else if (GLEW_ARB_debug_output) {
 		glDebugMessageInsertARB(
 		        GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_OTHER_ARB, 0,
 		        GL_DEBUG_SEVERITY_LOW_ARB, -1, buf);
-
-		return;
 	}
-
-	if (GLEW_AMD_debug_output) {
+#if LEGACY_DEBUG
+	else if (GLEW_AMD_debug_output) {
 		glDebugMessageInsertAMD(
 		        GL_DEBUG_CATEGORY_APPLICATION_AMD, GL_DEBUG_SEVERITY_LOW_AMD, 0,
 		        0, buf);
-
-		return;
-	}
-
-	if (GLEW_GREMEDY_string_marker) {
-		glStringMarkerGREMEDY(0, buf);
-
-		return;
 	}
 #endif
 }
@@ -409,18 +221,6 @@ void GPU_print_error_debug(const char *str)
 	if (G.debug & G_DEBUG)
 		fprintf(stderr, "GPU: %s\n", str);
 }
-
-
-void GPU_assert_no_gl_errors(const char *file, int line, const char *str)
-{
-	if (G.debug) {
-		GLboolean gl_ok = gpu_report_gl_errors(file, line, str);
-
-		BLI_assert(gl_ok);
-		(void) gl_ok;
-	}
-}
-
 
 static void gpu_state_print_fl_ex(const char *name, GLenum type)
 {
@@ -448,7 +248,8 @@ static void gpu_state_print_fl_ex(const char *name, GLenum type)
 
 void GPU_state_print(void)
 {
-	GPU_ASSERT_NO_GL_ERRORS("GPU_state_print"); /* clear any errors */
+	/* clear any errors */ 
+	while (glGetError() != GL_NO_ERROR) {} 
 
 	gpu_state_print_fl(GL_ACCUM_ALPHA_BITS);
 	gpu_state_print_fl(GL_ACCUM_BLUE_BITS);

@@ -57,6 +57,8 @@
 #include "ED_screen_types.h"
 #include "ED_space_api.h"
 
+#include "GPU_immediate.h"
+
 #include "BIF_gl.h"
 #include "BIF_glutil.h"
 #include "BLF_api.h"
@@ -89,21 +91,30 @@ static void region_draw_emboss(const ARegion *ar, const rcti *scirct)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
+	VertexFormat* format = immVertexFormat();
+	unsigned pos = add_attrib(format, "pos", GL_FLOAT, 2, KEEP_FLOAT);
+	unsigned color = add_attrib(format, "color", GL_UNSIGNED_BYTE, 4, NORMALIZE_INT_TO_FLOAT);
+
+	immBindBuiltinProgram(GPU_SHADER_2D_FLAT_COLOR);
+	immBegin(GL_LINE_STRIP, 5);
+	
 	/* right  */
-	glColor4ub(0, 0, 0, 30);
-	sdrawline(rect.xmax, rect.ymin, rect.xmax, rect.ymax);
+	immAttrib4ub(color, 0, 0, 0, 30);
+	immVertex2f(pos, rect.xmax, rect.ymax);
+	immVertex2f(pos, rect.xmax, rect.ymin);
 	
 	/* bottom  */
-	glColor4ub(0, 0, 0, 30);
-	sdrawline(rect.xmin, rect.ymin, rect.xmax, rect.ymin);
+	immVertex2f(pos, rect.xmin, rect.ymin);
 	
-	/* top  */
-	glColor4ub(255, 255, 255, 30);
-	sdrawline(rect.xmin, rect.ymax, rect.xmax, rect.ymax);
-
 	/* left  */
-	glColor4ub(255, 255, 255, 30);
-	sdrawline(rect.xmin, rect.ymin, rect.xmin, rect.ymax);
+	immAttrib4ub(color, 255, 255, 255, 30);
+	immVertex2f(pos, rect.xmin, rect.ymax);
+
+	/* top  */
+	immVertex2f(pos, rect.xmax, rect.ymax);
+	
+	immEnd();
+	immUnbindProgram();
 	
 	glDisable(GL_BLEND);
 }
@@ -206,7 +217,7 @@ static void area_draw_azone_fullscreen(short x1, short y1, short x2, short y2, f
 	if (G.debug_value == 1) {
 		rcti click_rect;
 		float icon_size = UI_DPI_ICON_SIZE + 7 * UI_DPI_FAC;
-		char alpha_debug = 255 * alpha;
+		unsigned char alpha_debug = 255 * alpha;
 
 		BLI_rcti_init(&click_rect, x, x + icon_size, y, y + icon_size);
 
@@ -229,59 +240,73 @@ static void area_draw_azone(short x1, short y1, short x2, short y2)
 	dx = copysign(ceilf(0.3f * abs(dx)), dx);
 	dy = copysign(ceilf(0.3f * abs(dy)), dy);
 
-	glEnable(GL_BLEND);
 	glEnable(GL_LINE_SMOOTH);
+
+	VertexFormat* format = immVertexFormat();
+	unsigned pos = add_attrib(format, "pos", GL_FLOAT, 2, KEEP_FLOAT);
+	unsigned col = add_attrib(format, "color", GL_UNSIGNED_BYTE, 4, NORMALIZE_INT_TO_FLOAT);
+
+	immBindBuiltinProgram(GPU_SHADER_2D_FLAT_COLOR);
+	immBegin(GL_LINES, 12);
+
+	immAttrib4ub(col, 255, 255, 255, 180);
+	immVertex2f(pos, x1, y2);
+	immVertex2f(pos, x2, y1);
+
+	immAttrib4ub(col, 255, 255, 255, 130);
+	immVertex2f(pos, x1, y2 - dy);
+	immVertex2f(pos, x2 - dx, y1);
+
+	immAttrib4ub(col, 255, 255, 255, 80);
+	immVertex2f(pos, x1, y2 - 2 * dy);
+	immVertex2f(pos, x2 - 2 * dx, y1);
 	
-	glColor4ub(255, 255, 255, 180);
-	fdrawline(x1, y2, x2, y1);
-	glColor4ub(255, 255, 255, 130);
-	fdrawline(x1, y2 - dy, x2 - dx, y1);
-	glColor4ub(255, 255, 255, 80);
-	fdrawline(x1, y2 - 2 * dy, x2 - 2 * dx, y1);
-	
-	glColor4ub(0, 0, 0, 210);
-	fdrawline(x1, y2 + 1, x2 + 1, y1);
-	glColor4ub(0, 0, 0, 180);
-	fdrawline(x1, y2 - dy + 1, x2 - dx + 1, y1);
-	glColor4ub(0, 0, 0, 150);
-	fdrawline(x1, y2 - 2 * dy + 1, x2 - 2 * dx + 1, y1);
+	immAttrib4ub(col, 0, 0, 0, 210);
+	immVertex2f(pos, x1, y2 + 1);
+	immVertex2f(pos, x2 + 1, y1);
+
+	immAttrib4ub(col, 0, 0, 0, 180);
+	immVertex2f(pos, x1, y2 - dy + 1);
+	immVertex2f(pos, x2 - dx + 1, y1);
+
+	immAttrib4ub(col, 0, 0, 0, 150);
+	immVertex2f(pos, x1, y2 - 2 * dy + 1);
+	immVertex2f(pos, x2 - 2 * dx + 1, y1);
+
+	immEnd();
+	immUnbindProgram();
 
 	glDisable(GL_LINE_SMOOTH);
-	glDisable(GL_BLEND);
 }
 
 static void region_draw_azone_icon(AZone *az)
 {
-	GLUquadricObj *qobj = NULL; 
-	short midx = az->x1 + (az->x2 - az->x1) / 2;
-	short midy = az->y1 + (az->y2 - az->y1) / 2;
-		
-	qobj = gluNewQuadric();
-	
-	glPushMatrix();
-	glTranslatef(midx, midy, 0.0);
-	
+	float midx = az->x1 + (az->x2 - az->x1) * 0.5f;
+	float midy = az->y1 + (az->y2 - az->y1) * 0.5f;
+
+	VertexFormat* format = immVertexFormat();
+	unsigned pos = add_attrib(format, "pos", GL_FLOAT, 2, KEEP_FLOAT);
+
+	immBindBuiltinProgram(GPU_SHADER_2D_UNIFORM_COLOR);
+
 	/* outlined circle */
+	immUniform4f("color", 1.0f, 1.0f, 1.0f, 0.8f);
+	imm_draw_filled_circle(pos, midx, midy, 4.25f, 12);
+	/* TODO(merwin): replace this --^ with one round point once shader is ready */
 	glEnable(GL_LINE_SMOOTH);
-
-	glColor4f(1.f, 1.f, 1.f, 0.8f);
-
-	gluQuadricDrawStyle(qobj, GLU_FILL); 
-	gluDisk(qobj, 0.0,  4.25f, 16, 1);
-
-	glColor4f(0.2f, 0.2f, 0.2f, 0.9f);
-	
-	gluQuadricDrawStyle(qobj, GLU_SILHOUETTE); 
-	gluDisk(qobj, 0.0,  4.25f, 16, 1);
-	
+	immUniform4f("color", 0.2f, 0.2f, 0.2f, 0.9f);
+	imm_draw_lined_circle(pos, midx, midy, 4.25f, 12);
 	glDisable(GL_LINE_SMOOTH);
-	
-	glPopMatrix();
-	gluDeleteQuadric(qobj);
-	
+
 	/* + */
-	sdrawline(midx, midy - 2, midx, midy + 3);
-	sdrawline(midx - 2, midy, midx + 3, midy);
+	immBegin(GL_LINES, 4);
+	immVertex2f(pos, midx, midy - 2);
+	immVertex2f(pos, midx, midy + 3);
+	immVertex2f(pos, midx - 2, midy);
+	immVertex2f(pos, midx + 3, midy);
+	immEnd();
+
+	immUnbindProgram();
 }
 
 static void draw_azone_plus(float x1, float y1, float x2, float y2)
@@ -314,8 +339,8 @@ static void region_draw_azone_tab_plus(AZone *az)
 			break;
 	}
 
-	glColor4f(0.05f, 0.05f, 0.05f, 0.4f);
-	UI_draw_roundbox((float)az->x1, (float)az->y1, (float)az->x2, (float)az->y2, 4.0f);
+	float color[4] = {0.05f, 0.05f, 0.05f, 0.4f};
+	UI_draw_roundbox((float)az->x1, (float)az->y1, (float)az->x2, (float)az->y2, 4.0f, color);
 
 	glEnable(GL_BLEND);
 
@@ -2346,11 +2371,16 @@ void ED_region_grid_draw(ARegion *ar, float zoomx, float zoomy)
 	int x1, y1, x2, y2;
 
 	/* the image is located inside (0, 0), (1, 1) as set by view2d */
-	UI_ThemeColorShade(TH_BACK, 20);
-
 	UI_view2d_view_to_region(&ar->v2d, 0.0f, 0.0f, &x1, &y1);
 	UI_view2d_view_to_region(&ar->v2d, 1.0f, 1.0f, &x2, &y2);
-	glRectf(x1, y1, x2, y2);
+
+	VertexFormat* format = immVertexFormat();
+	unsigned pos = add_attrib(format, "pos", GL_FLOAT, 2, KEEP_FLOAT);
+	
+	immBindBuiltinProgram(GPU_SHADER_2D_UNIFORM_COLOR);
+	immUniformThemeColorShade(TH_BACK, 20);
+	immRectf(pos, x1, y1, x2, y2);
+	immUnbindProgram();
 
 	/* gridsize adapted to zoom level */
 	gridsize = 0.5f * (zoomx + zoomy);
@@ -2370,33 +2400,52 @@ void ED_region_grid_draw(ARegion *ar, float zoomx, float zoomy)
 		}
 	}
 
-	/* the fine resolution level */
 	blendfac = 0.25f * gridsize - floorf(0.25f * gridsize);
 	CLAMP(blendfac, 0.0f, 1.0f);
-	UI_ThemeColorShade(TH_BACK, (int)(20.0f * (1.0f - blendfac)));
 
-	fac = 0.0f;
-	glBegin(GL_LINES);
-	while (fac < 1.0f) {
-		glVertex2f(x1, y1 * (1.0f - fac) + y2 * fac);
-		glVertex2f(x2, y1 * (1.0f - fac) + y2 * fac);
-		glVertex2f(x1 * (1.0f - fac) + x2 * fac, y1);
-		glVertex2f(x1 * (1.0f - fac) + x2 * fac, y2);
-		fac += gridstep;
+	int count_fine = 1.0f / gridstep;
+	int count_large = 1.0f / (4.0f * gridstep);
+
+	if (count_fine > 0) {
+		VertexFormat_clear(format);
+		pos = add_attrib(format, "pos", GL_FLOAT, 2, KEEP_FLOAT);
+		unsigned color = add_attrib(format, "color", GL_FLOAT, 3, KEEP_FLOAT);
+		
+		immBindBuiltinProgram(GPU_SHADER_2D_FLAT_COLOR);
+		immBegin(GL_LINES, 4 * count_fine + 4 * count_large);
+		
+		float theme_color[3];
+		UI_GetThemeColorShade3fv(TH_BACK, (int)(20.0f * (1.0f - blendfac)), theme_color);
+		immAttrib3fv(color, theme_color);
+		fac = 0.0f;
+		
+		/* the fine resolution level */
+		for (int i = 0; i < count_fine; i++) {
+			immVertex2f(pos, x1, y1 * (1.0f - fac) + y2 * fac);
+			immVertex2f(pos, x2, y1 * (1.0f - fac) + y2 * fac);
+			immVertex2f(pos, x1 * (1.0f - fac) + x2 * fac, y1);
+			immVertex2f(pos, x1 * (1.0f - fac) + x2 * fac, y2);
+			fac += gridstep;
+		}
+
+		if (count_large > 0) {
+			UI_GetThemeColor3fv(TH_BACK, theme_color);
+			immAttrib3fv(color, theme_color);
+			fac = 0.0f;
+			
+			/* the large resolution level */
+			for (int i = 0; i < count_large; i++) {
+				immVertex2f(pos, x1, y1 * (1.0f - fac) + y2 * fac);
+				immVertex2f(pos, x2, y1 * (1.0f - fac) + y2 * fac);
+				immVertex2f(pos, x1 * (1.0f - fac) + x2 * fac, y1);
+				immVertex2f(pos, x1 * (1.0f - fac) + x2 * fac, y2);
+				fac += 4.0f * gridstep;
+			}
+		}
+
+		immEnd();
+		immUnbindProgram();
 	}
-
-	/* the large resolution level */
-	UI_ThemeColor(TH_BACK);
-
-	fac = 0.0f;
-	while (fac < 1.0f) {
-		glVertex2f(x1, y1 * (1.0f - fac) + y2 * fac);
-		glVertex2f(x2, y1 * (1.0f - fac) + y2 * fac);
-		glVertex2f(x1 * (1.0f - fac) + x2 * fac, y1);
-		glVertex2f(x1 * (1.0f - fac) + x2 * fac, y2);
-		fac += 4.0f * gridstep;
-	}
-	glEnd();
 }
 
 /* If the area has overlapping regions, it returns visible rect for Region *ar */

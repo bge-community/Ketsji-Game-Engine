@@ -35,6 +35,7 @@
 
 #include "GPU_extensions.h"
 #include "GPU_basic_shader.h"
+#include "GPU_immediate.h"
 
 #include "BLI_blenlib.h"
 #include "BLI_utildefines.h"
@@ -504,8 +505,12 @@ static void init_internal_icons(void)
 			icongltex.id = 0;
 		}
 
+#if 0 /* should be a compile-time check (if needed at all) */
 		/* we only use a texture for cards with non-power of two */
 		if (GPU_full_non_power_of_two_support()) {
+#else
+		{
+#endif
 			glGenTextures(1, &icongltex.id);
 
 			if (icongltex.id) {
@@ -533,11 +538,6 @@ static void init_internal_icons(void)
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				
 				glBindTexture(GL_TEXTURE_2D, 0);
-				
-				if (glGetError() == GL_OUT_OF_MEMORY) {
-					glDeleteTextures(1, &icongltex.id);
-					icongltex.id = 0;
-				}
 			}
 		}
 	}
@@ -851,12 +851,15 @@ void ui_icon_ensure_deferred(const bContext *C, const int icon_id, const bool bi
 				{
 					ID *id = (icon->type != 0) ? icon->obj : NULL;
 					PreviewImage *prv = id ? BKE_previewimg_id_ensure(id) : icon->obj;
+					/* Using jobs for screen previews crashes due to offscreen rendering.
+					 * XXX would be nicer if PreviewImage could store if it supports jobs */
+					const bool use_jobs = !id || (GS(id->name) != ID_SCR);
 
 					if (prv) {
 						const int size = big ? ICON_SIZE_PREVIEW : ICON_SIZE_ICON;
 
 						if (id || (prv->tag & PRV_TAG_DEFFERED) != 0) {
-							ui_id_preview_image_render_size(C, NULL, id, prv, size, true);
+							ui_id_preview_image_render_size(C, NULL, id, prv, size, use_jobs);
 						}
 					}
 					break;
@@ -1017,33 +1020,40 @@ static void icon_draw_texture(
 {
 	float x1, x2, y1, y2;
 
-	if (rgb) glColor4f(rgb[0], rgb[1], rgb[2], alpha);
-	else     glColor4f(alpha, alpha, alpha, alpha);
-
 	x1 = ix * icongltex.invw;
 	x2 = (ix + ih) * icongltex.invw;
 	y1 = iy * icongltex.invh;
 	y2 = (iy + ih) * icongltex.invh;
 
-	GPU_basic_shader_bind(GPU_SHADER_TEXTURE_2D | GPU_SHADER_USE_COLOR);
-	glBindTexture(GL_TEXTURE_2D, icongltex.id);
-
 	/* sharper downscaling, has no effect when scale matches with a mip level */
 	glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, -0.5f);
 
-	glBegin(GL_QUADS);
-	glTexCoord2f(x1, y1);
-	glVertex2f(x, y);
+	glBindTexture(GL_TEXTURE_2D, icongltex.id);
+	VertexFormat* format = immVertexFormat();
+	unsigned pos = add_attrib(format, "pos", GL_FLOAT, 2, KEEP_FLOAT);
+	unsigned texCoord = add_attrib(format, "texCoord", GL_FLOAT, 2, KEEP_FLOAT);
 
-	glTexCoord2f(x2, y1);
-	glVertex2f(x + w, y);
+	immBindBuiltinProgram(GPU_SHADER_2D_IMAGE_COLOR);
+	if (rgb) immUniform4f("color", rgb[0], rgb[1], rgb[2], alpha);
+	else     immUniform4f("color", alpha, alpha, alpha, alpha);
 
-	glTexCoord2f(x2, y2);
-	glVertex2f(x + w, y + h);
+	immUniform1i("image", 0);
 
-	glTexCoord2f(x1, y2);
-	glVertex2f(x, y + h);
-	glEnd();
+	immBegin(GL_TRIANGLE_STRIP, 4);
+	immAttrib2f(texCoord, x1, y2);
+	immVertex2f(pos, x, y + h);
+
+	immAttrib2f(texCoord, x1, y1);
+	immVertex2f(pos, x, y);
+
+	immAttrib2f(texCoord, x2, y2);
+	immVertex2f(pos, x + w, y + h);
+
+	immAttrib2f(texCoord, x2, y1);
+	immVertex2f(pos, x + w, y);
+	immEnd();
+
+	immUnbindProgram();
 
 	glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, 0.0f);
 
@@ -1162,7 +1172,7 @@ void UI_id_icon_render(const bContext *C, Scene *scene, ID *id, const bool big, 
 	}
 }
 
-static void ui_id_brush_render(const bContext *C, ID *id)
+static void ui_id_icon_render(const bContext *C, ID *id, bool use_jobs)
 {
 	PreviewImage *pi = BKE_previewimg_id_ensure(id);
 	enum eIconSizes i;
@@ -1174,7 +1184,7 @@ static void ui_id_brush_render(const bContext *C, ID *id)
 		/* check if rect needs to be created; changed
 		 * only set by dynamic icons */
 		if (((pi->flag[i] & PRV_CHANGED) || !pi->rect[i])) {
-			icon_set_image(C, NULL, id, pi, i, true);
+			icon_set_image(C, NULL, id, pi, i, use_jobs);
 			pi->flag[i] &= ~PRV_CHANGED;
 		}
 	}
@@ -1187,7 +1197,7 @@ static int ui_id_brush_get_icon(const bContext *C, ID *id)
 
 	if (br->flag & BRUSH_CUSTOM_ICON) {
 		BKE_icon_id_ensure(id);
-		ui_id_brush_render(C, id);
+		ui_id_icon_render(C, id, true);
 	}
 	else {
 		Object *ob = CTX_data_active_object(C);
@@ -1234,6 +1244,15 @@ static int ui_id_brush_get_icon(const bContext *C, ID *id)
 	return id->icon_id;
 }
 
+static int ui_id_screen_get_icon(const bContext *C, ID *id)
+{
+	BKE_icon_id_ensure(id);
+	/* Don't use jobs here, offscreen rendering doesn't like this and crashes. */
+	ui_id_icon_render(C, id, false);
+
+	return id->icon_id;
+}
+
 int ui_id_icon_get(const bContext *C, ID *id, const bool big)
 {
 	int iconid = 0;
@@ -1251,6 +1270,9 @@ int ui_id_icon_get(const bContext *C, ID *id, const bool big)
 			iconid = BKE_icon_id_ensure(id);
 			/* checks if not exists, or changed */
 			UI_id_icon_render(C, NULL, id, big, true);
+			break;
+		case ID_SCR:
+			iconid = ui_id_screen_get_icon(C, id);
 			break;
 		default:
 			break;
@@ -1338,8 +1360,6 @@ int UI_idcode_icon_get(const int idcode)
 			return ICON_NODETREE;
 		case ID_OB:
 			return ICON_OBJECT_DATA;
-		case ID_PA:
-			return ICON_PARTICLE_DATA;
 		case ID_PAL:
 			return ICON_COLOR;  /* TODO! this would need its own icon! */
 		case ID_PC:

@@ -52,8 +52,8 @@ typedef struct GPUOffScreen GPUOffScreen;
 void GPU_texture_bind_as_framebuffer(struct GPUTexture *tex);
 
 GPUFrameBuffer *GPU_framebuffer_create(void);
-int GPU_framebuffer_texture_attach(GPUFrameBuffer *fb, struct GPUTexture *tex, int slot, char err_out[256]);
-int GPU_framebuffer_texture_attach_target(GPUFrameBuffer *fb, struct GPUTexture *tex, int target, int slot, char err_out[256]);
+bool GPU_framebuffer_texture_attach(GPUFrameBuffer *fb, struct GPUTexture *tex, int slot);
+int GPU_framebuffer_texture_attach_target(GPUFrameBuffer *fb, struct GPUTexture *tex, int target, int slot);
 void GPU_framebuffer_texture_detach(struct GPUTexture *tex);
 void GPU_framebuffer_texture_detach_target(GPUTexture *tex, int target);
 void GPU_framebuffer_slots_bind(GPUFrameBuffer *fb, int slot);
@@ -61,7 +61,7 @@ void GPU_framebuffer_texture_unbind(GPUFrameBuffer *fb, struct GPUTexture *tex);
 void GPU_framebuffer_free(GPUFrameBuffer *fb);
 bool GPU_framebuffer_check_valid(GPUFrameBuffer *fb, char err_out[256]);
 
-int GPU_framebuffer_renderbuffer_attach(GPUFrameBuffer *fb, GPURenderBuffer *rb, int slot, char err_out[256]);
+int GPU_framebuffer_renderbuffer_attach(GPUFrameBuffer *fb, GPURenderBuffer *rb, int slot);
 void GPU_framebuffer_renderbuffer_detach(GPURenderBuffer *rb);
 
 void GPU_framebuffer_bind_no_save(GPUFrameBuffer *fb, int slot);

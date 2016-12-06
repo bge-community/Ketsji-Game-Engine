@@ -62,7 +62,6 @@ typedef struct GPUNode GPUNode;
 typedef struct GPUNodeLink GPUNodeLink;
 typedef struct GPUMaterial GPUMaterial;
 typedef struct GPULamp GPULamp;
-typedef struct GPUParticleInfo GPUParticleInfo;
 
 /* Functions to create GPU Materials nodes */
 
@@ -92,11 +91,7 @@ typedef enum GPUBuiltin {
 	GPU_OBCOLOR =               (1 << 6),
 	GPU_AUTO_BUMPSCALE =        (1 << 7),
 	GPU_CAMERA_TEXCO_FACTORS =  (1 << 8),
-	GPU_PARTICLE_SCALAR_PROPS = (1 << 9),
-	GPU_PARTICLE_LOCATION =	    (1 << 10),
-	GPU_PARTICLE_VELOCITY =     (1 << 11),
-	GPU_PARTICLE_ANG_VELOCITY = (1 << 12),
-	GPU_LOC_TO_VIEW_MATRIX =    (1 << 13),
+	GPU_LOC_TO_VIEW_MATRIX =    (1 << 9),
 	GPU_INVERSE_LOC_TO_VIEW_MATRIX = (1 << 14),
 	GPU_INSTANCING_MATRIX                     = (1 << 15),
 	GPU_INSTANCING_INVERSE_MATRIX             = (1 << 16),
@@ -264,7 +259,7 @@ void GPU_material_bind(
         float viewmat[4][4], float viewinv[4][4], float cameraborder[4], bool scenelock);
 void GPU_material_bind_uniforms(
         GPUMaterial *material, float obmat[4][4], float viewmat[4][4], float obcol[4],
-        float autobumpscale, GPUParticleInfo *pi);
+        float autobumpscale);
 void GPU_material_unbind(GPUMaterial *material);
 bool GPU_material_bound(GPUMaterial *material);
 struct Scene *GPU_material_scene(GPUMaterial *material);
@@ -373,14 +368,6 @@ void GPU_horizon_update_color(float color[3]);
 void GPU_ambient_update_color(float color[3]);
 void GPU_zenith_update_color(float color[3]);
 void GPU_update_exposure_range(float exp, float range);
-
-struct GPUParticleInfo
-{
-	float scalprops[4];
-	float location[3];
-	float velocity[3];
-	float angular_velocity[3];
-};
 
 #ifdef WITH_OPENSUBDIV
 struct DerivedMesh;

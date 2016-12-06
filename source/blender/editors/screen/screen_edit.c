@@ -42,6 +42,7 @@
 
 #include "BKE_context.h"
 #include "BKE_depsgraph.h"
+#include "BKE_icons.h"
 #include "BKE_image.h"
 #include "BKE_global.h"
 #include "BKE_library.h"
@@ -615,7 +616,9 @@ int screen_area_join(bContext *C, bScreen *scr, ScrArea *sa1, ScrArea *sa2)
 	screen_delarea(C, scr, sa2);
 	removedouble_scrverts(scr);
 	sa1->flag &= ~AREA_FLAG_DRAWJOINFROM;
-	
+	/* Update preview thumbnail */
+	BKE_icon_changed(scr->id.icon_id);
+
 	return 1;
 }
 
@@ -1069,6 +1072,9 @@ static void region_cursor_set(wmWindow *win, int swinid, int swin_changed)
 		for (ARegion *ar = sa->regionbase.first; ar; ar = ar->next) {
 			if (ar->swinid == swinid) {
 				if (swin_changed || (ar->type && ar->type->event_cursor)) {
+					if (WM_manipulatormap_cursor_set(ar->manipulator_map, win)) {
+						return;
+					}
 					ED_region_cursor_set(win, sa, ar);
 				}
 				return;
@@ -1274,25 +1280,28 @@ void ED_screens_initialize(wmWindowManager *wm)
 void ED_region_exit(bContext *C, ARegion *ar)
 {
 	wmWindowManager *wm = CTX_wm_manager(C);
+	wmWindow *win = CTX_wm_window(C);
 	ARegion *prevar = CTX_wm_region(C);
 
 	if (ar->type && ar->type->exit)
 		ar->type->exit(wm, ar);
 
 	CTX_wm_region_set(C, ar);
+
 	WM_event_remove_handlers(C, &ar->handlers);
+	WM_event_modal_handler_region_replace(win, ar, NULL);
 	if (ar->swinid) {
-		wm_subwindow_close(CTX_wm_window(C), ar->swinid);
+		wm_subwindow_close(win, ar->swinid);
 		ar->swinid = 0;
 	}
-	
+
 	if (ar->headerstr) {
 		MEM_freeN(ar->headerstr);
 		ar->headerstr = NULL;
 	}
 	
 	if (ar->regiontimer) {
-		WM_event_remove_timer(CTX_wm_manager(C), CTX_wm_window(C), ar->regiontimer);
+		WM_event_remove_timer(wm, win, ar->regiontimer);
 		ar->regiontimer = NULL;
 	}
 
@@ -1302,6 +1311,7 @@ void ED_region_exit(bContext *C, ARegion *ar)
 void ED_area_exit(bContext *C, ScrArea *sa)
 {
 	wmWindowManager *wm = CTX_wm_manager(C);
+	wmWindow *win = CTX_wm_window(C);
 	ScrArea *prevsa = CTX_wm_area(C);
 	ARegion *ar;
 
@@ -1309,10 +1319,13 @@ void ED_area_exit(bContext *C, ScrArea *sa)
 		sa->type->exit(wm, sa);
 
 	CTX_wm_area_set(C, sa);
+
 	for (ar = sa->regionbase.first; ar; ar = ar->next)
 		ED_region_exit(C, ar);
 
 	WM_event_remove_handlers(C, &sa->handlers);
+	WM_event_modal_handler_area_replace(win, sa, NULL);
+
 	CTX_wm_area_set(C, prevsa);
 }
 

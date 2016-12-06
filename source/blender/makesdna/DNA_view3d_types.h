@@ -45,6 +45,7 @@ struct SmoothView3DStore;
 struct wmTimer;
 struct Material;
 struct GPUFX;
+struct GPUViewport;
 
 /* This is needed to not let VC choke on near and far... old
  * proprietary MS extensions... */
@@ -65,6 +66,12 @@ struct GPUFX;
 
 /* The near/far thing is a Win EXCEPTION. Thus, leave near/far in the
  * code, and patch for windows. */
+
+typedef struct View3DDebug {
+	float znear, zfar;
+	char background;
+	char pad[7];
+} View3DDebug;
  
 /* Background Picture in 3D-View */
 typedef struct BGpic {
@@ -111,7 +118,7 @@ typedef struct RegionView3D {
 	struct wmTimer *smooth_timer;
 
 
-	/* transform widget matrix */
+	/* transform manipulator matrix */
 	float twmat[4][4];
 
 	float viewquat[4];			/* view rotation, must be kept normalized */
@@ -147,6 +154,7 @@ typedef struct RegionView3D {
 	float rot_axis[3];
 
 	struct GPUFX *compositor;
+	struct GPUViewport *viewport;
 } RegionView3D;
 
 /* 3D ViewPort Struct */
@@ -202,7 +210,7 @@ typedef struct View3D {
 	short gridsubdiv;	/* Number of subdivisions in the grid between each highlighted grid line */
 	char gridflag;
 
-	/* transform widget info */
+	/* transform manipulator info */
 	char twtype, twmode, twflag;
 	
 	short flag3;
@@ -217,8 +225,11 @@ typedef struct View3D {
 
 	char multiview_eye;				/* multiview current eye - for internal use */
 
-	/* built-in shader effects (eGPUFXFlags) */
-	char pad3[4];
+	/* XXX tmp flags for 2.8 viewport transition to avoid compatibility issues that would be caused by
+	 * using usual flag bitfields (which are saved to files). Can be removed when not needed anymore. */
+	char tmp_compat_flag;
+
+	char pad3[3];
 
 	/* note, 'fx_settings.dof' is currently _not_ allocated,
 	 * instead set (temporarily) from camera */
@@ -244,6 +255,7 @@ typedef struct View3D {
 	short prev_drawtype;
 	short pad1;
 	float pad2;
+	View3DDebug debug;
 } View3D;
 
 
@@ -319,6 +331,20 @@ typedef struct View3D {
 
 /* View3d->flag3 (short) */
 #define V3D_SHOW_WORLD			(1 << 0)
+
+/* View3d->tmp_compat_flag */
+enum {
+	V3D_NEW_VIEWPORT              = (1 << 0),
+	V3D_DEBUG_SHOW_SCENE_DEPTH    = (1 << 1),
+	V3D_DEBUG_SHOW_COMBINED_DEPTH = (1 << 2),
+};
+
+/* View3d->debug.background */
+enum {
+	V3D_DEBUG_BACKGROUND_NONE     = (1 << 0),
+	V3D_DEBUG_BACKGROUND_GRADIENT = (1 << 1),
+	V3D_DEBUG_BACKGROUND_WORLD    = (1 << 2),
+};
 
 /* View3D->around */
 enum {
