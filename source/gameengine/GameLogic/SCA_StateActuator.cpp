@@ -26,48 +26,41 @@
  * Actuator to toggle visibility/invisibility of objects
  */
 
-/** \file gameengine/Ketsji/KX_StateActuator.cpp
- *  \ingroup ketsji
+/** \file gameengine/GameLogic/SCA_StateActuator.cpp
+ *  \ingroup gamelogic
  */
 
 
-#include "KX_StateActuator.h"
+#include "SCA_StateActuator.h"
 #include "KX_GameObject.h"
 
-KX_StateActuator::KX_StateActuator(
-	SCA_IObject* gameobj,
+SCA_StateActuator::SCA_StateActuator(
+	SCA_IObject *gameobj,
 	int operation,
-	unsigned int mask
-	) 
-	: SCA_IActuator(gameobj, KX_ACT_STATE),
+	unsigned int mask) 
+	: SCA_IActuator(gameobj, SCA_ACT_STATE),
 	  m_operation(operation),
 	  m_mask(mask)
 {
 	// intentionally empty
 }
 
-KX_StateActuator::~KX_StateActuator(
-	void
-	)
+SCA_StateActuator::~SCA_StateActuator(void)
 {
 	// intentionally empty
 }
 
 // used to put state actuator to be executed before any other actuators
-SG_QList KX_StateActuator::m_stateActuatorHead;
+SG_QList SCA_StateActuator::m_stateActuatorHead;
 
-CValue*
-KX_StateActuator::GetReplica(
-	void
-	)
+CValue *SCA_StateActuator::GetReplica(void)
 {
-	KX_StateActuator* replica = new KX_StateActuator(*this);
+	SCA_StateActuator *replica = new SCA_StateActuator(*this);
 	replica->ProcessReplica();
 	return replica;
 }
 
-bool
-KX_StateActuator::Update()
+bool SCA_StateActuator::Update()
 {
 	bool bNegativeEvent = IsNegativeEvent();
 	unsigned int objMask;
@@ -76,28 +69,28 @@ KX_StateActuator::Update()
 	// because all the active actuator of this object will be removed for sure.
 	m_gameobj->m_firstState = NULL;
 	RemoveAllEvents();
-	if (bNegativeEvent) return false;
+	if (bNegativeEvent)
+		return false;
 
-	KX_GameObject *obj = (KX_GameObject*) GetParent();
+	KX_GameObject *obj = (KX_GameObject *) GetParent();
 	
 	objMask = obj->GetState();
-	switch (m_operation) 
-	{
-	case OP_CPY:
-		objMask = m_mask;
-		break;
-	case OP_SET:
-		objMask |= m_mask;
-		break;
-	case OP_CLR:
-		objMask &= ~m_mask;
-		break;
-	case OP_NEG:
-		objMask ^= m_mask;
-		break;
-	default:
-		// unsupported operation, no  nothing
-		return false;
+	switch (m_operation) {
+		case OP_CPY:
+			objMask = m_mask;
+			break;
+		case OP_SET:
+			objMask |= m_mask;
+			break;
+		case OP_CLR:
+			objMask &= ~m_mask;
+			break;
+		case OP_NEG:
+			objMask ^= m_mask;
+			break;
+		default:
+			// unsupported operation, no  nothing
+			return false;
 	}
 	obj->SetState(objMask);
 	return false;
@@ -105,22 +98,21 @@ KX_StateActuator::Update()
 
 // this function is only used to deactivate actuators outside the logic loop
 // e.g. when an object is deleted.
-void KX_StateActuator::Deactivate()
+void SCA_StateActuator::Deactivate()
 {
-	if (QDelink())
-	{
+	if (QDelink()) {
 		// the actuator was in the active list
-		if (m_stateActuatorHead.QEmpty())
+		if (m_stateActuatorHead.QEmpty()) {
 			// no more state object active
 			m_stateActuatorHead.Delink();
+		}
 	}
 }
 
-void KX_StateActuator::Activate(SG_DList& head)
+void SCA_StateActuator::Activate(SG_DList &head)
 {
 	// sort the state actuators per object on the global list
-	if (QEmpty())
-	{
+	if (QEmpty()) {
 		InsertSelfActiveQList(m_stateActuatorHead, &m_gameobj->m_firstState);
 		// add front to make sure it runs before other actuators
 		head.AddFront(&m_stateActuatorHead);
@@ -134,11 +126,10 @@ void KX_StateActuator::Activate(SG_DList& head)
 /* ------------------------------------------------------------------------- */
 
 
-
 /* Integration hooks ------------------------------------------------------- */
-PyTypeObject KX_StateActuator::Type = {
+PyTypeObject SCA_StateActuator::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
-	"KX_StateActuator",
+	"SCA_StateActuator",
 	sizeof(PyObjectPlus_Proxy),
 	0,
 	py_base_dealloc,
@@ -158,13 +149,13 @@ PyTypeObject KX_StateActuator::Type = {
 	py_base_new
 };
 
-PyMethodDef KX_StateActuator::Methods[] = {
+PyMethodDef SCA_StateActuator::Methods[] = {
 	{NULL,NULL} //Sentinel
 };
 
-PyAttributeDef KX_StateActuator::Attributes[] = {
-	KX_PYATTRIBUTE_INT_RW("operation",KX_StateActuator::OP_NOP+1,KX_StateActuator::OP_COUNT-1,false,KX_StateActuator,m_operation),
-	KX_PYATTRIBUTE_INT_RW("mask",0,0x3FFFFFFF,false,KX_StateActuator,m_mask),
+PyAttributeDef SCA_StateActuator::Attributes[] = {
+	KX_PYATTRIBUTE_INT_RW("operation", SCA_StateActuator::OP_NOP + 1, SCA_StateActuator::OP_COUNT - 1, false, SCA_StateActuator, m_operation),
+	KX_PYATTRIBUTE_INT_RW("mask", 0, 0x3FFFFFFF, false, SCA_StateActuator, m_mask),
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 

@@ -25,13 +25,13 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_StateActuator.h
- *  \ingroup ketsji
+/** \file SCA_StateActuator.h
+ *  \ingroup gamelogic
  *  \brief Actuator to toggle visibility/invisibility of objects
  */
 
-#ifndef __KX_STATEACTUATOR_H__
-#define __KX_STATEACTUATOR_H__
+#ifndef __SCA_STATEACTUATOR_H__
+#define __SCA_STATEACTUATOR_H__
 
 #include "SCA_IActuator.h"
 
@@ -40,9 +40,9 @@
  * Use of SG_DList : element of actuator being deactivated
  *                   Head: SCA_LogicManager::m_removedActuators
  * Use of SG_QList : element of global activated state actuator list 
- *                   Head: KX_StateActuator::m_stateActuatorHead
+ *                   Head: SCA_StateActuator::m_stateActuatorHead
  */
-class KX_StateActuator : public SCA_IActuator
+class SCA_StateActuator : public SCA_IActuator
 {
 	Py_Header
 
@@ -58,32 +58,18 @@ class KX_StateActuator : public SCA_IActuator
 	// SG_Dlist: element of objects with active actuators, always put in front of the list
 	//           Head: SCA_LogicManager::m_activeActuators
 	// SG_QList: Head of active state actuators list globally
-	//           Elements: KX_StateActuator
-	static SG_QList	m_stateActuatorHead;
-	int				m_operation;
-	int				m_mask;
+	//           Elements: SCA_StateActuator
+	static SG_QList m_stateActuatorHead;
+	int m_operation;
+	int m_mask;
 
  public:
 	
-	KX_StateActuator(
-		SCA_IObject* gameobj,
-		int operation,
-		unsigned int mask
-	);
+	SCA_StateActuator(SCA_IObject *gameobj, int operation, unsigned int mask);
+	virtual ~SCA_StateActuator(void);
 
-	virtual
-		~KX_StateActuator(
-			void
-			);
-
-	virtual CValue*
-		GetReplica(
-			void
-			);
-
-	virtual bool
-		Update();
-
+	virtual CValue *GetReplica(void);
+	virtual bool Update();
 	virtual void Deactivate();
 	virtual void Activate(SG_DList& head);
 

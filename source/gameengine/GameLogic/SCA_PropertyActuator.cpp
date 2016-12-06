@@ -44,8 +44,12 @@
 /* Native functions                                                          */
 /* ------------------------------------------------------------------------- */
 
-SCA_PropertyActuator::SCA_PropertyActuator(SCA_IObject* gameobj,SCA_IObject* sourceObj,const std::string& propname,const std::string& expr,int acttype)
-   :	SCA_IActuator(gameobj, KX_ACT_PROPERTY),
+SCA_PropertyActuator::SCA_PropertyActuator(SCA_IObject *gameobj,
+                                           SCA_IObject *sourceObj,
+                                           const std::string &propname,
+                                           const std::string &expr,
+                                           int acttype)
+	: SCA_IActuator(gameobj, SCA_ACT_PROPERTY),
 	m_type(acttype),
 	m_propname(propname),
 	m_exprtxt(expr),

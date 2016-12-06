@@ -26,19 +26,26 @@
 set(INC
 	.
 	../Common
+	../Converter
 	../Device
 	../Expressions
 	../Rasterizer
 	../SceneGraph
 	../Ketsji
+	../Ketsji/Network
 	../../blender/makesdna
+	../../blender/makesrna
+	../../blender/blenkernel
 	../../blender/blenlib
+	../../../intern/guardedalloc
 	../../../intern/termcolor
 	../../../intern/ghost
 )
 
 set(INC_SYS
 	../../../intern/moto/include
+	../../../extern/recastnavigation/Recast/Include
+	../../../extern/recastnavigation/Detour/Include
 	${BOOST_INCLUDE_DIR}
 )
 
@@ -79,6 +86,10 @@ set(SRC
 	SCA_RandomActuator.cpp
 	SCA_RandomNumberGenerator.cpp
 	SCA_RandomSensor.cpp
+	SCA_SceneActuator.cpp
+	SCA_SoundActuator.cpp
+	SCA_StateActuator.cpp
+	SCA_SteeringActuator.cpp
 	SCA_TimeEventManager.cpp
 	SCA_TrackToActuator.cpp
 	SCA_VibrationActuator.cpp
@@ -122,6 +133,10 @@ set(SRC
 	SCA_RandomActuator.h
 	SCA_RandomNumberGenerator.h
 	SCA_RandomSensor.h
+	SCA_SceneActuator.h
+	SCA_SoundActuator.h
+	SCA_StateActuator.h
+	SCA_SteeringActuator.h
 	SCA_TimeEventManager.h
 	SCA_TrackToActuator.h
 	SCA_VibrationActuator.h
@@ -140,6 +155,15 @@ if(WITH_SDL)
 	if(WITH_GHOST_SDL)
 		add_definitions(-DWITH_GHOST_SDL)
 	endif()
+endif()
+
+if(WITH_AUDASPACE)
+	add_definitions(${AUDASPACE_DEFINITIONS})
+
+	list(APPEND INC_SYS
+		${AUDASPACE_C_INCLUDE_DIRS}
+		${AUDASPACE_PY_INCLUDE_DIRS}
+	)
 endif()
 
 blender_add_lib(ge_logic "${SRC}" "${INC}" "${INC_SYS}")

@@ -54,11 +54,11 @@ SCA_RandomActuator::SCA_RandomActuator(SCA_IObject *gameobj,
                                        float para1,
                                        float para2,
                                        const std::string &propName)
-    : SCA_IActuator(gameobj, KX_ACT_RANDOM),
+	: SCA_IActuator(gameobj, SCA_ACT_RANDOM),
       m_propname(propName),
-	  m_parameter1(para1),
-	  m_parameter2(para2),
-	  m_distribution(mode)
+      m_parameter1(para1),
+      m_parameter2(para2),
+      m_distribution(mode)
 {
 	m_base = new SCA_RandomNumberGenerator(seed);
 	m_counter = 0;

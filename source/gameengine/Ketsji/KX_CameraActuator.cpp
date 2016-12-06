@@ -55,7 +55,7 @@ KX_CameraActuator::KX_CameraActuator(
 	short axis,
 	float damping
 ): 
-	SCA_IActuator(gameobj, KX_ACT_CAMERA),
+	SCA_IActuator(gameobj, SCA_ACT_CAMERA),
 	m_ob (obj),
 	m_height (hght),
 	m_minHeight (minhght),

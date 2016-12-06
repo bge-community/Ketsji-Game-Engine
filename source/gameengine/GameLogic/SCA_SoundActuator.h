@@ -25,12 +25,12 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_SoundActuator.h
- *  \ingroup ketsji
+/** \file SCA_SoundActuator.h
+ *  \ingroup gamelogic
  */
 
-#ifndef __KX_SOUNDACTUATOR_H__
-#define __KX_SOUNDACTUATOR_H__
+#ifndef __SCA_SOUNDACTUATOR_H__
+#define __SCA_SOUNDACTUATOR_H__
 
 #include "SCA_IActuator.h"
 
@@ -41,7 +41,7 @@
 
 #include "BKE_sound.h"
 
-typedef struct KX_3DSoundSettings {
+typedef struct SCA_3DSoundSettings {
 	float min_gain;
 	float max_gain;
 	float reference_distance;
@@ -50,20 +50,20 @@ typedef struct KX_3DSoundSettings {
 	float cone_inner_angle;
 	float cone_outer_angle;
 	float cone_outer_gain;
-} KX_3DSoundSettings;
+} SCA_3DSoundSettings;
 
-class KX_SoundActuator : public SCA_IActuator
+class SCA_SoundActuator : public SCA_IActuator
 {
 	Py_Header
-	bool					m_isplaying;
+	bool m_isplaying;
 #ifdef WITH_AUDASPACE
-	AUD_Sound*				m_sound;
-	AUD_Handle*				m_handle;
+	AUD_Sound *m_sound;
+	AUD_Handle *m_handle;
 #endif  // WITH_AUDASPACE
-	float					m_volume;
-	float					m_pitch;
-	bool					m_is3d;
-	KX_3DSoundSettings		m_3d;
+	float m_volume;
+	float m_pitch;
+	bool m_is3d;
+	SCA_3DSoundSettings m_3d;
 
 	void play();
 
@@ -81,23 +81,23 @@ public:
 			KX_SOUNDACT_MAX
 	};
 
-	KX_SOUNDACT_TYPE		m_type;
+	KX_SOUNDACT_TYPE m_type;
 
-	KX_SoundActuator(SCA_IObject* gameobj,
+	SCA_SoundActuator(SCA_IObject* gameobj,
 #ifdef WITH_AUDASPACE
 					 AUD_Sound *sound,
 #endif  // WITH_AUDASPACE
 					 float volume,
 					 float pitch,
 					 bool is3d,
-					 KX_3DSoundSettings settings,
+					 SCA_3DSoundSettings settings,
 					 KX_SOUNDACT_TYPE type);
 
-	~KX_SoundActuator();
+	~SCA_SoundActuator();
 
 	virtual bool Update(double curtime, bool frame);
 
-	CValue* GetReplica();
+	CValue *GetReplica();
 	void ProcessReplica();
 
 #ifdef WITH_PYTHON
@@ -106,9 +106,9 @@ public:
 	/* Python interface --------------------------------------------------- */
 	/* -------------------------------------------------------------------- */
 
-	KX_PYMETHOD_DOC_NOARGS(KX_SoundActuator, startSound);
-	KX_PYMETHOD_DOC_NOARGS(KX_SoundActuator, pauseSound);
-	KX_PYMETHOD_DOC_NOARGS(KX_SoundActuator, stopSound);
+	KX_PYMETHOD_DOC_NOARGS(SCA_SoundActuator, startSound);
+	KX_PYMETHOD_DOC_NOARGS(SCA_SoundActuator, pauseSound);
+	KX_PYMETHOD_DOC_NOARGS(SCA_SoundActuator, stopSound);
 
 	static int pyattr_set_3d_property(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static int pyattr_set_audposition(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
@@ -128,4 +128,4 @@ public:
 
 };
 
-#endif  /* __KX_SOUNDACTUATOR_H__ */
+#endif  /* __SCA_SOUNDACTUATOR_H__ */

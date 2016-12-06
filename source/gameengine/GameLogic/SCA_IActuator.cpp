@@ -33,7 +33,7 @@
 #include "SCA_IActuator.h"
 #include "CM_Message.h"
 
-SCA_IActuator::SCA_IActuator(SCA_IObject* gameobj, KX_ACTUATOR_TYPE type) :
+SCA_IActuator::SCA_IActuator(SCA_IObject* gameobj, SCA_ACTUATOR_TYPE type) :
 	SCA_ILogicBrick(gameobj),
 	m_type(type),
 	m_links(0),

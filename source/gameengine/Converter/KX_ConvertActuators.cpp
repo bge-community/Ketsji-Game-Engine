@@ -50,6 +50,10 @@
 #include "SCA_PropertyActuator.h"
 #include "SCA_LogicManager.h"
 #include "SCA_RandomActuator.h"
+#include "SCA_SceneActuator.h"
+#include "SCA_SoundActuator.h"
+#include "SCA_StateActuator.h"
+#include "SCA_SteeringActuator.h"
 #include "SCA_TrackToActuator.h"
 #include "SCA_VibrationActuator.h"
 #include "SCA_VisibilityActuator.h"
@@ -58,19 +62,15 @@
 #include "RAS_2DFilterManager.h" // for filter type.
 
 // Ketsji specific logicbricks
-#include "KX_SceneActuator.h"
-#include "KX_SoundActuator.h"
 #include "KX_ObjectActuator.h"
 #include "KX_ConstraintActuator.h"
 #include "KX_CameraActuator.h"
 #include "KX_GameActuator.h"
-#include "KX_StateActuator.h"
 #include "KX_SCA_AddObjectActuator.h"
 #include "KX_SCA_EndObjectActuator.h"
 #include "KX_SCA_ReplaceMeshActuator.h"
 #include "KX_ParentActuator.h"
 #include "KX_SCA_DynamicActuator.h"
-#include "KX_SteeringActuator.h"
 #include "KX_MouseActuator.h"
 
 #include "KX_Scene.h"
@@ -304,42 +304,41 @@ void BL_ConvertActuators(const char* maggiename,
 			{
 				bSoundActuator* soundact = (bSoundActuator*) bact->data;
 				/* get type, and possibly a start and end frame */
-				KX_SoundActuator::KX_SOUNDACT_TYPE
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_NODEF;
+				SCA_SoundActuator::KX_SOUNDACT_TYPE soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_NODEF;
 				
 				switch (soundact->type) {
 				case ACT_SND_PLAY_STOP_SOUND:
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_PLAYSTOP;
+					soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_PLAYSTOP;
 					break;
 				case ACT_SND_PLAY_END_SOUND:
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_PLAYEND;
+					soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_PLAYEND;
 					break;
 				case ACT_SND_LOOP_STOP_SOUND:
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_LOOPSTOP;
+					soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_LOOPSTOP;
 					break;
 				case ACT_SND_LOOP_END_SOUND:
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_LOOPEND;
+					soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_LOOPEND;
 					break;
 				case ACT_SND_LOOP_BIDIRECTIONAL_SOUND:
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL;
+					soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL;
 					break;
 				case ACT_SND_LOOP_BIDIRECTIONAL_STOP_SOUND:
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP;
+					soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_LOOPBIDIRECTIONAL_STOP;
 					break;
 					
 				default:
 					/* This is an error!!! */
-					soundActuatorType = KX_SoundActuator::KX_SOUNDACT_NODEF;
+					soundActuatorType = SCA_SoundActuator::KX_SOUNDACT_NODEF;
 				}
 				
-				if (soundActuatorType != KX_SoundActuator::KX_SOUNDACT_NODEF) 
+				if (soundActuatorType != SCA_SoundActuator::KX_SOUNDACT_NODEF)
 				{
 					bSound* sound = soundact->sound;
 					bool is3d = soundact->flag & ACT_SND_3D_SOUND ? true : false;
 #ifdef WITH_AUDASPACE
 					AUD_Sound* snd_sound = NULL;
 #endif  // WITH_AUDASPACE
-					KX_3DSoundSettings settings;
+					SCA_3DSoundSettings settings;
 					settings.cone_inner_angle = RAD2DEGF(soundact->sound3D.cone_inner_angle);
 					settings.cone_outer_angle = RAD2DEGF(soundact->sound3D.cone_outer_angle);
 					settings.cone_outer_gain = soundact->sound3D.cone_outer_gain;
@@ -365,8 +364,7 @@ void BL_ConvertActuators(const char* maggiename,
 						}
 #endif  // WITH_AUDASPACE
 					}
-					KX_SoundActuator* tmpsoundact =
-						new KX_SoundActuator(gameobj,
+					SCA_SoundActuator* tmpsoundact = new SCA_SoundActuator(gameobj,
 #ifdef WITH_AUDASPACE
 						snd_sound,
 #endif  // WITH_AUDASPACE
@@ -658,8 +656,8 @@ void BL_ConvertActuators(const char* maggiename,
 				bSceneActuator *sceneact = (bSceneActuator *) bact->data;
 				std::string nextSceneName("");
 				
-				KX_SceneActuator* tmpsceneact;
-				int mode = KX_SceneActuator::KX_SCENE_NODEF;
+				SCA_SceneActuator *tmpsceneact;
+				int mode = SCA_SceneActuator::KX_SCENE_NODEF;
 				KX_Camera *cam = NULL;
 				//KX_Scene* scene = NULL;
 				switch (sceneact->type)
@@ -674,23 +672,23 @@ void BL_ConvertActuators(const char* maggiename,
 						switch (sceneact->type)
 						{
 						case ACT_SCENE_RESUME:
-							mode = KX_SceneActuator::KX_SCENE_RESUME;
+							mode = SCA_SceneActuator::KX_SCENE_RESUME;
 							break;
 						case ACT_SCENE_SUSPEND:
-							mode = KX_SceneActuator::KX_SCENE_SUSPEND;
+							mode = SCA_SceneActuator::KX_SCENE_SUSPEND;
 							break;
 						case ACT_SCENE_ADD_FRONT:
-							mode = KX_SceneActuator::KX_SCENE_ADD_FRONT_SCENE;
+							mode = SCA_SceneActuator::KX_SCENE_ADD_FRONT_SCENE;
 							break;
 						case ACT_SCENE_ADD_BACK:
-							mode = KX_SceneActuator::KX_SCENE_ADD_BACK_SCENE;
+							mode = SCA_SceneActuator::KX_SCENE_ADD_BACK_SCENE;
 							break;
 						case ACT_SCENE_REMOVE:
-							mode = KX_SceneActuator::KX_SCENE_REMOVE_SCENE;
+							mode = SCA_SceneActuator::KX_SCENE_REMOVE_SCENE;
 							break;
 						case ACT_SCENE_SET:
 						default:
-							mode = KX_SceneActuator::KX_SCENE_SET_SCENE;
+							mode = SCA_SceneActuator::KX_SCENE_SET_SCENE;
 							break;
 						};
 						
@@ -701,7 +699,7 @@ void BL_ConvertActuators(const char* maggiename,
 						break;
 					}
 				case ACT_SCENE_CAMERA:
-					mode = KX_SceneActuator::KX_SCENE_SET_CAMERA;
+					mode = SCA_SceneActuator::KX_SCENE_SET_CAMERA;
 					if (sceneact->camera)
 					{
 						KX_GameObject *tmp = converter->FindGameObject(sceneact->camera);
@@ -712,19 +710,13 @@ void BL_ConvertActuators(const char* maggiename,
 				case ACT_SCENE_RESTART:
 					{
 						
-						mode =  KX_SceneActuator::KX_SCENE_RESTART;
+						mode = SCA_SceneActuator::KX_SCENE_RESTART;
 						break;
 					}
 				default:
 					; /* flag error */
 				}
-				tmpsceneact = new KX_SceneActuator(
-				            gameobj,
-				            mode,
-				            scene,
-				            ketsjiEngine,
-				            nextSceneName,
-				            cam);
+				tmpsceneact = new SCA_SceneActuator(gameobj, mode, scene, ketsjiEngine, nextSceneName, cam);
 				baseact = tmpsceneact;
 				break;
 			}
@@ -867,7 +859,7 @@ void BL_ConvertActuators(const char* maggiename,
 		case ACT_VIBRATION:
 		{
 			bVibrationActuator *vib_act = (bVibrationActuator *)bact->data;
-			SCA_VibrationActuator * tmp_vib_act = NULL;
+			SCA_VibrationActuator *tmp_vib_act = NULL;
 
 			int joyindex = vib_act->joyindex;
 			float strength = vib_act->strength;
@@ -881,7 +873,7 @@ void BL_ConvertActuators(const char* maggiename,
 		case ACT_VISIBILITY:
 		{
 			bVisibilityActuator *vis_act = (bVisibilityActuator *) bact->data;
-			SCA_VisibilityActuator * tmp_vis_act = NULL;
+			SCA_VisibilityActuator *tmp_vis_act = NULL;
 			bool v = ((vis_act->flag & ACT_VISIBILITY_INVISIBLE) != 0);
 			bool o = ((vis_act->flag & ACT_VISIBILITY_OCCLUSION) != 0);
 			bool recursive = ((vis_act->flag & ACT_VISIBILITY_RECURSIVE) != 0);
@@ -895,10 +887,9 @@ void BL_ConvertActuators(const char* maggiename,
 		case ACT_STATE:
 		{
 			bStateActuator *sta_act = (bStateActuator *) bact->data;
-			KX_StateActuator * tmp_sta_act = NULL;
+			SCA_StateActuator *tmp_sta_act = NULL;
 
-			tmp_sta_act = 
-				new KX_StateActuator(gameobj, sta_act->type, sta_act->mask);
+			tmp_sta_act = new SCA_StateActuator(gameobj, sta_act->type, sta_act->mask);
 			
 			baseact = tmp_sta_act;
 		}
@@ -1042,16 +1033,16 @@ void BL_ConvertActuators(const char* maggiename,
 				}
 				KX_GameObject *targetob = converter->FindGameObject(stAct->target);
 
-				int mode = KX_SteeringActuator::KX_STEERING_NODEF;
+				int mode = SCA_SteeringActuator::KX_STEERING_NODEF;
 				switch (stAct->type) {
 				case ACT_STEERING_SEEK:
-					mode = KX_SteeringActuator::KX_STEERING_SEEK;
+					mode = SCA_SteeringActuator::KX_STEERING_SEEK;
 					break;
 				case ACT_STEERING_FLEE:
-					mode = KX_SteeringActuator::KX_STEERING_FLEE;
+					mode = SCA_SteeringActuator::KX_STEERING_FLEE;
 					break;
 				case ACT_STEERING_PATHFOLLOWING:
-					mode = KX_SteeringActuator::KX_STEERING_PATHFOLLOWING;
+					mode = SCA_SteeringActuator::KX_STEERING_PATHFOLLOWING;
 					break;
 				}
 
@@ -1060,11 +1051,12 @@ void BL_ConvertActuators(const char* maggiename,
 				short facingMode = (stAct->flag & ACT_STEERING_AUTOMATICFACING) ? stAct->facingaxis : 0;
 				bool normalup = (stAct->flag & ACT_STEERING_NORMALUP) !=0;
 				bool lockzvel = (stAct->flag & ACT_STEERING_LOCKZVEL) !=0;
-				KX_SteeringActuator *tmpstact
-					= new KX_SteeringActuator(gameobj, mode, targetob, navmeshob,stAct->dist, 
-					stAct->velocity, stAct->acceleration, stAct->turnspeed, 
-					selfTerminated, stAct->updateTime,
-					scene->GetObstacleSimulation(), facingMode, normalup, enableVisualization, lockzvel);
+				SCA_SteeringActuator *tmpstact = new SCA_SteeringActuator(gameobj, mode, targetob, navmeshob,
+				                                                         stAct->dist, stAct->velocity,
+				                                                         stAct->acceleration, stAct->turnspeed,
+				                                                         selfTerminated, stAct->updateTime,
+				                                                         scene->GetObstacleSimulation(), facingMode,
+				                                                         normalup, enableVisualization, lockzvel);
 				baseact = tmpstact;
 				break;
 			}

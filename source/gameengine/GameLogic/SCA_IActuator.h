@@ -64,36 +64,36 @@ public:
 	/**
 	 * This class also inherits the default copy constructors
 	 */
-	enum KX_ACTUATOR_TYPE {
-		KX_ACT_OBJECT,
-		KX_ACT_IPO,
-		KX_ACT_CAMERA,
-		KX_ACT_SOUND,
-		KX_ACT_PROPERTY,
-		KX_ACT_ADD_OBJECT,
-		KX_ACT_END_OBJECT,
-		KX_ACT_DYNAMIC,
-		KX_ACT_REPLACE_MESH,
-		KX_ACT_TRACKTO,
-		KX_ACT_CONSTRAINT,
-		KX_ACT_SCENE,
-		KX_ACT_RANDOM,
-		KX_ACT_MESSAGE,
-		KX_ACT_ACTION,
-		KX_ACT_CD,
-		KX_ACT_GAME,
-		KX_ACT_VIBRATION,
-		KX_ACT_VISIBILITY,
-		KX_ACT_2DFILTER,
-		KX_ACT_PARENT,
-		KX_ACT_SHAPEACTION,
-		KX_ACT_STATE,
-		KX_ACT_ARMATURE,
-		KX_ACT_STEERING,
-		KX_ACT_MOUSE,
+	enum SCA_ACTUATOR_TYPE {
+		SCA_ACT_OBJECT,
+		SCA_ACT_IPO,
+		SCA_ACT_CAMERA,
+		SCA_ACT_SOUND,
+		SCA_ACT_PROPERTY,
+		SCA_ACT_ADD_OBJECT,
+		SCA_ACT_END_OBJECT,
+		SCA_ACT_DYNAMIC,
+		SCA_ACT_REPLACE_MESH,
+		SCA_ACT_TRACKTO,
+		SCA_ACT_CONSTRAINT,
+		SCA_ACT_SCENE,
+		SCA_ACT_RANDOM,
+		SCA_ACT_MESSAGE,
+		SCA_ACT_ACTION,
+		SCA_ACT_CD,
+		SCA_ACT_GAME,
+		SCA_ACT_VIBRATION,
+		SCA_ACT_VISIBILITY,
+		SCA_ACT_2DFILTER,
+		SCA_ACT_PARENT,
+		SCA_ACT_SHAPEACTION,
+		SCA_ACT_STATE,
+		SCA_ACT_ARMATURE,
+		SCA_ACT_STEERING,
+		SCA_ACT_MOUSE,
 	};
 
-	SCA_IActuator(SCA_IObject* gameobj, KX_ACTUATOR_TYPE type); 
+	SCA_IActuator(SCA_IObject* gameobj, SCA_ACTUATOR_TYPE type);
 
 	/**
 	 * UnlinkObject(...)
@@ -164,7 +164,7 @@ public:
 	void IncLink() { m_links++; }
 	virtual void DecLink();
 	bool IsNoLink() const { return !m_links; }
-	bool IsType(KX_ACTUATOR_TYPE type) { return m_type == type; }
+	bool IsType(SCA_ACTUATOR_TYPE type) { return m_type == type; }
 	
 #ifdef WITH_CXX_GUARDEDALLOC
 	MEM_CXX_CLASS_ALLOC_FUNCS("GE:SCA_IActuator")

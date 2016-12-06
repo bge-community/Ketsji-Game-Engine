@@ -127,7 +127,7 @@ KX_SCA_ReplaceMeshActuator::KX_SCA_ReplaceMeshActuator(SCA_IObject *gameobj,
 													   bool use_gfx,
 													   bool use_phys) :
 
-	SCA_IActuator(gameobj, KX_ACT_REPLACE_MESH),
+	SCA_IActuator(gameobj, SCA_ACT_REPLACE_MESH),
 	m_mesh(mesh),
 	m_scene(scene),
 	m_use_gfx(use_gfx),

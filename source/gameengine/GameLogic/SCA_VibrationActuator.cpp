@@ -33,7 +33,7 @@
 #include "PIL_time.h" // Module to get real time in Game Engine
 
 SCA_VibrationActuator::SCA_VibrationActuator(SCA_IObject *gameobj, int joyindex, float strength, int duration)
-	: SCA_IActuator(gameobj, KX_ACT_VIBRATION),
+	: SCA_IActuator(gameobj, SCA_ACT_VIBRATION),
 	m_joyindex(joyindex),
 	m_strength(strength),
 	m_duration(duration),

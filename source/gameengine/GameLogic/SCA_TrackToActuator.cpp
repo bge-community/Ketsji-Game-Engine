@@ -56,7 +56,7 @@ SCA_TrackToActuator::SCA_TrackToActuator(SCA_IObject *gameobj,
                                        bool allow3D,
                                        int trackflag,
                                        int upflag)
-    : SCA_IActuator(gameobj, KX_ACT_TRACKTO)
+    : SCA_IActuator(gameobj, SCA_ACT_TRACKTO)
 {
 	m_time = time;
 	m_allow3D = allow3D;

@@ -57,7 +57,7 @@ KX_MouseActuator::KX_MouseActuator(
 	float* limit_x,
 	float* limit_y
 ):
-	SCA_IActuator(gameobj, KX_ACT_MOUSE),
+	SCA_IActuator(gameobj, SCA_ACT_MOUSE),
 	m_ketsji(ketsjiEngine),
 	m_eventmgr(eventmgr),
 	m_type(acttype),
