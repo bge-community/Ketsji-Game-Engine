@@ -163,5 +163,3 @@ PyAttributeDef SCA_DynamicActuator::Attributes[] = {
 
 #endif // WITH_PYTHON
 
-
-/* eof */

@@ -108,5 +108,3 @@ PyAttributeDef SCA_EndObjectActuator::Attributes[] = {
 };
 
 #endif // WITH_PYTHON
-
-

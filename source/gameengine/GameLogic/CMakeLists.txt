@@ -39,10 +39,6 @@ set(INC
 	../../blender/blenkernel
 	../../blender/blenlib
 	../../../intern/guardedalloc
-<<<<<<< 0f6d42c75b6d0213e35d5d5b940c9bd1cfc8dbb3
-=======
-	../../../intern/string
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators
 	../../../intern/termcolor
 	../../../intern/ghost
 )
@@ -94,10 +90,7 @@ set(SRC
 	SCA_RandomActuator.cpp
 	SCA_RandomNumberGenerator.cpp
 	SCA_RandomSensor.cpp
-<<<<<<< 0f6d42c75b6d0213e35d5d5b940c9bd1cfc8dbb3
 	SCA_ReplaceMeshActuator.cpp
-=======
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators
 	SCA_SceneActuator.cpp
 	SCA_SoundActuator.cpp
 	SCA_StateActuator.cpp
@@ -148,10 +141,7 @@ set(SRC
 	SCA_RandomActuator.h
 	SCA_RandomNumberGenerator.h
 	SCA_RandomSensor.h
-<<<<<<< 0f6d42c75b6d0213e35d5d5b940c9bd1cfc8dbb3
 	SCA_ReplaceMeshActuator.h
-=======
->>>>>>> UPBGE: Move & Cleanup Steering, State, Sound and Scene actuators
 	SCA_SceneActuator.h
 	SCA_SoundActuator.h
 	SCA_StateActuator.h
