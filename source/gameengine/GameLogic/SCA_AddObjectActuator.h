@@ -25,16 +25,13 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_SCA_AddObjectActuator.h
- *  \ingroup ketsji
- *  \attention Previously existed as: source/gameengine/GameLogic/SCA_AddObjectActuator.h
- * Please look here for revision history.
+/** \file SCA_AddObjectActuator.h
+ *  \ingroup gamelogic
  */
 
-#ifndef __KX_SCA_ADDOBJECTACTUATOR_H__
-#define __KX_SCA_ADDOBJECTACTUATOR_H__
+#ifndef __SCA_ADDOBJECTACTUATOR_H__
+#define __SCA_ADDOBJECTACTUATOR_H__
 
-/* Actuator tree */
 #include "SCA_IActuator.h"
 #include "SCA_LogicManager.h"
 
@@ -43,34 +40,34 @@
 
 class SCA_IScene;
 
-class KX_SCA_AddObjectActuator : public SCA_IActuator
+class SCA_AddObjectActuator : public SCA_IActuator
 {
 	Py_Header
 
+private:
 	/// Time field: lifetime of the new object
 	float m_timeProp;
 
 	/// Original object reference (object to replicate)
-	SCA_IObject*	m_OriginalObject;
+	SCA_IObject *m_OriginalObject;
 
 	/// Object will be added to the following scene
-	SCA_IScene*	m_scene;
+	SCA_IScene *m_scene;
 
 	/// Linear velocity upon creation of the object. 
-	float  m_linear_velocity[3];
+	float m_linear_velocity[3];
+
 	/// Apply the velocity locally 
 	bool m_localLinvFlag;
 	
 	/// Angular velocity upon creation of the object. 
-	float  m_angular_velocity[3];
+	float m_angular_velocity[3];
+
 	/// Apply the velocity locally 
 	bool m_localAngvFlag; 
-	
-	
-	
-	
-	SCA_IObject*	m_lastCreatedObject;
-	
+
+	SCA_IObject *m_lastCreatedObject;
+
 public:
 
 	/** 
@@ -78,49 +75,39 @@ public:
 	 * available. Use with care!
 	 */
 
-	KX_SCA_AddObjectActuator(
-		SCA_IObject *gameobj,
-		SCA_IObject *original,
-		float time,
-		SCA_IScene* scene,
-		const float *linvel,
-		bool linv_local,
-		const float *angvel,
-		bool angv_local
-	);
+	SCA_AddObjectActuator(SCA_IObject *gameobj,
+	                      SCA_IObject *original,
+	                      float time,
+	                      SCA_IScene *scene,
+	                      const float *linvel,
+	                      bool linv_local,
+	                      const float *angvel,
+	                      bool angv_local);
 
-	~KX_SCA_AddObjectActuator(void);
+	~SCA_AddObjectActuator(void);
 
-		CValue* 
-	GetReplica(
-	);
+	CValue *GetReplica();
 
-	virtual void 
-	ProcessReplica();
+	virtual void ProcessReplica();
 
 	virtual void Replace_IScene(SCA_IScene *val)
 	{
-		m_scene= val;
-	};
+		m_scene = val;
+	}
 
-	virtual bool 
-	UnlinkObject(SCA_IObject* clientobj);
+	virtual bool UnlinkObject(SCA_IObject *clientobj);
 
-	virtual void 
-	Relink(std::map<void *, void *>& obj_map);
+	virtual void Relink(std::map<void *, void *> &obj_map);
 
-	virtual bool 
-	Update();
+	virtual bool Update();
 
-		SCA_IObject *
-	GetLastCreatedObject(
-	) const;
+	SCA_IObject *GetLastCreatedObject() const;
 
-	void	InstantAddObject();
+	void InstantAddObject();
 
 #ifdef WITH_PYTHON
 
-	KX_PYMETHOD_DOC_NOARGS(KX_SCA_AddObjectActuator,InstantAddObject);
+	KX_PYMETHOD_DOC_NOARGS(SCA_AddObjectActuator, InstantAddObject);
 
 	static PyObject *pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
@@ -128,6 +115,6 @@ public:
 	
 #endif  /* WITH_PYTHON */
 
-}; /* end of class KX_SCA_AddObjectActuator : public KX_EditObjectActuator */
+}; /* end of class SCA_AddObjectActuator : public SCA_EditObjectActuator */
 
-#endif  /* __KX_SCA_ADDOBJECTACTUATOR_H__ */
+#endif  /* __SCA_ADDOBJECTACTUATOR_H__ */
