@@ -119,10 +119,6 @@ set(SRC
 	KX_RadarSensor.cpp
 	KX_RayCast.cpp
 	KX_RaySensor.cpp
-	KX_SCA_AddObjectActuator.cpp
-	KX_SCA_DynamicActuator.cpp
-	KX_SCA_EndObjectActuator.cpp
-	KX_SCA_ReplaceMeshActuator.cpp
 	KX_SG_BoneParentNodeRelationship.cpp
 	KX_SG_NodeRelationships.cpp
 	KX_ScalarInterpolator.cpp
@@ -200,10 +196,6 @@ set(SRC
 	KX_RadarSensor.h
 	KX_RayCast.h
 	KX_RaySensor.h
-	KX_SCA_AddObjectActuator.h
-	KX_SCA_DynamicActuator.h
-	KX_SCA_EndObjectActuator.h
-	KX_SCA_ReplaceMeshActuator.h
 	KX_SG_BoneParentNodeRelationship.h
 	KX_SG_NodeRelationships.h
 	KX_ScalarInterpolator.h

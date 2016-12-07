@@ -25,64 +25,51 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file gameengine/Ketsji/KX_SCA_EndObjectActuator.cpp
- *  \ingroup ketsji
+/** \file gameengine/GameLogic/SCA_EndObjectActuator.cpp
+ *  \ingroup gamelogic
  */
 
-
-//
-
 // Remove the actuator's parent when triggered
-//
-// Previously existed as:
-// \source\gameengine\GameLogic\SCA_EndObjectActuator.cpp
-// Please look here for revision history.
+
 
 #include "SCA_IActuator.h"
-#include "KX_SCA_EndObjectActuator.h"
+#include "SCA_EndObjectActuator.h"
 #include "SCA_IScene.h"
 
-KX_SCA_EndObjectActuator::KX_SCA_EndObjectActuator(SCA_IObject *gameobj,
-                                                   SCA_IScene* scene):
-    SCA_IActuator(gameobj, SCA_ACT_END_OBJECT),
-    m_scene(scene)
+SCA_EndObjectActuator::SCA_EndObjectActuator(SCA_IObject *gameobj,
+                                             SCA_IScene *scene)
+	: SCA_IActuator(gameobj, SCA_ACT_END_OBJECT),
+	m_scene(scene)
 {
 	// intentionally empty
-} /* End of constructor */
+}
 
-
-
-KX_SCA_EndObjectActuator::~KX_SCA_EndObjectActuator()
+SCA_EndObjectActuator::~SCA_EndObjectActuator()
 { 
 	// there's nothing to be done here, really....
-} /* end of destructor */
+}
 
-
-
-bool KX_SCA_EndObjectActuator::Update()
+bool SCA_EndObjectActuator::Update()
 {
-	// bool result = false;	/*unused*/
 	bool bNegativeEvent = IsNegativeEvent();
 	RemoveAllEvents();
 
 	if (bNegativeEvent)
 		return false; // do nothing on negative events
 	m_scene->DelayedRemoveObject(GetParent());
-	
+
 	return false;
 }
 
-
-
-CValue* KX_SCA_EndObjectActuator::GetReplica()
+CValue *SCA_EndObjectActuator::GetReplica()
 {
-	KX_SCA_EndObjectActuator* replica = 
-		new KX_SCA_EndObjectActuator(*this);
-	if (replica == NULL) return NULL;
+	SCA_EndObjectActuator *replica = new SCA_EndObjectActuator(*this);
+	if (replica == NULL)
+		return NULL;
 
 	replica->ProcessReplica();
 	return replica;
-};
+}
 
 #ifdef WITH_PYTHON
 
@@ -90,9 +77,9 @@ CValue* KX_SCA_EndObjectActuator::GetReplica()
 /* Python functions : integration hooks                                      */
 /* ------------------------------------------------------------------------- */
 
-PyTypeObject KX_SCA_EndObjectActuator::Type = {
+PyTypeObject SCA_EndObjectActuator::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
-	"KX_SCA_EndObjectActuator",
+	"SCA_EndObjectActuator",
 	sizeof(PyObjectPlus_Proxy),
 	0,
 	py_base_dealloc,
@@ -112,14 +99,14 @@ PyTypeObject KX_SCA_EndObjectActuator::Type = {
 	py_base_new
 };
 
-PyMethodDef KX_SCA_EndObjectActuator::Methods[] = {
+PyMethodDef SCA_EndObjectActuator::Methods[] = {
 	{NULL,NULL} //Sentinel
 };
 
-PyAttributeDef KX_SCA_EndObjectActuator::Attributes[] = {
+PyAttributeDef SCA_EndObjectActuator::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
 #endif // WITH_PYTHON
 
-/* eof */
+

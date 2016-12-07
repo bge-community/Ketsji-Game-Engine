@@ -25,17 +25,104 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file gameengine/Ketsji/KX_SCA_DynamicActuator.cpp
- *  \ingroup ketsji
+/** \file gameengine/GameLogic/SCA_DynamicActuator.cpp
+ *  \ingroup gamelogic
  * Adjust dynamics settings for this object
  */
 
-/* Previously existed as:
- * \source\gameengine\GameLogic\SCA_DynamicActuator.cpp
- * Please look here for revision history. */
 
-#include "KX_SCA_DynamicActuator.h"
+#include "SCA_DynamicActuator.h"
 #include "PHY_IPhysicsController.h"
+
+
+SCA_DynamicActuator::SCA_DynamicActuator(SCA_IObject *gameobj,
+                                         short dyn_operation,
+                                         float setmass)
+	: SCA_IActuator(gameobj, SCA_ACT_DYNAMIC),
+	m_dyn_operation(dyn_operation),
+	m_setmass(setmass)
+{
+
+}
+
+SCA_DynamicActuator::~SCA_DynamicActuator()
+{ 
+	// there's nothing to be done here, really....
+}
+
+
+
+bool SCA_DynamicActuator::Update()
+{
+	// bool result = false;	/*unused*/
+	KX_GameObject *obj = (KX_GameObject *) GetParent();
+	bool bNegativeEvent = IsNegativeEvent();
+	PHY_IPhysicsController *controller;
+	RemoveAllEvents();
+
+	if (bNegativeEvent)
+		return false; // do nothing on negative events
+	
+	if (!obj)
+		return false; // object not accessible, shouldnt happen
+	controller = obj->GetPhysicsController();
+	if (!controller)
+		return false;	// no physic object
+
+	switch (m_dyn_operation) {
+		case KX_DYN_RESTORE_DYNAMICS:
+		{
+			// Child objects must be static, so we block changing to dynamic
+			if (!obj->GetParent())
+				controller->RestoreDynamics();
+			break;
+		}
+		case KX_DYN_DISABLE_DYNAMICS:
+		{
+			controller->SuspendDynamics();
+			break;
+		}
+		case KX_DYN_ENABLE_RIGID_BODY:
+		{
+			controller->SetRigidBody(true);
+			break;
+		}
+		case KX_DYN_DISABLE_RIGID_BODY:
+		{
+			controller->SetRigidBody(false);
+			break;
+		}
+		case KX_DYN_SET_MASS:
+		{
+			controller->SetMass(m_setmass);
+			break;
+		}
+		case KX_DYN_RESTORE_PHYSICS:
+		{
+			controller->RestorePhysics();
+			break;
+		}
+		case KX_DYN_DISABLE_PHYSICS:
+		{
+			controller->SuspendPhysics();
+			break;
+		}
+	}
+
+	return false;
+}
+
+CValue *SCA_DynamicActuator::GetReplica()
+{
+	SCA_DynamicActuator *replica = new SCA_DynamicActuator(*this);
+
+	if (replica == NULL)
+		return NULL;
+
+	replica->ProcessReplica();
+	return replica;
+}
+
 
 #ifdef WITH_PYTHON
 
@@ -45,9 +132,9 @@
 
 /* Integration hooks ------------------------------------------------------- */
 
-PyTypeObject KX_SCA_DynamicActuator::Type = {
+PyTypeObject SCA_DynamicActuator::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
-	"KX_SCA_DynamicActuator",
+	"SCA_DynamicActuator",
 	sizeof(PyObjectPlus_Proxy),
 	0,
 	py_base_dealloc,
@@ -67,104 +154,17 @@ PyTypeObject KX_SCA_DynamicActuator::Type = {
 	py_base_new
 };
 
-PyMethodDef KX_SCA_DynamicActuator::Methods[] = {
+PyMethodDef SCA_DynamicActuator::Methods[] = {
 	{NULL,NULL} //Sentinel
 };
 
-PyAttributeDef KX_SCA_DynamicActuator::Attributes[] = {
-	KX_PYATTRIBUTE_SHORT_RW("mode",0,4,false,KX_SCA_DynamicActuator,m_dyn_operation),
-	KX_PYATTRIBUTE_FLOAT_RW("mass",0.0f,FLT_MAX,KX_SCA_DynamicActuator,m_setmass),
+PyAttributeDef SCA_DynamicActuator::Attributes[] = {
+	KX_PYATTRIBUTE_SHORT_RW("mode", 0, 4, false, SCA_DynamicActuator, m_dyn_operation),
+	KX_PYATTRIBUTE_FLOAT_RW("mass", 0.0f, FLT_MAX, SCA_DynamicActuator, m_setmass),
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
 #endif // WITH_PYTHON
-
-/* ------------------------------------------------------------------------- */
-/* Native functions                                                          */
-/* ------------------------------------------------------------------------- */
-
-KX_SCA_DynamicActuator::KX_SCA_DynamicActuator(SCA_IObject *gameobj,
-													   short dyn_operation,
-													   float setmass) :
-
-	SCA_IActuator(gameobj, SCA_ACT_DYNAMIC),
-	m_dyn_operation(dyn_operation),
-	m_setmass(setmass)
-{
-} /* End of constructor */
-
-
-KX_SCA_DynamicActuator::~KX_SCA_DynamicActuator()
-{ 
-	// there's nothing to be done here, really....
-} /* end of destructor */
-
-
-
-bool KX_SCA_DynamicActuator::Update()
-{
-	// bool result = false;	/*unused*/
-	KX_GameObject *obj = (KX_GameObject*) GetParent();
-	bool bNegativeEvent = IsNegativeEvent();
-	PHY_IPhysicsController* controller;
-	RemoveAllEvents();
-
-	if (bNegativeEvent)
-		return false; // do nothing on negative events
-	
-	if (!obj)
-		return false; // object not accessible, shouldnt happen
-	controller = obj->GetPhysicsController();
-	if (!controller)
-		return false;	// no physic object
-
-	switch (m_dyn_operation)
-	{
-		case KX_DYN_RESTORE_DYNAMICS:
-			// Child objects must be static, so we block changing to dynamic
-			if (!obj->GetParent())
-				controller->RestoreDynamics();
-			break;
-		case KX_DYN_DISABLE_DYNAMICS:
-			controller->SuspendDynamics();
-			break;
-		case KX_DYN_ENABLE_RIGID_BODY:
-			controller->SetRigidBody(true);
-			break;
-		case KX_DYN_DISABLE_RIGID_BODY:
-			controller->SetRigidBody(false);
-			break;
-		case KX_DYN_SET_MASS:
-			controller->SetMass(m_setmass);
-			break;
-		case KX_DYN_RESTORE_PHYSICS:
-		{
-			controller->RestorePhysics();
-			break;
-		}
-		case KX_DYN_DISABLE_PHYSICS:
-		{
-			controller->SuspendPhysics();
-			break;
-		}
-	}
-
-	return false;
-}
-
-
-
-CValue* KX_SCA_DynamicActuator::GetReplica()
-{
-	KX_SCA_DynamicActuator* replica = 
-		new KX_SCA_DynamicActuator(*this);
-
-	if (replica == NULL)
-		return NULL;
-
-	replica->ProcessReplica();
-	return replica;
-};
 
 
 /* eof */

@@ -86,7 +86,7 @@ extern "C" {
 #include "SCA_SceneActuator.h"
 #include "KX_GameActuator.h"
 #include "KX_ParentActuator.h"
-#include "KX_SCA_DynamicActuator.h"
+#include "SCA_DynamicActuator.h"
 #include "SCA_SteeringActuator.h"
 #include "KX_NavMeshObject.h"
 #include "KX_MouseActuator.h"
@@ -1660,11 +1660,11 @@ PyMODINIT_FUNC initGameLogicPythonBinding()
 	KX_MACRO_addTypesToDict(d, KX_TRACK_TRAXIS_NEG_Z, SCA_TrackToActuator::KX_TRACK_TRAXIS_NEG_Z);
 
 	/* Dynamic actuator */
-	KX_MACRO_addTypesToDict(d, KX_DYN_RESTORE_DYNAMICS, KX_SCA_DynamicActuator::KX_DYN_RESTORE_DYNAMICS);
-	KX_MACRO_addTypesToDict(d, KX_DYN_DISABLE_DYNAMICS, KX_SCA_DynamicActuator::KX_DYN_DISABLE_DYNAMICS);
-	KX_MACRO_addTypesToDict(d, KX_DYN_ENABLE_RIGID_BODY, KX_SCA_DynamicActuator::KX_DYN_ENABLE_RIGID_BODY);
-	KX_MACRO_addTypesToDict(d, KX_DYN_DISABLE_RIGID_BODY, KX_SCA_DynamicActuator::KX_DYN_DISABLE_RIGID_BODY);
-	KX_MACRO_addTypesToDict(d, KX_DYN_SET_MASS, KX_SCA_DynamicActuator::KX_DYN_SET_MASS);
+	KX_MACRO_addTypesToDict(d, KX_DYN_RESTORE_DYNAMICS, SCA_DynamicActuator::KX_DYN_RESTORE_DYNAMICS);
+	KX_MACRO_addTypesToDict(d, KX_DYN_DISABLE_DYNAMICS, SCA_DynamicActuator::KX_DYN_DISABLE_DYNAMICS);
+	KX_MACRO_addTypesToDict(d, KX_DYN_ENABLE_RIGID_BODY, SCA_DynamicActuator::KX_DYN_ENABLE_RIGID_BODY);
+	KX_MACRO_addTypesToDict(d, KX_DYN_DISABLE_RIGID_BODY, SCA_DynamicActuator::KX_DYN_DISABLE_RIGID_BODY);
+	KX_MACRO_addTypesToDict(d, KX_DYN_SET_MASS, SCA_DynamicActuator::KX_DYN_SET_MASS);
 
 	/* Input & Mouse Sensor */
 	KX_MACRO_addTypesToDict(d, KX_INPUT_NONE, SCA_InputEvent::NONE);
