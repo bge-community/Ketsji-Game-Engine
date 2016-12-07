@@ -25,50 +25,41 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_SCA_EndObjectActuator.h
- *  \ingroup ketsji
+/** \file SCA_EndObjectActuator.h
+ *  \ingroup gamelogic
  *  \brief Add object to the game world on action of this actuator
- *  \attention Previously existed as: source/gameengine/GameLogic/SCA_EndObjectActuator.h
- * Please look here for revision history.
  */
 
-#ifndef __KX_SCA_ENDOBJECTACTUATOR_H__
-#define __KX_SCA_ENDOBJECTACTUATOR_H__
+#ifndef __SCA_ENDOBJECTACTUATOR_H__
+#define __SCA_ENDOBJECTACTUATOR_H__
 
 #include "SCA_IActuator.h"
 
 class SCA_IScene;
 
-class KX_SCA_EndObjectActuator : public SCA_IActuator
+class SCA_EndObjectActuator : public SCA_IActuator
 {
 	Py_Header
-	SCA_IScene*		m_scene;
+	SCA_IScene *m_scene;
 
  public:
-	KX_SCA_EndObjectActuator(
-		SCA_IObject* gameobj,
-		SCA_IScene* scene
-	);
+	SCA_EndObjectActuator(SCA_IObject *gameobj, SCA_IScene *scene);
 
-	~KX_SCA_EndObjectActuator();
+	~SCA_EndObjectActuator();
 
-		CValue* 
-	GetReplica(
-	);
-
-	virtual bool 
-	Update();
+	CValue * GetReplica();
+	virtual bool Update();
 
 	virtual void Replace_IScene(SCA_IScene *val)
 	{
-		m_scene= val;
-	};
+		m_scene = val;
+	}
 
 	/* --------------------------------------------------------------------- */
 	/* Python interface ---------------------------------------------------- */
 	/* --------------------------------------------------------------------- */
 	
-}; /* end of class KX_EditObjectActuator : public SCA_PropertyActuator */
+}; /* end of class EditObjectActuator*/
 
 #endif
 

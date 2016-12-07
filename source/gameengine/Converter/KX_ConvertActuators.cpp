@@ -47,9 +47,13 @@
 
 // Actuators
 //SCA logiclibrary native logicbricks
+#include "SCA_AddObjectActuator.h"
+#include "SCA_EndObjectActuator.h"
+#include "SCA_DynamicActuator.h"
 #include "SCA_PropertyActuator.h"
 #include "SCA_LogicManager.h"
 #include "SCA_RandomActuator.h"
+#include "SCA_ReplaceMeshActuator.h"
 #include "SCA_SceneActuator.h"
 #include "SCA_SoundActuator.h"
 #include "SCA_StateActuator.h"
@@ -66,11 +70,7 @@
 #include "KX_ConstraintActuator.h"
 #include "KX_CameraActuator.h"
 #include "KX_GameActuator.h"
-#include "KX_SCA_AddObjectActuator.h"
-#include "KX_SCA_EndObjectActuator.h"
-#include "KX_SCA_ReplaceMeshActuator.h"
 #include "KX_ParentActuator.h"
-#include "KX_SCA_DynamicActuator.h"
 #include "KX_MouseActuator.h"
 
 #include "KX_Scene.h"
@@ -438,7 +438,7 @@ void BL_ConvertActuators(const char* maggiename,
 							}
 						}
 						
-						KX_SCA_AddObjectActuator* tmpaddact = new KX_SCA_AddObjectActuator(
+						SCA_AddObjectActuator *tmpaddact = new SCA_AddObjectActuator(
 						            gameobj,
 						            originalval,
 						            editobact->time,
@@ -454,8 +454,7 @@ void BL_ConvertActuators(const char* maggiename,
 					break;
 				case ACT_EDOB_END_OBJECT:
 					{
-						KX_SCA_EndObjectActuator* tmpendact 
-							= new KX_SCA_EndObjectActuator(gameobj,scene);
+						SCA_EndObjectActuator *tmpendact = new SCA_EndObjectActuator(gameobj,scene);
 						baseact = tmpendact;
 					}
 					break;
@@ -468,7 +467,7 @@ void BL_ConvertActuators(const char* maggiename,
 								<< "\" uses a mesh not owned by an object in scene \"" << scene->GetName() << "\".");
 						}
 
-						KX_SCA_ReplaceMeshActuator* tmpreplaceact = new KX_SCA_ReplaceMeshActuator(
+						SCA_ReplaceMeshActuator *tmpreplaceact = new SCA_ReplaceMeshActuator(
 						            gameobj,
 						            tmpmesh,
 						            scene,
@@ -496,7 +495,7 @@ void BL_ConvertActuators(const char* maggiename,
 					}
 				case ACT_EDOB_DYNAMICS:
 					{
-						KX_SCA_DynamicActuator* tmpdynact = new KX_SCA_DynamicActuator(
+						SCA_DynamicActuator *tmpdynact = new SCA_DynamicActuator(
 						            gameobj,
 						            editobact->dyn_operation,
 						            editobact->mass);

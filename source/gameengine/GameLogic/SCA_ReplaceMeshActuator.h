@@ -25,15 +25,13 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_SCA_ReplaceMeshActuator.h
- *  \ingroup ketsji
+/** \file SCA_ReplaceMeshActuator.h
+ *  \ingroup gamelogic
  *  \brief Add object to the game world on action of this actuator
- *  \attention Previously existed as: source/gameengine/GameLogic/SCA_ReplaceMeshActuator.h
- *  Please look here for revision history.
  */
 
-#ifndef __KX_SCA_REPLACEMESHACTUATOR_H__
-#define __KX_SCA_REPLACEMESHACTUATOR_H__
+#ifndef __SCA_REPLACEMESHACTUATOR_H__
+#define __SCA_REPLACEMESHACTUATOR_H__
 
 #include "SCA_IActuator.h"
 #include "SCA_PropertyActuator.h"
@@ -42,36 +40,29 @@
 
 #include "RAS_MeshObject.h"
 
-class KX_SCA_ReplaceMeshActuator : public SCA_IActuator
+class SCA_ReplaceMeshActuator : public SCA_IActuator
 {
 	Py_Header
 
+private:
 	// mesh reference (mesh to replace)
-	RAS_MeshObject* m_mesh;
-	SCA_IScene*	 m_scene;
+	RAS_MeshObject *m_mesh;
+	SCA_IScene *m_scene;
 	bool m_use_gfx; 
 	bool m_use_phys;
 
- public:
-	KX_SCA_ReplaceMeshActuator(
-		SCA_IObject* gameobj, 
-		RAS_MeshObject *mesh, 
-		SCA_IScene* scene,
-		bool use_gfx,
-		bool use_phys
-	);
+public:
+	SCA_ReplaceMeshActuator(SCA_IObject *gameobj,
+	                        RAS_MeshObject *mesh,
+	                        SCA_IScene *scene,
+	                        bool use_gfx,
+	                        bool use_phys);
 
-	~KX_SCA_ReplaceMeshActuator(
-	);
+	~SCA_ReplaceMeshActuator();
 
-		CValue* 
-	GetReplica(
-	);
-
-	virtual bool 
-	Update();
-
-	void	InstantReplaceMesh();
+	CValue *GetReplica();
+	virtual bool Update();
+	void InstantReplaceMesh();
 
 #ifdef WITH_PYTHON
 
@@ -81,16 +72,16 @@ class KX_SCA_ReplaceMeshActuator : public SCA_IActuator
 
 	virtual void Replace_IScene(SCA_IScene *val)
 	{
-		m_scene= val;
+		m_scene = val;
 	};
 
 	static PyObject *pyattr_get_mesh(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_mesh(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 
-	KX_PYMETHOD_DOC(KX_SCA_ReplaceMeshActuator,instantReplaceMesh);
+	KX_PYMETHOD_DOC(SCA_ReplaceMeshActuator, instantReplaceMesh);
 
 #endif  /* WITH_PYTHON */
 
 }; 
 
-#endif  /* __KX_SCA_REPLACEMESHACTUATOR_H__ */
+#endif  /* __SCA_REPLACEMESHACTUATOR_H__ */

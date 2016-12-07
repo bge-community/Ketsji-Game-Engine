@@ -29,6 +29,7 @@ set(INC
 	../Converter
 	../Device
 	../Expressions
+	../Physics/Common
 	../Rasterizer
 	../SceneGraph
 	../Ketsji
@@ -55,9 +56,12 @@ set(SRC
 	SCA_ANDController.cpp
 	SCA_ActuatorEventManager.cpp
 	SCA_ActuatorSensor.cpp
+	SCA_AddObjectActuator.cpp
 	SCA_AlwaysSensor.cpp
 	SCA_BasicEventManager.cpp
 	SCA_DelaySensor.cpp
+	SCA_DynamicActuator.cpp
+	SCA_EndObjectActuator.cpp
 	SCA_EventManager.cpp
 	SCA_ExpressionController.cpp
 	SCA_IActuator.cpp
@@ -87,6 +91,7 @@ set(SRC
 	SCA_RandomActuator.cpp
 	SCA_RandomNumberGenerator.cpp
 	SCA_RandomSensor.cpp
+	SCA_ReplaceMeshActuator.cpp
 	SCA_SceneActuator.cpp
 	SCA_SoundActuator.cpp
 	SCA_StateActuator.cpp
@@ -102,9 +107,12 @@ set(SRC
 	SCA_ANDController.h
 	SCA_ActuatorEventManager.h
 	SCA_ActuatorSensor.h
+	SCA_AddObjectActuator.h
 	SCA_AlwaysSensor.h
 	SCA_BasicEventManager.h
 	SCA_DelaySensor.h
+	SCA_DynamicActuator.h
+	SCA_EndObjectActuator.h
 	SCA_EventManager.h
 	SCA_ExpressionController.h
 	SCA_IActuator.h
@@ -134,6 +142,7 @@ set(SRC
 	SCA_RandomActuator.h
 	SCA_RandomNumberGenerator.h
 	SCA_RandomSensor.h
+	SCA_ReplaceMeshActuator.h
 	SCA_SceneActuator.h
 	SCA_SoundActuator.h
 	SCA_StateActuator.h
