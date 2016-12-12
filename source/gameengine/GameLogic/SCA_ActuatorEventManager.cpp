@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -35,24 +30,20 @@
 #include "SCA_ActuatorSensor.h"
 
 
-SCA_ActuatorEventManager::SCA_ActuatorEventManager(class SCA_LogicManager* logicmgr)
+SCA_ActuatorEventManager::SCA_ActuatorEventManager(class SCA_LogicManager *logicmgr)
 	: SCA_EventManager(logicmgr, ACTUATOR_EVENTMGR)
 {
 }
 
-
-
 SCA_ActuatorEventManager::~SCA_ActuatorEventManager()
 {
-
 }
 
 void SCA_ActuatorEventManager::NextFrame()
 {
 	// check for changed actuator
 	SG_DList::iterator<SCA_ISensor> it(m_sensors);
-	for (it.begin();!it.end();++it)
-	{
+	for (it.begin(); !it.end(); ++it) {
 		(*it)->Activate(m_logicmgr);
 	}
 }
@@ -61,8 +52,7 @@ void SCA_ActuatorEventManager::UpdateFrame()
 {
 	// update the state of actuator before executing them
 	SG_DList::iterator<SCA_ActuatorSensor> it(m_sensors);
-	for (it.begin();!it.end();++it)
-	{
+	for (it.begin(); !it.end(); ++it) {
 		(*it)->Update();
 	}
 }

@@ -1,7 +1,4 @@
 /*
- * SCA_2DFilterActuator.h
- *
- *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
  * This program is free software; you can redistribute it and/or
@@ -18,8 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
+ * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
  */
@@ -46,29 +42,28 @@ private:
 	int m_type;
 	short m_disableMotionBlur;
 	float m_float_arg;
-	int   m_int_arg;
-	STR_String	m_shaderText;
-	RAS_IRasterizer* m_rasterizer;
+	int m_int_arg;
+	STR_String m_shaderText;
+	RAS_IRasterizer *m_rasterizer;
 	RAS_2DFilterManager *m_filterManager;
-	SCA_IScene* m_scene;
+	SCA_IScene *m_scene;
 
 public:
-	SCA_2DFilterActuator(
-	        class SCA_IObject* gameobj,
-	        int type,
-	        short flag,
-	        float float_arg,
-	        int int_arg,
-	        RAS_IRasterizer* rasterizer,
-			RAS_2DFilterManager *filterManager,
-	        SCA_IScene* scene);
+	SCA_2DFilterActuator(class SCA_IObject *gameobj,
+	                     int type,
+	                     short flag,
+	                     float float_arg,
+	                     int int_arg,
+	                     RAS_IRasterizer *rasterizer,
+	                     RAS_2DFilterManager *filterManager,
+	                     SCA_IScene *scene);
 
-	void	SetShaderText(const char *text);
 	virtual ~SCA_2DFilterActuator();
+
+	void SetShaderText(const char *text);
 	virtual bool Update();
-
-	void	SetScene(SCA_IScene *scene);
-
-	virtual CValue* GetReplica();
+	void SetScene(SCA_IScene *scene);
+	virtual CValue *GetReplica();
 };
-#endif
+
+#endif //__SCA_2DFILTERACTUATOR_H__
