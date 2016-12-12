@@ -178,7 +178,6 @@ PyAttributeDef SCA_2DFilterActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("passNumber", 0, 100, true, SCA_2DFilterActuator, m_int_arg),
 	KX_PYATTRIBUTE_FLOAT_RW("value", 0.0, 100.0, SCA_2DFilterActuator, m_float_arg),
 	KX_PYATTRIBUTE_NULL	//Sentinel
-
 };
 
 #endif
