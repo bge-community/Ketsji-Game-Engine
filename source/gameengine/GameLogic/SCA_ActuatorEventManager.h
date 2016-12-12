@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -37,7 +32,7 @@
 class SCA_ActuatorEventManager : public SCA_EventManager
 {
 public:
-	SCA_ActuatorEventManager(class SCA_LogicManager* logicmgr);
+	SCA_ActuatorEventManager(class SCA_LogicManager *logicmgr);
 	virtual ~SCA_ActuatorEventManager();
 	virtual void NextFrame();
 	virtual void UpdateFrame();
@@ -47,4 +42,4 @@ public:
 #endif
 };
 
-#endif  /* __SCA_ACTUATOREVENTMANAGER_H__ */
+#endif  //__SCA_ACTUATOREVENTMANAGER_H__
