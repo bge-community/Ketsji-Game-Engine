@@ -1,6 +1,4 @@
 /*
- * SCA_ANDController.h
- *
  *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
@@ -17,11 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
  *
  * Contributor(s): none yet.
  *
@@ -40,12 +33,13 @@
 class SCA_ANDController : public SCA_IController
 {
 	Py_Header
-	//virtual void Trigger(class SCA_LogicManager* logicmgr);
+
 public:
-	SCA_ANDController(SCA_IObject* gameobj);
+	SCA_ANDController(SCA_IObject *gameobj);
 	virtual ~SCA_ANDController();
-	virtual CValue* GetReplica();
-	virtual void Trigger(SCA_LogicManager* logicmgr);
+
+	virtual CValue *GetReplica();
+	virtual void Trigger(SCA_LogicManager *logicmgr);
 };
 
-#endif  /* __SCA_ANDCONTROLLER_H__ */
+#endif  //__SCA_ANDCONTROLLER_H__

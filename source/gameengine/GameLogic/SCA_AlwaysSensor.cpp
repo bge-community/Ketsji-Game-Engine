@@ -1,6 +1,4 @@
 /*
- * Always trigger
- *
  *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
@@ -33,8 +31,8 @@
  */
 
 #ifdef _MSC_VER
-  /* This warning tells us about truncation of __long__ stl-generated names.
-   * It can occasionally cause DevStudio to have internal compiler warnings. */
+  //This warning tells us about truncation of __long__ stl-generated names.
+  //It can occasionally cause DevStudio to have internal compiler warnings.
 #  pragma warning( disable:4786 )
 #endif
 
@@ -42,16 +40,17 @@
 #include "SCA_LogicManager.h"
 #include "SCA_EventManager.h"
 
-/* ------------------------------------------------------------------------- */
-/* Native functions                                                          */
-/* ------------------------------------------------------------------------- */
 
-SCA_AlwaysSensor::SCA_AlwaysSensor(class SCA_EventManager* eventmgr,
-								 SCA_IObject* gameobj)
+SCA_AlwaysSensor::SCA_AlwaysSensor(class SCA_EventManager *eventmgr,
+                                   SCA_IObject *gameobj)
 	: SCA_ISensor(gameobj,eventmgr)
 {
-	//SetDrawColor(255,0,0);
 	Init();
+}
+
+SCA_AlwaysSensor::~SCA_AlwaysSensor()
+{
+	// intentionally empty
 }
 
 void SCA_AlwaysSensor::Init()
@@ -59,39 +58,22 @@ void SCA_AlwaysSensor::Init()
 	m_alwaysresult = true;
 }
 
-SCA_AlwaysSensor::~SCA_AlwaysSensor()
+CValue *SCA_AlwaysSensor::GetReplica()
 {
-	/* intentionally empty */
-}
-
-
-
-CValue* SCA_AlwaysSensor::GetReplica()
-{
-	CValue* replica = new SCA_AlwaysSensor(*this);//m_float,GetName());
+	CValue *replica = new SCA_AlwaysSensor(*this);
 	// this will copy properties and so on...
 	replica->ProcessReplica();
 
 	return replica;
 }
 
-
-
 bool SCA_AlwaysSensor::IsPositiveTrigger()
-{ 
+{
 	return (m_invert ? false : true);
 }
 
-
-
 bool SCA_AlwaysSensor::Evaluate()
 {
-	/* Nice! :) */
-		//return true;
-	/* even nicer ;) */
-		//return false;
-	
-	/* nicest ! */
 	bool result = m_alwaysresult;
 	m_alwaysresult = false;
 	return result;
@@ -135,5 +117,3 @@ PyAttributeDef SCA_AlwaysSensor::Attributes[] = {
 };
 
 #endif
-
-/* eof */

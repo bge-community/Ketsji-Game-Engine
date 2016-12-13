@@ -1,6 +1,4 @@
 /*
- * 'And' together all inputs
- *
  *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
@@ -18,11 +16,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -38,53 +31,43 @@
 #include "SCA_LogicManager.h"
 #include "EXP_BoolValue.h"
 
-/* ------------------------------------------------------------------------- */
-/* Native functions                                                          */
-/* ------------------------------------------------------------------------- */
 
-SCA_ANDController::SCA_ANDController(SCA_IObject* gameobj)
-	:
-	SCA_IController(gameobj)
+SCA_ANDController::SCA_ANDController(SCA_IObject *gameobj)
+	: SCA_IController(gameobj)
 {
 }
-
-
 
 SCA_ANDController::~SCA_ANDController()
 {
 }
 
-
-
-void SCA_ANDController::Trigger(SCA_LogicManager* logicmgr)
+void SCA_ANDController::Trigger(SCA_LogicManager *logicmgr)
 {
-
 	bool sensorresult = true;
 
-	for (std::vector<SCA_ISensor*>::const_iterator is=m_linkedsensors.begin();
-	!(is==m_linkedsensors.end());is++)
+	for (std::vector<SCA_ISensor *>::const_iterator is = m_linkedsensors.begin();
+	     !(is == m_linkedsensors.end());
+	     is++)
 	{
-		SCA_ISensor* sensor = *is;
-		if (!sensor->GetState())
-		{
+		SCA_ISensor *sensor = *is;
+		if (!sensor->GetState()) {
 			sensorresult = false;
 			break;
 		}
 	}
 	
-	for (std::vector<SCA_IActuator*>::const_iterator i=m_linkedactuators.begin();
-	!(i==m_linkedactuators.end());i++)
+	for (std::vector<SCA_IActuator *>::const_iterator i = m_linkedactuators.begin();
+	     !(i == m_linkedactuators.end());
+	     i++)
 	{
-		SCA_IActuator* actua = *i;
-		logicmgr->AddActiveActuator(actua,sensorresult);
+		SCA_IActuator *actua = *i;
+		logicmgr->AddActiveActuator(actua, sensorresult);
 	}
 }
 
-
-
-CValue* SCA_ANDController::GetReplica()
+CValue *SCA_ANDController::GetReplica()
 {
-	CValue* replica = new SCA_ANDController(*this);
+	CValue *replica = new SCA_ANDController(*this);
 	// this will copy properties and so on...
 	replica->ProcessReplica();
 
@@ -128,4 +111,3 @@ PyAttributeDef SCA_ANDController::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 #endif // WITH_PYTHON
-/* eof */
