@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -37,22 +32,20 @@
 #include "KX_GameObject.h"
 #include "EXP_PyObjectPlus.h" 
 
-/* ------------------------------------------------------------------------- */
-/* Native functions                                                          */
-/* ------------------------------------------------------------------------- */
 
 SCA_AddObjectActuator::SCA_AddObjectActuator(SCA_IObject *gameobj,
                                              SCA_IObject *original,
-                                             float time,SCA_IScene *scene,
+                                             float time,
+                                             SCA_IScene *scene,
                                              const float *linvel,
                                              bool linv_local,
                                              const float *angvel,
                                              bool angv_local)
 	: SCA_IActuator(gameobj, SCA_ACT_ADD_OBJECT),
-	m_OriginalObject(original),
-	m_scene(scene),
-	m_localLinvFlag(linv_local),
-	m_localAngvFlag(angv_local)
+      m_OriginalObject(original),
+      m_scene(scene),
+      m_localLinvFlag(linv_local),
+      m_localAngvFlag(angv_local)
 {
 	m_linear_velocity[0] = linvel[0];
 	m_linear_velocity[1] = linvel[1];
@@ -67,7 +60,6 @@ SCA_AddObjectActuator::SCA_AddObjectActuator(SCA_IObject *gameobj,
 	m_lastCreatedObject = NULL;
 	m_timeProp = time;
 } 
-
 
 SCA_AddObjectActuator::~SCA_AddObjectActuator()
 { 
@@ -94,8 +86,6 @@ SCA_IObject *SCA_AddObjectActuator::GetLastCreatedObject() const
 {
 	return m_lastCreatedObject;
 }
-
-
 
 CValue *SCA_AddObjectActuator::GetReplica()
 {
@@ -141,6 +131,42 @@ void SCA_AddObjectActuator::Relink(std::map<void *, void *> &obj_map)
 			m_OriginalObject->UnregisterActuator(this);
 		m_OriginalObject = (SCA_IObject *)h_obj;
 		m_OriginalObject->RegisterActuator(this);
+	}
+}
+
+void SCA_AddObjectActuator::InstantAddObject()
+{
+	if (m_OriginalObject) {
+		// Add an identical object, with properties inherited from the original object
+		// Now it needs to be added to the current scene.
+		SCA_IObject *replica = m_scene->AddReplicaObject(m_OriginalObject, GetParent(), m_timeProp);
+		KX_GameObject *game_obj = static_cast<KX_GameObject *>(replica);
+		game_obj->setLinearVelocity(MT_Vector3(m_linear_velocity), m_localLinvFlag);
+		game_obj->setAngularVelocity(MT_Vector3(m_angular_velocity), m_localAngvFlag);
+		game_obj->ResolveCombinedVelocities(MT_Vector3(m_linear_velocity),
+		                                    MT_Vector3(m_angular_velocity),
+		                                    m_localLinvFlag,
+		                                    m_localAngvFlag);
+
+		// keep a copy of the last object, to allow python scripters to change it
+		if (m_lastCreatedObject) {
+			//Let's not keep a reference to the object: it's bad, if the object is deleted
+			//this will force to keep a "zombie" in the game for no good reason.
+			//m_scene->DelayedReleaseObject(m_lastCreatedObject);
+			//m_lastCreatedObject->Release();
+
+			//Instead we use the registration mechanism
+			m_lastCreatedObject->UnregisterActuator(this);
+			m_lastCreatedObject = NULL;
+		}
+		
+		m_lastCreatedObject = replica;
+		// no reference
+		//m_lastCreatedObject->AddRef();
+		// but registration
+		m_lastCreatedObject->RegisterActuator(this);
+		// finished using replica? then release it
+		replica->Release();
 	}
 }
 
@@ -227,44 +253,7 @@ PyObject *SCA_AddObjectActuator::pyattr_get_objectLastCreated(void *self, const 
 PyObject *SCA_AddObjectActuator::PyInstantAddObject()
 {
 	InstantAddObject();
-
 	Py_RETURN_NONE;
 }
 
 #endif // WITH_PYTHON
-
-void SCA_AddObjectActuator::InstantAddObject()
-{
-	if (m_OriginalObject) {
-		// Add an identical object, with properties inherited from the original object
-		// Now it needs to be added to the current scene.
-		SCA_IObject *replica = m_scene->AddReplicaObject(m_OriginalObject, GetParent(), m_timeProp );
-		KX_GameObject *game_obj = static_cast<KX_GameObject *>(replica);
-		game_obj->setLinearVelocity(MT_Vector3(m_linear_velocity), m_localLinvFlag);
-		game_obj->setAngularVelocity(MT_Vector3(m_angular_velocity), m_localAngvFlag);
-		game_obj->ResolveCombinedVelocities(MT_Vector3(m_linear_velocity),
-		                                    MT_Vector3(m_angular_velocity),
-		                                    m_localLinvFlag,
-		                                    m_localAngvFlag);
-
-		// keep a copy of the last object, to allow python scripters to change it
-		if (m_lastCreatedObject) {
-			//Let's not keep a reference to the object: it's bad, if the object is deleted
-			//this will force to keep a "zombie" in the game for no good reason.
-			//m_scene->DelayedReleaseObject(m_lastCreatedObject);
-			//m_lastCreatedObject->Release();
-
-			//Instead we use the registration mechanism
-			m_lastCreatedObject->UnregisterActuator(this);
-			m_lastCreatedObject = NULL;
-		}
-		
-		m_lastCreatedObject = replica;
-		// no reference
-		//m_lastCreatedObject->AddRef();
-		// but registration
-		m_lastCreatedObject->RegisterActuator(this);
-		// finished using replica? then release it
-		replica->Release();
-	}
-}
