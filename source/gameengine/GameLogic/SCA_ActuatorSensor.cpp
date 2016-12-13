@@ -1,6 +1,4 @@
 /*
- * Actuator sensor
- *
  *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
@@ -18,11 +16,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -34,32 +27,36 @@
 
 
 #include <stddef.h>
-
 #include <iostream>
 #include "SCA_ActuatorSensor.h"
 #include "SCA_EventManager.h"
 #include "SCA_LogicManager.h"
 
-SCA_ActuatorSensor::SCA_ActuatorSensor(SCA_EventManager* eventmgr,
-									 SCA_IObject* gameobj,
-									 const STR_String& actname)
+
+SCA_ActuatorSensor::SCA_ActuatorSensor(SCA_EventManager *eventmgr,
+                                       SCA_IObject *gameobj,
+                                       const STR_String &actname)
 	: SCA_ISensor(gameobj,eventmgr),
-	  m_checkactname(actname)
+      m_checkactname(actname)
 {
 	m_actuator = GetParent()->FindActuator(m_checkactname);
 	Init();
 }
 
+SCA_ActuatorSensor::~SCA_ActuatorSensor()
+{
+}
+
 void SCA_ActuatorSensor::Init()
 {
-	m_lastresult = m_invert?true:false;
+	m_lastresult = m_invert ? true : false;
 	m_midresult = m_lastresult;
 	m_reset = true;
 }
 
-CValue* SCA_ActuatorSensor::GetReplica()
+CValue *SCA_ActuatorSensor::GetReplica()
 {
-	SCA_ActuatorSensor* replica = new SCA_ActuatorSensor(*this);
+	SCA_ActuatorSensor *replica = new SCA_ActuatorSensor(*this);
 	// m_range_expr must be recalculated on replica!
 	replica->ProcessReplica();
 	replica->Init();
@@ -67,7 +64,7 @@ CValue* SCA_ActuatorSensor::GetReplica()
 	return replica;
 }
 
-void SCA_ActuatorSensor::ReParent(SCA_IObject* parent)
+void SCA_ActuatorSensor::ReParent(SCA_IObject *parent)
 {
 	m_actuator = parent->FindActuator(m_checkactname);
 	SCA_ISensor::ReParent(parent);
@@ -82,24 +79,14 @@ bool SCA_ActuatorSensor::IsPositiveTrigger()
 	return result;
 }
 
-
-
-SCA_ActuatorSensor::~SCA_ActuatorSensor()
-{
-}
-
-
-
 bool SCA_ActuatorSensor::Evaluate()
 {
-	if (m_actuator)
-	{
+	if (m_actuator) {
 		bool result = m_actuator->IsActive();
 		bool reset = m_reset && m_level;
 		
 		m_reset = false;
-		if (m_lastresult != result || m_midresult != result)
-		{
+		if (m_lastresult != result || m_midresult != result) {
 			m_lastresult = m_midresult = result;
 			return true;
 		}
@@ -110,8 +97,7 @@ bool SCA_ActuatorSensor::Evaluate()
 
 void SCA_ActuatorSensor::Update()
 {
-	if (m_actuator)
-	{
+	if (m_actuator) {
 		m_midresult = m_actuator->IsActive() && !m_actuator->IsNegativeEvent();
 	}
 }
@@ -121,6 +107,18 @@ void SCA_ActuatorSensor::Update()
 /* ------------------------------------------------------------------------- */
 /* Python functions                                                          */
 /* ------------------------------------------------------------------------- */
+
+static int SCA_ActuatorSensor::CheckActuator(void *self, const PyAttributeDef *)
+{
+	SCA_ActuatorSensor *sensor = reinterpret_cast<SCA_ActuatorSensor *>(self);
+	SCA_IActuator *act = sensor->GetParent()->FindActuator(sensor->m_checkactname);
+	if (act) {
+		sensor->m_actuator = act;
+		return 0;
+	}
+	PyErr_SetString(PyExc_AttributeError, "string does not correspond to an actuator");
+	return 1;
+}
 
 /* Integration hooks ------------------------------------------------------- */
 PyTypeObject SCA_ActuatorSensor::Type = {
@@ -150,22 +148,8 @@ PyMethodDef SCA_ActuatorSensor::Methods[] = {
 };
 
 PyAttributeDef SCA_ActuatorSensor::Attributes[] = {
-	KX_PYATTRIBUTE_STRING_RW_CHECK("actuator",0,MAX_PROP_NAME,false,SCA_ActuatorSensor,m_checkactname,CheckActuator),
-	{ NULL }	//Sentinel
+	KX_PYATTRIBUTE_STRING_RW_CHECK("actuator", 0, MAX_PROP_NAME, false, SCA_ActuatorSensor, m_checkactname, CheckActuator),
+	{NULL}	//Sentinel
 };
 
-int SCA_ActuatorSensor::CheckActuator(void *self, const PyAttributeDef*)
-{
-	SCA_ActuatorSensor* sensor = reinterpret_cast<SCA_ActuatorSensor*>(self);
-	SCA_IActuator* act = sensor->GetParent()->FindActuator(sensor->m_checkactname);
-	if (act) {
-		sensor->m_actuator = act;
-		return 0;
-	}
-	PyErr_SetString(PyExc_AttributeError, "string does not correspond to an actuator");
-	return 1;
-}
-
 #endif // WITH_PYTHON
-
-/* eof */

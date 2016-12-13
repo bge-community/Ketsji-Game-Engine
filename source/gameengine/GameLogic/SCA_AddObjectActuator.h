@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -34,7 +29,6 @@
 
 #include "SCA_IActuator.h"
 #include "SCA_LogicManager.h"
-
 #include "MT_Vector3.h"
 
 
@@ -45,35 +39,19 @@ class SCA_AddObjectActuator : public SCA_IActuator
 	Py_Header
 
 private:
-	/// Time field: lifetime of the new object
-	float m_timeProp;
-
-	/// Original object reference (object to replicate)
-	SCA_IObject *m_OriginalObject;
-
-	/// Object will be added to the following scene
-	SCA_IScene *m_scene;
-
-	/// Linear velocity upon creation of the object. 
-	float m_linear_velocity[3];
-
-	/// Apply the velocity locally 
-	bool m_localLinvFlag;
-	
-	/// Angular velocity upon creation of the object. 
-	float m_angular_velocity[3];
-
-	/// Apply the velocity locally 
-	bool m_localAngvFlag; 
-
+	float m_timeProp; // Time field: lifetime of the new object
+	SCA_IObject *m_OriginalObject; // Original object reference (object to replicate)
+	SCA_IScene *m_scene; // Object will be added to the following scene
+	float m_linear_velocity[3]; // Linear velocity upon creation of the object. 
+	bool m_localLinvFlag; // Apply the velocity locally 
+	float m_angular_velocity[3]; // Angular velocity upon creation of the object. 
+	bool m_localAngvFlag;  // Apply the angular velocity locally 
 	SCA_IObject *m_lastCreatedObject;
 
 public:
 
-	/** 
-	 * This class also has the default constructors
-	 * available. Use with care!
-	 */
+	// This class also has the default constructors
+	// available. Use with care!
 
 	SCA_AddObjectActuator(SCA_IObject *gameobj,
 	                      SCA_IObject *original,
@@ -87,22 +65,12 @@ public:
 	~SCA_AddObjectActuator(void);
 
 	CValue *GetReplica();
-
 	virtual void ProcessReplica();
-
-	virtual void Replace_IScene(SCA_IScene *val)
-	{
-		m_scene = val;
-	}
-
+	virtual void Replace_IScene(SCA_IScene *val) { m_scene = val; }
 	virtual bool UnlinkObject(SCA_IObject *clientobj);
-
 	virtual void Relink(std::map<void *, void *> &obj_map);
-
 	virtual bool Update();
-
 	SCA_IObject *GetLastCreatedObject() const;
-
 	void InstantAddObject();
 
 #ifdef WITH_PYTHON
@@ -113,8 +81,8 @@ public:
 	static int pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject *pyattr_get_objectLastCreated(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 	
-#endif  /* WITH_PYTHON */
+#endif  // WITH_PYTHON
 
-}; /* end of class SCA_AddObjectActuator : public SCA_EditObjectActuator */
+};
 
-#endif  /* __SCA_ADDOBJECTACTUATOR_H__ */
+#endif  //__SCA_ADDOBJECTACTUATOR_H__

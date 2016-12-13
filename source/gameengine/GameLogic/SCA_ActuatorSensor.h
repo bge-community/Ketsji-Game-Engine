@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -38,33 +33,28 @@
 class SCA_ActuatorSensor : public SCA_ISensor
 {
 	Py_Header
-	STR_String		m_checkactname;
-	bool			m_lastresult;
-	bool			m_midresult;
- protected:
-	SCA_IActuator*	m_actuator;
+
+private:
+	STR_String m_checkactname;
+	bool m_lastresult;
+	bool m_midresult;
+
+protected:
+	SCA_IActuator *m_actuator;
+
 public:
-	SCA_ActuatorSensor(class SCA_EventManager* eventmgr,
-					  SCA_IObject* gameobj,
-					  const STR_String& actname);
+	SCA_ActuatorSensor(class SCA_EventManager *eventmgr,
+	                   SCA_IObject *gameobj,
+	                   const STR_String &actname);
 	
 	virtual ~SCA_ActuatorSensor();
-	virtual CValue* GetReplica();
+
+	virtual CValue *GetReplica();
 	virtual void Init();
 	virtual bool Evaluate();
-	virtual bool	IsPositiveTrigger();
-	virtual void	ReParent(SCA_IObject* parent);
+	virtual bool IsPositiveTrigger();
+	virtual void ReParent(SCA_IObject *parent);
 	void Update();
-
-#ifdef WITH_PYTHON
-
-	/* --------------------------------------------------------------------- */
-	/* Python interface ---------------------------------------------------- */
-	/* --------------------------------------------------------------------- */
-
-	static int CheckActuator(void *self, const PyAttributeDef*);
-	
-#endif  /* WITH_PYTHON */
 };
 
-#endif  /* __SCA_ACTUATORSENSOR_H__ */
+#endif  //__SCA_ACTUATORSENSOR_H__
