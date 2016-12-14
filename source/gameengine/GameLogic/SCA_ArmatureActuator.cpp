@@ -240,7 +240,7 @@ PyObject *BL_ArmatureActuator::pyattr_get_object(void *self, const struct KX_PYA
 int BL_ArmatureActuator::pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
 	BL_ArmatureActuator* actuator = static_cast<BL_ArmatureActuator*>(self);
-	KX_GameObject* &target = (attrdef->m_name == "target") ? actuator->m_gametarget : actuator->m_gamesubtarget;
+	KX_GameObject *target = (attrdef->m_name == "target") ? actuator->m_gametarget : actuator->m_gamesubtarget;
 	KX_GameObject *gameobj;
 		
 	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: BL_ArmatureActuator"))
