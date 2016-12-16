@@ -1,6 +1,4 @@
 /*
- * Manager for sensor that only need to call Update
- *
  *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
@@ -18,11 +16,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -37,10 +30,13 @@
 
 #include "SCA_EventManager.h"
 
+
+// Manager for sensors that only need to call Update
+
 class SCA_BasicEventManager : public SCA_EventManager
 {
 public:
-	SCA_BasicEventManager(class SCA_LogicManager* logicmgr);
+	SCA_BasicEventManager(class SCA_LogicManager *logicmgr);
 	~SCA_BasicEventManager();
 
 	virtual void NextFrame();
@@ -50,4 +46,4 @@ public:
 #endif
 };
 
-#endif  /* __SCA_BASICEVENTMANAGER_H__ */
+#endif  //__SCA_BASICEVENTMANAGER_H__
