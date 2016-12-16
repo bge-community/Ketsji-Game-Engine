@@ -15,18 +15,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_ArmatureSensor.h
- *  \ingroup ketsji
+/** \file SCA_ArmatureSensor.h
+ *  \ingroup gamelogic
  *  \brief Property sensor
  */
 
@@ -38,28 +33,34 @@ struct bConstraint;
 #include "SCA_ISensor.h"
 #include "DNA_sensor_types.h"
 
-class KX_ArmatureSensor : public SCA_ISensor
+class SCA_ArmatureSensor : public SCA_ISensor
 {
 	Py_Header
-	//class CExpression*	m_rightexpr;
 
-protected:
+private:
+	struct bConstraint *m_constraint;
+	STR_String m_posechannel;
+	STR_String m_constraintname;
+	int m_type;
+	float m_value;
+	bool m_result;
+	bool m_lastresult;
 
 public:
-	KX_ArmatureSensor(class SCA_EventManager* eventmgr,
-					SCA_IObject* gameobj,
-					const char *posechannel,
-					const char *constraintname,
-					int type,
-					float value);
+	SCA_ArmatureSensor(class SCA_EventManager *eventmgr,
+	                   SCA_IObject *gameobj,
+	                   const char *posechannel,
+	                   const char *constraintname,
+	                   int type,
+	                   float value);
 	
-	/** 
-	 *  For property sensor, it is used to release the pre-calculated expression
-	 *  so that self references are removed before the sensor itself is released
-	 */
-	virtual ~KX_ArmatureSensor();
-	virtual CValue* GetReplica();
-	virtual void ReParent(SCA_IObject* parent);
+	virtual ~SCA_ArmatureSensor();
+
+	//  For property sensor, it is used to release the pre-calculated expression
+	//  so that self references are removed before the sensor itself is released
+
+	virtual CValue *GetReplica();
+	virtual void ReParent(SCA_IObject *parent);
 	virtual void Init();
 	virtual bool Evaluate();
 	virtual bool IsPositiveTrigger();
@@ -74,17 +75,9 @@ public:
 	/* --------------------------------------------------------------------- */
 	static PyObject *pyattr_get_constraint(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 
-#endif  /* WITH_PYTHON */
+#endif  // WITH_PYTHON
 
-private:
-	struct bConstraint*	m_constraint;
-	STR_String		m_posechannel;
-	STR_String		m_constraintname;
-	int				m_type;
-	float			m_value;
-	bool			m_result;
-	bool			m_lastresult;
 };
 
-#endif
+#endif //__KX_ARMATURESENSOR_H__
 

@@ -1,7 +1,4 @@
 /*
- * Manager for 'always' events. Since always sensors can operate in pulse
- * mode, they need to be activated.
- *
  *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
@@ -19,11 +16,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -38,7 +30,12 @@
 #include "SCA_LogicManager.h"
 #include "SCA_ISensor.h"
 
-SCA_BasicEventManager::SCA_BasicEventManager(class SCA_LogicManager* logicmgr)
+
+// Manager for 'always' events. Since always sensors can operate in pulse
+// mode, they need to be activated. 
+// Manager for sensors that only need to call Update.
+
+SCA_BasicEventManager::SCA_BasicEventManager(class SCA_LogicManager *logicmgr)
 	: SCA_EventManager(logicmgr, BASIC_EVENTMGR)
 {
 }
@@ -50,8 +47,7 @@ SCA_BasicEventManager::~SCA_BasicEventManager()
 void SCA_BasicEventManager::NextFrame()
 {
 	SG_DList::iterator<SCA_ISensor> it(m_sensors);
-	for (it.begin();!it.end();++it)
-	{
+	for (it.begin(); !it.end(); ++it) {
 		(*it)->Activate(m_logicmgr);
 	}
 }
