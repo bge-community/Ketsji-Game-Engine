@@ -70,7 +70,6 @@
 #include "KX_CollisionContactPoints.h"
 
 #include "BKE_object.h"
-#include "BKE_python_component.h"
 
 #include "BL_ActionManager.h"
 #include "BL_Action.h"
@@ -222,18 +221,18 @@ KX_GameObject* KX_GameObject::GetClientObject(KX_ClientObjectInfo *info)
 	return info->m_gameobject;
 }
 
-const STR_String KX_GameObject::GetText()
+const std::string KX_GameObject::GetText()
 {
 	return m_text;
 }
 
-STR_String KX_GameObject::GetName()
+std::string KX_GameObject::GetName()
 {
 	return m_name;
 }
 
 /* Set the name of the value */
-void KX_GameObject::SetName(const char *name)
+void KX_GameObject::SetName(const std::string& name)
 {
 	m_name = name;
 }
@@ -442,7 +441,7 @@ BL_ActionManager* KX_GameObject::GetActionManager()
 	return m_actionManager;
 }
 
-bool KX_GameObject::PlayAction(const char* name,
+bool KX_GameObject::PlayAction(const std::string& name,
 								float start,
 								float end,
 								short layer,
@@ -487,7 +486,7 @@ float KX_GameObject::GetActionFrame(short layer)
 	return GetActionManager()->GetActionFrame(layer);
 }
 
-const char *KX_GameObject::GetActionName(short layer)
+const std::string KX_GameObject::GetActionName(short layer)
 {
 	return GetActionManager()->GetActionName(layer);
 }
@@ -535,14 +534,19 @@ void KX_GameObject::ProcessReplica()
 	}
 
 #ifdef WITH_PYTHON
+
 	if (m_attr_dict)
 		m_attr_dict= PyDict_Copy(m_attr_dict);
-#endif
 
 	if (m_components) {
-		m_components->Release();
+		m_components = (CListValue *)m_components->GetReplica();
+		for (CListValue::iterator<KX_PythonComponent> it = m_components->GetBegin(), end = m_components->GetEnd(); it != end; ++it) {
+			KX_PythonComponent *component = *it;
+			component->SetGameObject(this);
+		}
 	}
-	m_components = NULL;
+
+#endif
 }
 
 static void setGraphicController_recursive(SG_Node* node)
@@ -1605,92 +1609,14 @@ CListValue* KX_GameObject::GetChildrenRecursive()
 	return list;
 }
 
-CListValue *KX_GameObject::GetComponents()
+CListValue *KX_GameObject::GetComponents() const
 {
 	return m_components;
 }
 
-void KX_GameObject::InitComponents()
+void KX_GameObject::SetComponents(CListValue *components)
 {
-#ifdef WITH_PYTHON
-	PythonComponent *pc = (PythonComponent *)GetBlenderObject()->components.first;
-	PyObject *arg_dict = NULL, *args = NULL, *mod = NULL, *cls = NULL, *pycomp = NULL, *ret = NULL;
-
-	if (!pc) {
-		return;
-	}
-
-	m_components = new CListValue();
-
-	while (pc) {
-		// Make sure to clean out anything from previous loops
-		Py_XDECREF(args);
-		Py_XDECREF(arg_dict);
-		Py_XDECREF(mod);
-		Py_XDECREF(cls);
-		Py_XDECREF(ret);
-		Py_XDECREF(pycomp);
-		args = arg_dict = mod = cls = pycomp = ret = NULL;
-
-		// Grab the module
-		mod = PyImport_ImportModule(pc->module);
-
-		if (mod == NULL) {
-			if (PyErr_Occurred()) {
-				PyErr_Print();
-			}
-			CM_Error("coulding import the module '" << pc->module << "'");
-			pc = pc->next;
-			continue;
-		}
-
-		// Grab the class object
-		cls = PyObject_GetAttrString(mod, pc->name);
-		if (cls == NULL) {
-			if (PyErr_Occurred()) {
-				PyErr_Print();
-			}
-			CM_Error("python module found, but failed to find the component '" << pc->name << "'");
-			pc = pc->next;
-			continue;
-		}
-
-		// Lastly make sure we have a class and it's an appropriate sub type
-		if (!PyType_Check(cls) || !PyObject_IsSubclass(cls, (PyObject*)&KX_PythonComponent::Type)) {
-			CM_Error(pc->module << "." << pc->name << " is not a KX_PythonComponent subclass");
-			pc = pc->next;
-			continue;
-		}
-
-		// Every thing checks out, now generate the args dictionary and init the component
-		arg_dict = (PyObject *)BKE_python_component_argument_dict_new(pc);
-		args = PyTuple_New(1);
-		PyTuple_SetItem(args, 0, GetProxy());
-
-		pycomp = PyObject_Call(cls, args, NULL);
-
-		ret = PyObject_CallMethod(pycomp, "start", "O", arg_dict);
-
-		if (PyErr_Occurred()) {
-			// The component is invalid, drop it
-			PyErr_Print();
-		}
-		else {
-			KX_PythonComponent *comp = static_cast<KX_PythonComponent *>(BGE_PROXY_REF(pycomp));
-			m_components->Add(comp);
-		}
-
-		pc = pc->next;
-	}
-
-	Py_XDECREF(args);
-	Py_XDECREF(arg_dict);
-	Py_XDECREF(mod);
-	Py_XDECREF(cls);
-	Py_XDECREF(ret);
-	Py_XDECREF(pycomp);
-
-#endif // WITH_PYTHON
+	m_components = components;
 }
 
 void KX_GameObject::UpdateComponents()
@@ -1700,11 +1626,9 @@ void KX_GameObject::UpdateComponents()
 		return;
 	}
 
-	for (CListValue::baseIterator it = m_components->GetBegin(), end = m_components->GetEnd(); it != end; ++it) {
-		PyObject *pycomp = (*it)->GetProxy();
-		if (!PyObject_CallMethod(pycomp, "update", "")) {
-			PyErr_Print();
-		}
+	for (CListValue::iterator<KX_PythonComponent> it = m_components->GetBegin(), end = m_components->GetEnd(); it != end; ++it) {
+		KX_PythonComponent *comp = *it;
+		comp->Update();
 	}
 
 #endif // WITH_PYTHON
@@ -2081,7 +2005,7 @@ PyAttributeDef KX_GameObject::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("sensors",		KX_GameObject, pyattr_get_sensors),
 	KX_PYATTRIBUTE_RO_FUNCTION("controllers",	KX_GameObject, pyattr_get_controllers),
 	KX_PYATTRIBUTE_RO_FUNCTION("actuators",		KX_GameObject, pyattr_get_actuators),
-	{NULL} //Sentinel
+	KX_PYATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *KX_GameObject::PyReplaceMesh(PyObject *args)
@@ -2341,7 +2265,7 @@ PyTypeObject KX_GameObject::Type = {
 PyObject *KX_GameObject::pyattr_get_name(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
-	return PyUnicode_From_STR_String(self->GetName());
+	return PyUnicode_FromStdString(self->GetName());
 }
 
 int KX_GameObject::pyattr_set_name(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
@@ -2353,8 +2277,8 @@ int KX_GameObject::pyattr_set_name(void *self_v, const KX_PYATTRIBUTE_DEF *attrd
 		return PY_SET_ATTR_FAIL;
 	}
 
-	STR_String newname = STR_String(_PyUnicode_AsString(value));
-	STR_String oldname = self->GetName();
+	std::string newname = std::string(_PyUnicode_AsString(value));
+	std::string oldname = self->GetName();
 
 	SCA_LogicManager *manager = self->GetScene()->GetLogicManager();
 
@@ -2363,7 +2287,7 @@ int KX_GameObject::pyattr_set_name(void *self_v, const KX_PYATTRIBUTE_DEF *attrd
 		/* Two non-replica objects can have the same name bacause these objects are register in the
 		 * logic manager and that the result of GetGameObjectByName will be undefined. */
 		if (manager->GetGameObjectByName(newname)) {
-			PyErr_Format(PyExc_TypeError, "gameOb.name = str: name %s is already used by an other non-replica game object", oldname.ReadPtr());
+			PyErr_Format(PyExc_TypeError, "gameOb.name = str: name %s is already used by an other non-replica game object", oldname.c_str());
 			return PY_SET_ATTR_FAIL;
 		}
 		// Unregister the old name.
@@ -3149,7 +3073,8 @@ int KX_GameObject::pyattr_set_obcolor(void *self_v, const KX_PYATTRIBUTE_DEF *at
 PyObject* KX_GameObject::pyattr_get_components(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
-	return self->GetComponents()->GetProxy();
+	CListValue *components = self->GetComponents();
+	return components ? components->GetProxy() : (new CListValue())->NewProxy(true);
 }
 
 static int kx_game_object_get_sensors_size_cb(void *self_v)
@@ -3162,9 +3087,9 @@ static PyObject *kx_game_object_get_sensors_item_cb(void *self_v, int index)
 	return ((KX_GameObject *)self_v)->GetSensors()[index]->GetProxy();
 }
 
-static const char *kx_game_object_get_sensors_item_name_cb(void *self_v, int index)
+static const std::string kx_game_object_get_sensors_item_name_cb(void *self_v, int index)
 {
-	return ((KX_GameObject *)self_v)->GetSensors()[index]->GetName().ReadPtr();
+	return ((KX_GameObject *)self_v)->GetSensors()[index]->GetName();
 }
 
 /* These are experimental! */
@@ -3189,9 +3114,9 @@ static PyObject *kx_game_object_get_controllers_item_cb(void *self_v, int index)
 	return ((KX_GameObject *)self_v)->GetControllers()[index]->GetProxy();
 }
 
-static const char *kx_game_object_get_controllers_item_name_cb(void *self_v, int index)
+static const std::string kx_game_object_get_controllers_item_name_cb(void *self_v, int index)
 {
-	return ((KX_GameObject *)self_v)->GetControllers()[index]->GetName().ReadPtr();
+	return ((KX_GameObject *)self_v)->GetControllers()[index]->GetName();
 }
 
 PyObject *KX_GameObject::pyattr_get_controllers(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
@@ -3215,9 +3140,9 @@ static PyObject *kx_game_object_get_actuators_item_cb(void *self_v, int index)
 	return ((KX_GameObject *)self_v)->GetActuators()[index]->GetProxy();
 }
 
-static const char *kx_game_object_get_actuators_item_name_cb(void *self_v, int index)
+static const std::string kx_game_object_get_actuators_item_name_cb(void *self_v, int index)
 {
-	return ((KX_GameObject *)self_v)->GetActuators()[index]->GetName().ReadPtr();
+	return ((KX_GameObject *)self_v)->GetActuators()[index]->GetName();
 }
 
 PyObject *KX_GameObject::pyattr_get_actuators(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
@@ -3753,7 +3678,7 @@ KX_PYMETHODDEF_DOC_O(KX_GameObject, getVectTo,
 
 struct KX_GameObject::RayCastData
 {
-	RayCastData(STR_String prop, bool xray, unsigned int mask)
+	RayCastData(std::string prop, bool xray, unsigned int mask)
 		:m_prop(prop),
 		m_xray(xray),
 		m_mask(mask),
@@ -3761,7 +3686,7 @@ struct KX_GameObject::RayCastData
 	{
 	}
 
-	STR_String m_prop;
+	std::string m_prop;
 	bool m_xray;
 	unsigned int m_mask;
 	KX_GameObject *m_hitObject;
@@ -3773,7 +3698,7 @@ bool KX_GameObject::RayHit(KX_ClientObjectInfo *client, KX_RayCast *result, RayC
 
 	// if X-ray option is selected, the unwnted objects were not tested, so get here only with true hit
 	// if not, all objects were tested and the front one may not be the correct one.
-	if ((rayData->m_xray || rayData->m_prop.Length() == 0 || hitKXObj->GetProperty(rayData->m_prop) != NULL) && 
+	if ((rayData->m_xray || rayData->m_prop.size() == 0 || hitKXObj->GetProperty(rayData->m_prop) != NULL) && 
 		hitKXObj->GetUserCollisionGroup() & rayData->m_mask)
 	{
 		rayData->m_hitObject = hitKXObj;
@@ -3801,7 +3726,7 @@ bool KX_GameObject::NeedRayCast(KX_ClientObjectInfo *client, RayCastData *rayDat
 	
 	// if X-Ray option is selected, skip object that don't match the criteria as we see through them
 	// if not, test all objects because we don't know yet which one will be on front
-	if ((!rayData->m_xray || rayData->m_prop.Length() == 0 || hitKXObj->GetProperty(rayData->m_prop) != NULL) && 
+	if ((!rayData->m_xray || rayData->m_prop.size() == 0 || hitKXObj->GetProperty(rayData->m_prop) != NULL) && 
 		hitKXObj->GetUserCollisionGroup() & rayData->m_mask)
 	{
 		return true;
@@ -3819,7 +3744,7 @@ KX_PYMETHODDEF_DOC(KX_GameObject, rayCastTo,
 	MT_Vector3 toPoint;
 	PyObject *pyarg;
 	float dist = 0.0f;
-	char *propName = NULL;
+	const char *propName = "";
 	SCA_LogicManager *logicmgr = GetScene()->GetLogicManager();
 
 	if (!PyArg_ParseTuple(args,"O|fs:rayCastTo", &pyarg, &dist, &propName)) {
@@ -3933,7 +3858,7 @@ KX_PYMETHODDEF_DOC(KX_GameObject, rayCast,
 	PyObject *pyto;
 	PyObject *pyfrom = NULL;
 	float dist = 0.0f;
-	char *propName = NULL;
+	const char *propName = "";
 	KX_GameObject *other;
 	int face=0, xray=0, poly=0;
 	int mask = (1 << OB_MAX_COL_MASKS) - 1;
@@ -4164,7 +4089,7 @@ KX_PYMETHODDEF_DOC(KX_GameObject, getActionName,
 
 	layer_check(layer, "getActionName");
 
-	return PyUnicode_FromString(GetActionName(layer));
+	return PyUnicode_FromStdString(GetActionName(layer));
 }
 
 KX_PYMETHODDEF_DOC(KX_GameObject, setActionFrame,
@@ -4276,7 +4201,7 @@ bool ConvertPythonToGameObject(SCA_LogicManager *manager, PyObject *value, KX_Ga
 	}
 	
 	if (PyUnicode_Check(value)) {
-		*object = (KX_GameObject*)manager->GetGameObjectByName(STR_String( _PyUnicode_AsString(value) ));
+		*object = (KX_GameObject*)manager->GetGameObjectByName(std::string( _PyUnicode_AsString(value) ));
 
 		if (*object) {
 			return true;

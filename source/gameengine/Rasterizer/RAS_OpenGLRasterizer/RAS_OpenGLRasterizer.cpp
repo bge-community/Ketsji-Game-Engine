@@ -79,7 +79,7 @@ extern "C" {
 #include "CM_Message.h"
 
 // WARNING: Always respect the order from RAS_IRasterizer::EnableBit.
-static int openGLEnableBitEnums[] = {
+static const int openGLEnableBitEnums[] = {
 	GL_DEPTH_TEST, // RAS_DEPTH_TEST
 	GL_ALPHA_TEST, // RAS_ALPHA_TEST
 	GL_SCISSOR_TEST, // RAS_SCISSOR_TEST
@@ -101,7 +101,7 @@ static int openGLEnableBitEnums[] = {
 };
 
 // WARNING: Always respect the order from RAS_IRasterizer::DepthFunc.
-static int openGLDepthFuncEnums[] = {
+static const int openGLDepthFuncEnums[] = {
 	GL_NEVER, // RAS_NEVER
 	GL_LEQUAL, // RAS_LEQUAL
 	GL_LESS, // RAS_LESS
@@ -113,14 +113,14 @@ static int openGLDepthFuncEnums[] = {
 };
 
 // WARNING: Always respect the order from RAS_IRasterizer::MatrixMode.
-static int openGLMatrixModeEnums[] = {
+static const int openGLMatrixModeEnums[] = {
 	GL_PROJECTION, // RAS_PROJECTION
 	GL_MODELVIEW, // RAS_MODELVIEW
 	GL_TEXTURE // RAS_TEXTURE
 };
 
 // WARNING: Always respect the order from RAS_IRasterizer::BlendFunc.
-static int openGLBlendFuncEnums[] = {
+static const int openGLBlendFuncEnums[] = {
 	GL_ZERO, // RAS_ZERO,
 	GL_ONE, // RAS_ONE,
 	GL_SRC_COLOR, // RAS_SRC_COLOR,
@@ -280,23 +280,14 @@ inline void RAS_OpenGLRasterizer::OffScreens::Update(RAS_ICanvas *canvas)
 		m_samples = canvas->GetSamples();
 	}
 
-	switch (canvas->GetHdrType()) {
-		case RAS_HDR_NONE:
-		{
-			m_hdr = GPU_HDR_NONE;
-			break;
-		}
-		case RAS_HDR_HALF_FLOAT:
-		{
-			m_hdr = GPU_HDR_HALF_FLOAT;
-			break;
-		}
-		case RAS_HDR_FULL_FLOAT:
-		{
-			m_hdr = GPU_HDR_FULL_FLOAT;
-			break;
-		}
-	}
+	// WARNING: Always respect the order from RAS_IRasterizer::HdrType.
+	static const int hdrEnums[] = {
+		GPU_HDR_NONE, // RAS_HDR_NONE
+		GPU_HDR_HALF_FLOAT, // RAS_HDR_HALF_FLOAT
+		GPU_HDR_FULL_FLOAT // RAS_HDR_FULL_FLOAT
+	};
+
+	m_hdr = hdrEnums[canvas->GetHdrType()];
 
 	// Destruct all off screens.
 	for (unsigned short i = 0; i < RAS_IRasterizer::RAS_OFFSCREEN_MAX; ++i) {
@@ -409,6 +400,25 @@ unsigned short RAS_IRasterizer::NextEyeOffScreen(unsigned short index)
 	BLI_assert(false);
 
 	return RAS_OFFSCREEN_EYE_LEFT0;
+}
+
+unsigned short RAS_IRasterizer::NextRenderOffScreen(unsigned short index)
+{
+	switch (index) {
+		case RAS_OFFSCREEN_FINAL:
+		{
+			return RAS_OFFSCREEN_RENDER;
+		}
+		case RAS_OFFSCREEN_RENDER:
+		{
+			return RAS_OFFSCREEN_FINAL;
+		}
+	}
+
+	// Passing a non-render frame buffer is disallowed.
+	BLI_assert(false);
+
+	return RAS_OFFSCREEN_RENDER;
 }
 
 RAS_OpenGLRasterizer::RAS_OpenGLRasterizer()
@@ -644,13 +654,13 @@ void RAS_OpenGLRasterizer::Clear(int clearbit)
 {
 	GLbitfield glclearbit = 0;
 
-	if ((clearbit & RAS_COLOR_BUFFER_BIT) == RAS_COLOR_BUFFER_BIT) {
+	if (clearbit & RAS_COLOR_BUFFER_BIT) {
 		glclearbit |= GL_COLOR_BUFFER_BIT;
 	}
-	if ((clearbit & RAS_DEPTH_BUFFER_BIT) == RAS_DEPTH_BUFFER_BIT) {
+	if (clearbit & RAS_DEPTH_BUFFER_BIT) {
 		glclearbit |= GL_DEPTH_BUFFER_BIT;
 	}
-	if ((clearbit & RAS_STENCIL_BUFFER_BIT) == RAS_STENCIL_BUFFER_BIT) {
+	if (clearbit & RAS_STENCIL_BUFFER_BIT) {
 		glclearbit |= GL_STENCIL_BUFFER_BIT;
 	}
 
@@ -2142,7 +2152,7 @@ void RAS_OpenGLRasterizer::RenderBox2D(int xco,
 }
 
 void RAS_OpenGLRasterizer::RenderText3D(
-        int fontid, const char *text, int size, int dpi,
+        int fontid, const std::string& text, int size, int dpi,
         const float color[4], const float mat[16], float aspect)
 {
 	/* gl prepping */
@@ -2163,7 +2173,7 @@ void RAS_OpenGLRasterizer::RenderText3D(
 
 	BLF_size(fontid, size, dpi);
 	BLF_position(fontid, 0, 0, 0);
-	BLF_draw(fontid, text, 65535);
+	BLF_draw(fontid, text.c_str(), 65535);
 
 	BLF_disable(fontid, BLF_MATRIX | BLF_ASPECT);
 
@@ -2172,7 +2182,7 @@ void RAS_OpenGLRasterizer::RenderText3D(
 
 void RAS_OpenGLRasterizer::RenderText2D(
     RAS_TEXT_RENDER_MODE mode,
-    const char *text,
+    const std::string& text,
     int xco, int yco,
     int width, int height)
 {
@@ -2198,14 +2208,14 @@ void RAS_OpenGLRasterizer::RenderText2D(
 		glColor3ub(0, 0, 0);
 		BLF_size(blf_mono_font, 11, 72);
 		BLF_position(blf_mono_font, (float)xco + 1, (float)(height - yco - 1), 0.0f);
-		BLF_draw(blf_mono_font, text, 65535); /* XXX, use real len */
+		BLF_draw(blf_mono_font, text.c_str(), 65535); /* XXX, use real len */
 	}
 
 	/* the actual drawing */
 	glColor3ub(255, 255, 255);
 	BLF_size(blf_mono_font, 11, 72);
 	BLF_position(blf_mono_font, (float)xco, (float)(height - yco), 0.0f);
-	BLF_draw(blf_mono_font, text, 65535); /* XXX, use real len */
+	BLF_draw(blf_mono_font, text.c_str(), 65535); /* XXX, use real len */
 
 	SetMatrixMode(RAS_PROJECTION);
 	PopMatrix();

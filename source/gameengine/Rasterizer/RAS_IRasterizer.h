@@ -36,7 +36,7 @@
 #  pragma warning (disable:4786)
 #endif
 
-#include "STR_HashedString.h"
+#include <string>
 
 #include "MT_CmMatrix4x4.h"
 #include "MT_Matrix4x4.h"
@@ -46,6 +46,7 @@
 #endif
 
 #include <map>
+#include <vector>
 
 class RAS_ICanvas;
 class RAS_IPolyMaterial;
@@ -264,6 +265,13 @@ public:
 	 * \return The output eye frame buffer.
 	 */
 	static unsigned short NextEyeOffScreen(unsigned short index);
+
+	/** Return the output frame buffer normally used for the input frame buffer
+	 * index in case of simple render.
+	 * \param index The input render frame buffer, can NOT be a non-render frame buffer.
+	 * \return The output render frame buffer.
+	 */
+	static unsigned short NextRenderOffScreen(unsigned short index);
 
 	/**
 	 * Enable capability
@@ -660,7 +668,7 @@ public:
 	 * \param aspect	A scaling factor to compensate for the size.
 	 */
 	virtual void RenderText3D(
-	        int fontid, const char *text, int size, int dpi,
+	        int fontid, const std::string& text, int size, int dpi,
 	        const float color[4], const float mat[16], float aspect) = 0;
 
 	/**
@@ -673,7 +681,7 @@ public:
 	 * \param height	Height of the canvas to draw to.
 	 */
 	virtual void RenderText2D(
-	        RAS_TEXT_RENDER_MODE mode, const char *text,
+	        RAS_TEXT_RENDER_MODE mode, const std::string& text,
 	        int xco, int yco, int width, int height) = 0;
 
 	virtual void ProcessLighting(bool uselights, const MT_Transform &trans) = 0;

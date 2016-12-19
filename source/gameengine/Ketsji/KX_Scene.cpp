@@ -141,7 +141,7 @@ SG_Callbacks KX_Scene::m_callbacks = SG_Callbacks(
 	KX_Scene::KX_ScenegraphRescheduleFunc);
 
 KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
-				   const STR_String& sceneName,
+				   const std::string& sceneName,
 				   Scene *scene,
 				   class RAS_ICanvas* canvas,
 				   KX_NetworkMessageManager *messageManager): 
@@ -311,13 +311,13 @@ KX_Scene::~KX_Scene()
 #endif
 }
 
-STR_String KX_Scene::GetName()
+std::string KX_Scene::GetName()
 {
 	return m_sceneName;
 }
 
 /// Set the name of the value
-void KX_Scene::SetName(const char *name)
+void KX_Scene::SetName(const std::string& name)
 {
 	m_sceneName = name;
 }
@@ -450,12 +450,12 @@ void KX_Scene::AddObjectDebugProperties(class KX_GameObject* gameobj)
 
 	while (prop) {
 		if (prop->flag & PROP_DEBUG)
-			AddDebugProperty(gameobj,STR_String(prop->name));
+			AddDebugProperty(gameobj, prop->name);
 		prop = prop->next;
 	}	
 
 	if (blenderobject->scaflag & OB_DEBUGSTATE)
-		AddDebugProperty(gameobj,STR_String("__state__"));
+		AddDebugProperty(gameobj, "__state__");
 }
 
 void KX_Scene::RemoveNodeDestructObject(class SG_IObject* node,class CValue* gameobj)
@@ -972,16 +972,6 @@ SCA_IObject* KX_Scene::AddReplicaObject(class CValue* originalobject,
 	{
 		DupliGroupRecurse(*git, 0);
 	}
-
-	// Initialize component in root parent object.
-	replica->InitComponents();
-	// Initialize components recursively.
-	CListValue *childrecursive = replica->GetChildrenRecursive();
-	for (CListValue::iterator<KX_GameObject> it = childrecursive->GetBegin(), end = childrecursive->GetEnd(); it != end; ++it) {
-		KX_GameObject *gameobj = *it;
-		gameobj->InitComponents();
-	}
-	childrecursive->Release();
 
 	//	don't release replica here because we are returning it, not done with it...
 	return replica;
@@ -1632,12 +1622,19 @@ void KX_Scene::UpdateAnimations(double curtime)
 
 void KX_Scene::LogicUpdateFrame(double curtime, bool frame)
 {
-	/* Update object components, don't use iterator in loop because component can add objects and then make
-	 * iterators invalid.
+	/* Update object components, we copy the object pointer in a second list to make sure that we iterate on a list
+	 * which will not be modified, indeed components can add objects in theirs initialization.
 	 */
-	for (int i = 0; i < m_objectlist->GetCount(); ++i) {
-		((KX_GameObject*)m_objectlist->GetValue(i))->UpdateComponents();
+
+	std::vector<KX_GameObject *> objects;
+	for (CListValue::iterator<KX_GameObject> it = m_objectlist->GetBegin(), end = m_objectlist->GetEnd(); it != end; ++it) {
+		objects.push_back(*it);
 	}
+
+	for (std::vector<KX_GameObject *>::iterator it = objects.begin(), end = objects.end(); it != end; ++it) {
+		(*it)->UpdateComponents();
+	}
+
 	m_logicmgr->UpdateFrame(curtime, frame);
 }
 
@@ -2270,7 +2267,7 @@ PySequenceMethods KX_Scene::Sequence = {
 PyObject *KX_Scene::pyattr_get_name(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
-	return PyUnicode_From_STR_String(self->GetName());
+	return PyUnicode_FromStdString(self->GetName());
 }
 
 PyObject *KX_Scene::pyattr_get_objects(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
@@ -2347,84 +2344,42 @@ int KX_Scene::pyattr_set_active_camera(void *self_v, const KX_PYATTRIBUTE_DEF *a
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_Scene::pyattr_get_drawing_callback_pre(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+static std::map<const std::string, KX_Scene::DrawingCallbackType> callbacksTable = {
+	{"pre_draw", KX_Scene::PRE_DRAW},
+	{"pre_draw_setup", KX_Scene::PRE_DRAW_SETUP},
+	{"post_draw", KX_Scene::POST_DRAW}
+};
+
+PyObject *KX_Scene::pyattr_get_drawing_callback(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	KX_Scene* self = static_cast<KX_Scene*>(self_v);
+	KX_Scene *self = static_cast<KX_Scene *>(self_v);
 
-	if (self->m_drawCallbacks[PRE_DRAW] ==NULL)
-		self->m_drawCallbacks[PRE_DRAW] = PyList_New(0);
-	Py_INCREF(self->m_drawCallbacks[PRE_DRAW]);
-	return self->m_drawCallbacks[PRE_DRAW];
-}
-
-PyObject *KX_Scene::pyattr_get_drawing_callback_post(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
-{
-	KX_Scene* self = static_cast<KX_Scene*>(self_v);
-
-	if (self->m_drawCallbacks[POST_DRAW] ==NULL)
-		self->m_drawCallbacks[POST_DRAW] = PyList_New(0);
-	Py_INCREF(self->m_drawCallbacks[POST_DRAW]);
-	return self->m_drawCallbacks[POST_DRAW];
-}
-
-PyObject *KX_Scene::pyattr_get_drawing_setup_callback_pre(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
-{
-	KX_Scene* self = static_cast<KX_Scene*>(self_v);
-
-	if (self->m_drawCallbacks[PRE_DRAW_SETUP] == NULL)
-		self->m_drawCallbacks[PRE_DRAW_SETUP] = PyList_New(0);
-
-	Py_INCREF(self->m_drawCallbacks[PRE_DRAW_SETUP]);
-	return self->m_drawCallbacks[PRE_DRAW_SETUP];
-}
-
-int KX_Scene::pyattr_set_drawing_callback_pre(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
-{
-	KX_Scene* self = static_cast<KX_Scene*>(self_v);
-
-	if (!PyList_CheckExact(value))
-	{
-		PyErr_SetString(PyExc_ValueError, "Expected a list");
-		return PY_SET_ATTR_FAIL;
+	const DrawingCallbackType type = callbacksTable[attrdef->m_name];
+	if (!self->m_drawCallbacks[type]) {
+		self->m_drawCallbacks[type] = PyList_New(0);
 	}
-	Py_XDECREF(self->m_drawCallbacks[PRE_DRAW]);
 
-	Py_INCREF(value);
-	self->m_drawCallbacks[PRE_DRAW] = value;
+	Py_INCREF(self->m_drawCallbacks[type]);
 
-	return PY_SET_ATTR_SUCCESS;
+	return self->m_drawCallbacks[type];
 }
 
-int KX_Scene::pyattr_set_drawing_callback_post(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_Scene::pyattr_set_drawing_callback(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
-	KX_Scene* self = static_cast<KX_Scene*>(self_v);
-
-	if (!PyList_CheckExact(value))
-	{
-		PyErr_SetString(PyExc_ValueError, "Expected a list");
-		return PY_SET_ATTR_FAIL;
-	}
-	Py_XDECREF(self->m_drawCallbacks[POST_DRAW]);
-
-	Py_INCREF(value);
-	self->m_drawCallbacks[POST_DRAW] = value;
-
-	return PY_SET_ATTR_SUCCESS;
-}
-
-int KX_Scene::pyattr_set_drawing_setup_callback_pre(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
-{
-	KX_Scene* self = static_cast<KX_Scene*>(self_v);
+	KX_Scene *self = static_cast<KX_Scene *>(self_v);
 
 	if (!PyList_CheckExact(value)) {
 		PyErr_SetString(PyExc_ValueError, "Expected a list");
 		return PY_SET_ATTR_FAIL;
 	}
 
-	Py_XDECREF(self->m_drawCallbacks[PRE_DRAW_SETUP]);
-	Py_INCREF(value);
+	const DrawingCallbackType type = callbacksTable[attrdef->m_name];
 
-	self->m_drawCallbacks[PRE_DRAW_SETUP] = value;
+	Py_XDECREF(self->m_drawCallbacks[type]);
+
+	Py_INCREF(value);
+	self->m_drawCallbacks[type] = value;
+
 	return PY_SET_ATTR_SUCCESS;
 }
 
@@ -2457,15 +2412,15 @@ PyAttributeDef KX_Scene::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("filterManager",		KX_Scene, pyattr_get_filter_manager),
 	KX_PYATTRIBUTE_RO_FUNCTION("world",				KX_Scene, pyattr_get_world),
 	KX_PYATTRIBUTE_RW_FUNCTION("active_camera",		KX_Scene, pyattr_get_active_camera, pyattr_set_active_camera),
-	KX_PYATTRIBUTE_RW_FUNCTION("pre_draw",			KX_Scene, pyattr_get_drawing_callback_pre, pyattr_set_drawing_callback_pre),
-	KX_PYATTRIBUTE_RW_FUNCTION("post_draw",			KX_Scene, pyattr_get_drawing_callback_post, pyattr_set_drawing_callback_post),
-	KX_PYATTRIBUTE_RW_FUNCTION("pre_draw_setup",	KX_Scene, pyattr_get_drawing_setup_callback_pre, pyattr_set_drawing_setup_callback_pre),
+	KX_PYATTRIBUTE_RW_FUNCTION("pre_draw",			KX_Scene, pyattr_get_drawing_callback, pyattr_set_drawing_callback),
+	KX_PYATTRIBUTE_RW_FUNCTION("post_draw",			KX_Scene, pyattr_get_drawing_callback, pyattr_set_drawing_callback),
+	KX_PYATTRIBUTE_RW_FUNCTION("pre_draw_setup",	KX_Scene, pyattr_get_drawing_callback, pyattr_set_drawing_callback),
 	KX_PYATTRIBUTE_RW_FUNCTION("gravity",			KX_Scene, pyattr_get_gravity, pyattr_set_gravity),
 	KX_PYATTRIBUTE_BOOL_RO("suspended",				KX_Scene, m_suspend),
 	KX_PYATTRIBUTE_BOOL_RO("activity_culling",		KX_Scene, m_activity_culling),
 	KX_PYATTRIBUTE_FLOAT_RW("activity_culling_radius", 0.5f, FLT_MAX, KX_Scene, m_activity_box_radius),
 	KX_PYATTRIBUTE_BOOL_RO("dbvt_culling",			KX_Scene, m_dbvt_culling),
-	{ NULL }	//Sentinel
+	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
 KX_PYMETHODDEF_DOC(KX_Scene, addObject,

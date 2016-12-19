@@ -106,7 +106,7 @@ void Texture::DestructFromPython()
 	PyObjectPlus::DestructFromPython();
 }
 
-STR_String Texture::GetName()
+std::string Texture::GetName()
 {
 	return "Texture";
 }
@@ -163,7 +163,7 @@ void Texture::SetSource(PyImage *source)
 
 // load texture
 void loadTexture(unsigned int texId, unsigned int *texture, short *size,
-                 bool mipmap, unsigned int format)
+                 bool mipmap, unsigned int internalFormat)
 {
 	// load texture for rendering
 	glBindTexture(GL_TEXTURE_2D, texId);
@@ -181,7 +181,7 @@ void loadTexture(unsigned int texId, unsigned int *texture, short *size,
 		for (i = 0; i < ibuf->miptot; i++) {
 			ImBuf *mip = IMB_getmipmap(ibuf, i);
 
-			glTexImage2D(GL_TEXTURE_2D, i, format, mip->x, mip->y, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip->rect);
+			glTexImage2D(GL_TEXTURE_2D, i, internalFormat, mip->x, mip->y, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip->rect);
 		}
 		IMB_freeImBuf(ibuf);
 	} 
@@ -189,7 +189,7 @@ void loadTexture(unsigned int texId, unsigned int *texture, short *size,
 	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D( GL_TEXTURE_2D, 0, format, size[0], size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+		glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, size[0], size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
 	}
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
@@ -232,12 +232,12 @@ short getMaterialID(PyObject *obj, const char *name)
 		// name is a material name if it starts with MA and a UV texture name if it starts with IM
 		if (name[0] == 'I' && name[1] == 'M') {
 			// if texture name matches
-			if (strcmp(mat->GetTextureName().ReadPtr(), name) == 0)
+			if (mat->GetTextureName() == name)
 				return matID;
 		}
 		else {
 			// if material name matches
-			if (strcmp(mat->GetName().ReadPtr(), name) == 0)
+			if (mat->GetName() == name)
 				return matID;
 		}
 	}
@@ -436,7 +436,7 @@ KX_PYMETHODDEF_DOC(Texture, refresh, "Refresh texture from source")
 						texture = m_scaledImBuf->rect;
 					}
 					// load texture for rendering
-					loadTexture(m_actTex, texture, size, m_mipmap, m_source->m_image->GetFormat());
+					loadTexture(m_actTex, texture, size, m_mipmap, m_source->m_image->GetInternalFormat());
 				}
 				// refresh texture source, if required
 				if (refreshSource) {
@@ -528,7 +528,7 @@ PyAttributeDef Texture::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("mipmap", Texture, pyattr_get_mipmap, pyattr_set_mipmap),
 	KX_PYATTRIBUTE_RW_FUNCTION("source", Texture, pyattr_get_source, pyattr_set_source),
 	KX_PYATTRIBUTE_RO_FUNCTION("bindId", Texture, pyattr_get_bindId),
-	{NULL}
+	KX_PYATTRIBUTE_NULL
 };
 
 

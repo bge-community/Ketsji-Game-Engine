@@ -38,7 +38,6 @@ KX_ConstraintWrapper::KX_ConstraintWrapper(
 						PHY_ConstraintType ctype,
 						int constraintId,
 						PHY_IPhysicsEnvironment* physenv) :
-		PyObjectPlus(),
 		m_constraintId(constraintId),
 		m_constraintType(ctype),
 		m_physenv(physenv)
@@ -46,6 +45,11 @@ KX_ConstraintWrapper::KX_ConstraintWrapper(
 }
 KX_ConstraintWrapper::~KX_ConstraintWrapper()
 {
+}
+
+std::string KX_ConstraintWrapper::GetName()
+{
+	return "KX_ConstraintWrapper";
 }
 
 #ifdef WITH_PYTHON
@@ -115,7 +119,7 @@ PyMethodDef KX_ConstraintWrapper::Methods[] = {
 PyAttributeDef KX_ConstraintWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_id", KX_ConstraintWrapper, pyattr_get_constraintId),
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_type", KX_ConstraintWrapper, pyattr_get_constraintType),
-	{ NULL }	//Sentinel
+	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_ConstraintWrapper::pyattr_get_constraintId(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
