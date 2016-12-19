@@ -1,6 +1,4 @@
 /*
- * Abstract class for sensor logic bricks
- *
  *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
@@ -18,11 +16,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -35,24 +28,15 @@
 #include "SCA_ISensor.h"
 #include "SCA_EventManager.h"
 #include "SCA_LogicManager.h"
-// needed for IsTriggered()
-#include "SCA_PythonController.h"
-
+#include "SCA_PythonController.h" // needed for IsTriggered()
 #include "CM_Message.h"
 
-/* Native functions */
-void	SCA_ISensor::ReParent(SCA_IObject* parent)
-{
-	SCA_ILogicBrick::ReParent(parent);
-	// will be done when the sensor is activated
-	//m_eventmgr->RegisterSensor(this);
-	//this->SetActive(false);
-}
 
+// Abstract class for sensor logic bricks
 
-SCA_ISensor::SCA_ISensor(SCA_IObject* gameobj,
-						 class SCA_EventManager* eventmgr) :
-	SCA_ILogicBrick(gameobj)
+SCA_ISensor::SCA_ISensor(SCA_IObject *gameobj,
+                         class SCA_EventManager *eventmgr)
+	: SCA_ILogicBrick(gameobj)
 {
 	m_links = 0;
 	m_suspended = false;
@@ -67,10 +51,8 @@ SCA_ISensor::SCA_ISensor(SCA_IObject* gameobj,
 	m_skipped_ticks = 0;
 	m_state = false;
 	m_prev_state = false;
-	
 	m_eventmgr = eventmgr;
 }
-
 
 SCA_ISensor::~SCA_ISensor()  
 {
@@ -97,9 +79,15 @@ bool SCA_ISensor::IsPositiveTrigger()
 	return result;
 }
 
-void SCA_ISensor::SetPulseMode(bool posmode, 
-                               bool negmode,
-                               int skippedticks)
+void SCA_ISensor::ReParent(SCA_IObject *parent)
+{
+	SCA_ILogicBrick::ReParent(parent);
+	// will be done when the sensor is activated
+	//m_eventmgr->RegisterSensor(this);
+	//this->SetActive(false);
+}
+
+void SCA_ISensor::SetPulseMode(bool posmode, bool negmode, int skippedticks)
 {
 	m_pos_pulsemode = posmode;
 	m_neg_pulsemode = negmode;
@@ -121,10 +109,14 @@ void SCA_ISensor::SetTap(bool tap)
 	m_tap = tap;
 }
 
-
 double SCA_ISensor::GetNumber()
 {
 	return GetState();
+}
+
+sensortype SCA_ISensor::GetSensorType()
+{
+	return ST_NONE;
 }
 
 void SCA_ISensor::Suspend()
@@ -142,24 +134,29 @@ void SCA_ISensor::Resume()
 	m_suspended = false;
 }
 
+bool SCA_ISensor::GetState()
+{
+	return m_state;
+}
+
+bool SCA_ISensor::GetPrevState()
+{
+	return m_prev_state;
+}
+
+int SCA_ISensor::GetPosTicks()
+{
+	return m_pos_ticks;
+}
+
+int SCA_ISensor::GetNegTicks()
+{
+	return m_neg_ticks;
+}
+
 void SCA_ISensor::Init()
 {
 	CM_LogicBrickError(this, "sensor " << m_name << " has no init function, please report this bug to Blender.org");
-}
-
-void SCA_ISensor::DecLink()
-{
-	m_links--;
-	if (m_links < 0) 
-	{
-		CM_LogicBrickWarning(this, "sensor " << m_name << " has negative m_links: " << m_links);
-		m_links = 0;
-	}
-	if (!m_links)
-	{
-		// sensor is detached from all controllers, remove it from manager
-		UnregisterToManager();
-	}
 }
 
 void SCA_ISensor::RegisterToManager()
@@ -170,31 +167,34 @@ void SCA_ISensor::RegisterToManager()
 	m_eventmgr->RegisterSensor(this);
 }
 
-void SCA_ISensor::Replace_EventManager(class SCA_LogicManager* logicmgr)
+void SCA_ISensor::Replace_EventManager(class SCA_LogicManager *logicmgr)
 {
-	if (m_links) { /* true if we're used currently */
-
+	// true if we're used currently
+	if (m_links) {
 		m_eventmgr->RemoveSensor(this);
-		m_eventmgr= logicmgr->FindEventManager(m_eventmgr->GetType());
+		m_eventmgr = logicmgr->FindEventManager(m_eventmgr->GetType());
 		m_eventmgr->RegisterSensor(this);
 	}
 	else {
-		m_eventmgr= logicmgr->FindEventManager(m_eventmgr->GetType());
+		m_eventmgr = logicmgr->FindEventManager(m_eventmgr->GetType());
 	}
 }
 
-void SCA_ISensor::LinkToController(SCA_IController* controller)
+void SCA_ISensor::ReserveController(int num)
+{
+	m_linkedcontrollers.reserve(num);
+}
+
+void SCA_ISensor::LinkToController(SCA_IController *controller)
 {
 	m_linkedcontrollers.push_back(controller);
 }
 
-void SCA_ISensor::UnlinkController(SCA_IController* controller)
+void SCA_ISensor::UnlinkController(SCA_IController *controller)
 {
-	std::vector<class SCA_IController*>::iterator contit;
-	for (contit = m_linkedcontrollers.begin();!(contit==m_linkedcontrollers.end());++contit)
-	{
-		if ((*contit) == controller)
-		{
+	std::vector<class SCA_IController *>::iterator contit;
+	for (contit = m_linkedcontrollers.begin(); !(contit == m_linkedcontrollers.end()); ++contit) {
+		if ((*contit) == controller) {
 			*contit = m_linkedcontrollers.back();
 			m_linkedcontrollers.pop_back();
 			return;
@@ -206,9 +206,8 @@ void SCA_ISensor::UnlinkController(SCA_IController* controller)
 
 void SCA_ISensor::UnlinkAllControllers()
 {
-	std::vector<class SCA_IController*>::iterator contit;
-	for (contit = m_linkedcontrollers.begin();!(contit==m_linkedcontrollers.end());++contit)
-	{
+	std::vector<class SCA_IController *>::iterator contit;
+	for (contit = m_linkedcontrollers.begin(); !(contit == m_linkedcontrollers.end()); ++contit) {
 		(*contit)->UnlinkSensor(this);
 	}
 	m_linkedcontrollers.clear();
@@ -220,20 +219,19 @@ void SCA_ISensor::UnregisterToManager()
 	m_links = 0;
 }
 
-void SCA_ISensor::ActivateControllers(class SCA_LogicManager* logicmgr)
+void SCA_ISensor::ActivateControllers(class SCA_LogicManager *logicmgr)
 {
-	for (std::vector<SCA_IController*>::const_iterator c= m_linkedcontrollers.begin();
-	    c!=m_linkedcontrollers.end();++c)
+	for (std::vector<SCA_IController *>::const_iterator c = m_linkedcontrollers.begin();
+	     c!=m_linkedcontrollers.end(); ++c)
 	{
-		SCA_IController* contr = *c;
+		SCA_IController *contr = *c;
 		if (contr->IsActive())
 			logicmgr->AddTriggeredController(contr, this);
 	}
 }
 
-void SCA_ISensor::Activate(class SCA_LogicManager* logicmgr)
+void SCA_ISensor::Activate(class SCA_LogicManager *logicmgr)
 {
-	
 	// calculate if a __triggering__ is wanted
 	// don't evaluate a sensor that is not connected to any controller
 	if (m_links && !m_suspended) {
@@ -248,20 +246,18 @@ void SCA_ISensor::Activate(class SCA_LogicManager* logicmgr)
 				// reset these counters so that pulse are synchronized with transition
 				m_pos_ticks = 0;
 				m_neg_ticks = 0;
-			} else
-			{
+			}
+			else {
 				result = false;
 			}
-		} else
-		{
-			/* First, the pulsing behavior, if pulse mode is
-			 * active. It seems something goes wrong if pulse mode is
-			 * not set :( */
+		}
+		else {
+			// First, the pulsing behavior, if pulse mode is active.
+			// It seems something goes wrong if pulse mode is not set :( 
 			if (m_pos_pulsemode) {
 				m_pos_ticks++;
 				if (m_pos_ticks > m_skipped_ticks) {
-					if ( m_state )
-					{
+					if (m_state) {
 						ActivateControllers(logicmgr);
 						result = true;
 					}
@@ -269,12 +265,10 @@ void SCA_ISensor::Activate(class SCA_LogicManager* logicmgr)
 				} 
 			}
 			// negative pulse doesn't make sense in tap mode, skip
-			if (m_neg_pulsemode && !m_tap)
-			{
+			if (m_neg_pulsemode && !m_tap) {
 				m_neg_ticks++;
 				if (m_neg_ticks > m_skipped_ticks) {
-					if (!m_state )
-					{
+					if (!m_state) {
 						ActivateControllers(logicmgr);
 						result = true;
 					}
@@ -282,14 +276,11 @@ void SCA_ISensor::Activate(class SCA_LogicManager* logicmgr)
 				}
 			}
 		}
-		if (m_tap)
-		{
+		if (m_tap) {
 			// in tap mode: we send always a negative pulse immediately after a positive pulse
-			if (!result)
-			{
+			if (!result) {
 				// the sensor did not trigger on this frame
-				if (m_prev_state)
-				{
+				if (m_prev_state) {
 					// but it triggered on previous frame => send a negative pulse
 					ActivateControllers(logicmgr);
 					result = true;
@@ -298,19 +289,47 @@ void SCA_ISensor::Activate(class SCA_LogicManager* logicmgr)
 				m_state = false;
 			}
 		}
-		if (!result && m_level)
-		{
+		if (!result && m_level) {
 			// This level sensor is connected to at least one controller that was just made 
 			// active but it did not generate an event yet, do it now to those controllers only 
 			for (std::vector<SCA_IController*>::const_iterator c= m_linkedcontrollers.begin();
-				c!=m_linkedcontrollers.end();++c)
+				c!=m_linkedcontrollers.end(); ++c)
 			{
-				SCA_IController* contr = *c;
+				SCA_IController *contr = *c;
 				if (contr->IsJustActivated())
 					logicmgr->AddTriggeredController(contr, this);
 			}
 		}
 	} 
+}
+
+void SCA_ISensor::ClrLink()
+{
+	m_links = 0;
+}
+
+void SCA_ISensor::IncLink()
+{
+	if (!m_links++) 
+		RegisterToManager();
+}
+
+void SCA_ISensor::DecLink()
+{
+	m_links--;
+	if (m_links < 0) {
+		CM_LogicBrickWarning(this, "sensor " << m_name << " has negative m_links: " << m_links);
+		m_links = 0;
+	}
+	if (!m_links) {
+		// sensor is detached from all controllers, remove it from manager
+		UnregisterToManager();
+	}
+}
+
+bool SCA_ISensor::IsNoLink() const 
+{
+	return !m_links;
 }
 
 #ifdef WITH_PYTHON
@@ -361,25 +380,24 @@ PyMethodDef SCA_ISensor::Methods[] = {
 };
 
 PyAttributeDef SCA_ISensor::Attributes[] = {
-	KX_PYATTRIBUTE_BOOL_RW("usePosPulseMode",SCA_ISensor,m_pos_pulsemode),
-	KX_PYATTRIBUTE_BOOL_RW("useNegPulseMode",SCA_ISensor,m_neg_pulsemode),
-	KX_PYATTRIBUTE_INT_RW("skippedTicks",0,100000,true,SCA_ISensor,m_skipped_ticks),
-	KX_PYATTRIBUTE_BOOL_RW("invert",SCA_ISensor,m_invert),
-	KX_PYATTRIBUTE_BOOL_RW_CHECK("level",SCA_ISensor,m_level,pyattr_check_level),
-	KX_PYATTRIBUTE_BOOL_RW_CHECK("tap",SCA_ISensor,m_tap,pyattr_check_tap),
+	KX_PYATTRIBUTE_BOOL_RW("usePosPulseMode", SCA_ISensor, m_pos_pulsemode),
+	KX_PYATTRIBUTE_BOOL_RW("useNegPulseMode", SCA_ISensor, m_neg_pulsemode),
+	KX_PYATTRIBUTE_INT_RW("skippedTicks", 0 ,100000, true, SCA_ISensor, m_skipped_ticks),
+	KX_PYATTRIBUTE_BOOL_RW("invert", SCA_ISensor, m_invert),
+	KX_PYATTRIBUTE_BOOL_RW_CHECK("level", SCA_ISensor, m_level, pyattr_check_level),
+	KX_PYATTRIBUTE_BOOL_RW_CHECK("tap", SCA_ISensor, m_tap,pyattr_check_tap),
 	KX_PYATTRIBUTE_RO_FUNCTION("triggered", SCA_ISensor, pyattr_get_triggered),
 	KX_PYATTRIBUTE_RO_FUNCTION("positive", SCA_ISensor, pyattr_get_positive),
 	KX_PYATTRIBUTE_RO_FUNCTION("status", SCA_ISensor, pyattr_get_status),
 	KX_PYATTRIBUTE_RO_FUNCTION("pos_ticks", SCA_ISensor, pyattr_get_posTicks),
 	KX_PYATTRIBUTE_RO_FUNCTION("neg_ticks", SCA_ISensor, pyattr_get_negTicks),
 	KX_PYATTRIBUTE_RW_FUNCTION("frequency", SCA_ISensor, pyattr_get_frequency, pyattr_set_frequency),
-	{ NULL }	//Sentinel
+	{NULL} //Sentinel
 };
-
 
 PyObject *SCA_ISensor::pyattr_get_triggered(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor* self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	bool retval = false;
 	if (SCA_PythonController::m_sCurrentController)
 		retval = SCA_PythonController::m_sCurrentController->IsTriggered(self);
@@ -388,27 +406,23 @@ PyObject *SCA_ISensor::pyattr_get_triggered(void *self_v, const KX_PYATTRIBUTE_D
 
 PyObject *SCA_ISensor::pyattr_get_positive(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor* self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	return PyBool_FromLong(self->GetState());
 }
 
 PyObject *SCA_ISensor::pyattr_get_status(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor* self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	int status = 0;
-	if (self->GetState()) 
-	{
-		if (self->GetState() == self->GetPrevState()) 
-		{
+	if (self->GetState()) {
+		if (self->GetState() == self->GetPrevState()) {
 			status = 2;
 		}
-		else 
-		{
+		else {
 			status = 1;
 		}
 	}
-	else if (self->GetState() != self->GetPrevState()) 
-	{
+	else if (self->GetState() != self->GetPrevState()) {
 		status = 3;
 	}
 	return PyLong_FromLong(status);
@@ -416,19 +430,19 @@ PyObject *SCA_ISensor::pyattr_get_status(void *self_v, const KX_PYATTRIBUTE_DEF 
 
 PyObject *SCA_ISensor::pyattr_get_posTicks(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor* self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	return PyLong_FromLong(self->GetPosTicks());
 }
 
 PyObject *SCA_ISensor::pyattr_get_negTicks(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor* self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	return PyLong_FromLong(self->GetNegTicks());
 }
 
 int SCA_ISensor::pyattr_check_level(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor* self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	if (self->m_level)
 		self->m_tap = false;
 	return 0;
@@ -436,7 +450,7 @@ int SCA_ISensor::pyattr_check_level(void *self_v, const KX_PYATTRIBUTE_DEF *attr
 
 int SCA_ISensor::pyattr_check_tap(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor* self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	if (self->m_tap)
 		self->m_level = false;
 	return 0;
@@ -444,14 +458,14 @@ int SCA_ISensor::pyattr_check_tap(void *self_v, const KX_PYATTRIBUTE_DEF *attrde
 
 PyObject *SCA_ISensor::pyattr_get_frequency(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
-	SCA_ISensor *self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	ShowDeprecationWarning("SCA_ISensor.frequency", "SCA_ISensor.skippedTicks");
 	return PyLong_FromLong(self->m_skipped_ticks);
 }
 
 int SCA_ISensor::pyattr_set_frequency(void *self_v, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
-	SCA_ISensor *self = static_cast<SCA_ISensor*>(self_v);
+	SCA_ISensor *self = static_cast<SCA_ISensor *>(self_v);
 	ShowDeprecationWarning("SCA_ISensor.frequency", "SCA_ISensor.skippedTicks");
 	if (PyLong_Check(value)) {
 		self->m_skipped_ticks = PyLong_AsLong(value);
@@ -463,5 +477,3 @@ int SCA_ISensor::pyattr_set_frequency(void *self_v, const struct KX_PYATTRIBUTE_
 	}
 }
 #endif // WITH_PYTHON
-
-/* eof */

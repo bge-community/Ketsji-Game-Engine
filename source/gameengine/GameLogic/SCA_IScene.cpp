@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -33,7 +28,9 @@
 #include "SCA_IScene.h"
 #include "EXP_Value.h"
 
-SCA_DebugProp::SCA_DebugProp(): m_obj(NULL)
+
+SCA_DebugProp::SCA_DebugProp()
+	: m_obj(NULL)
 {
 }
 
@@ -43,37 +40,36 @@ SCA_DebugProp::~SCA_DebugProp()
 		m_obj->Release(); 
 }
 
+
 SCA_IScene::SCA_IScene()
 {
 }
-
-void SCA_IScene::RemoveAllDebugProperties()
-{
-	for (std::vector<SCA_DebugProp*>::iterator it = m_debugList.begin();
-		!(it==m_debugList.end());++it)
-	{
-		delete (*it);
-	}
-	m_debugList.clear();
-}
-
 
 SCA_IScene::~SCA_IScene()
 {
 	RemoveAllDebugProperties();
 }
 
+void SCA_IScene::RemoveAllDebugProperties()
+{
+	for (std::vector<SCA_DebugProp *>::iterator it = m_debugList.begin();
+		!(it == m_debugList.end()); ++it)
+	{
+		delete (*it);
+	}
+	m_debugList.clear();
+}
 
-std::vector<SCA_DebugProp*>& SCA_IScene::GetDebugProperties() 
+std::vector<SCA_DebugProp *> &SCA_IScene::GetDebugProperties() 
 {
 	return m_debugList;
 }
 
-
-bool SCA_IScene::PropertyInDebugList( class CValue *gameobj, const STR_String &name )
+bool SCA_IScene::PropertyInDebugList(class CValue *gameobj, const STR_String &name)
 {
-	for (std::vector<SCA_DebugProp*>::iterator it = m_debugList.begin();
-		!(it==m_debugList.end());++it) {
+	for (std::vector<SCA_DebugProp *>::iterator it = m_debugList.begin();
+		!(it == m_debugList.end()); ++it) 
+	{
 		STR_String debugname = (*it)->m_name;
 		CValue *debugobj = (*it)->m_obj;
 
@@ -83,12 +79,12 @@ bool SCA_IScene::PropertyInDebugList( class CValue *gameobj, const STR_String &n
 	return false;
 }
 
-
-bool SCA_IScene::ObjectInDebugList( class CValue *gameobj )
+bool SCA_IScene::ObjectInDebugList(class CValue *gameobj)
 {
-	for (std::vector<SCA_DebugProp*>::iterator it = m_debugList.begin();
-		!(it==m_debugList.end());++it) {
-		CValue* debugobj = (*it)->m_obj;
+	for (std::vector<SCA_DebugProp *>::iterator it = m_debugList.begin();
+		!(it == m_debugList.end()); ++it) 
+	{
+		CValue *debugobj = (*it)->m_obj;
 
 		if (debugobj == gameobj)
 			return true;
@@ -96,12 +92,10 @@ bool SCA_IScene::ObjectInDebugList( class CValue *gameobj )
 	return false;
 }
 
-
-void SCA_IScene::AddDebugProperty(class CValue* debugprop,
-								  const STR_String &name)
+void SCA_IScene::AddDebugProperty(class CValue *debugprop, const STR_String &name)
 {
 	if (m_debugList.size() < DEBUG_MAX_DISPLAY) {
-		SCA_DebugProp* dprop = new SCA_DebugProp();
+		SCA_DebugProp *dprop = new SCA_DebugProp();
 		dprop->m_obj = debugprop;
 		debugprop->AddRef();
 		dprop->m_name = name;
@@ -109,41 +103,34 @@ void SCA_IScene::AddDebugProperty(class CValue* debugprop,
 	}
 }
 
-
-void SCA_IScene::RemoveDebugProperty(class CValue *gameobj,
-								  const STR_String &name)
+void SCA_IScene::RemoveDebugProperty(class CValue *gameobj, const STR_String &name)
 {
-	std::vector<SCA_DebugProp*>::iterator it = m_debugList.begin();
+	std::vector<SCA_DebugProp *>::iterator it = m_debugList.begin();
 	while (it != m_debugList.end()) {
 		STR_String debugname = (*it)->m_name;
 		CValue *debugobj = (*it)->m_obj;
 
 		if (debugobj == gameobj && debugname == name) {
 			delete (*it);
-			it = m_debugList.erase(it);
+			m_debugList.erase(it);
 			break;
 		}
-		else {
-			++it;
-		}
+		++it;
 	}
 }
 
-
-void SCA_IScene::RemoveObjectDebugProperties(class CValue* gameobj)
+void SCA_IScene::RemoveObjectDebugProperties(class CValue *gameobj)
 {	
-	std::vector<SCA_DebugProp*>::iterator it = m_debugList.begin();
+	std::vector<SCA_DebugProp *>::iterator it = m_debugList.begin();
 	while (it != m_debugList.end()) {
-		CValue* debugobj = (*it)->m_obj;
+		CValue *debugobj = (*it)->m_obj;
 
 		if (debugobj == gameobj) {
 			delete (*it);
-			it = m_debugList.erase(it);
+			m_debugList.erase(it);
 			continue;
 		}
-		else {
-			++it;
-		}
+		++it;
 	}
 }
 

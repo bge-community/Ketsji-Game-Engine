@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
@@ -33,7 +28,6 @@
 #define __SCA_ISCENE_H__
 
 #include <vector>
-
 #include "STR_String.h"
 #include "RAS_2DFilterData.h"
 
@@ -45,38 +39,37 @@
 
 struct SCA_DebugProp
 {
-	class CValue*	m_obj;
-	STR_String 		m_name;
+	class CValue *m_obj;
+	STR_String m_name;
 	SCA_DebugProp();
 	~SCA_DebugProp();
 };
 
 class SCA_IScene 
 {
-	std::vector<SCA_DebugProp*> m_debugList;
+	std::vector<SCA_DebugProp *> m_debugList;
+
 public:
 	SCA_IScene();
 	virtual ~SCA_IScene();
-	virtual class SCA_IObject* AddReplicaObject(class CValue* gameobj,
-												class CValue* locationobj,
-												float lifespan=0.0f)=0;
-	virtual void	RemoveObject(class CValue* gameobj)=0;
-	virtual void	DelayedRemoveObject(class CValue* gameobj)=0;
-	//virtual void	DelayedReleaseObject(class CValue* gameobj)=0;
-	
-	virtual void	ReplaceMesh(class CValue* gameobj,
-								void* meshobj, bool use_gfx, bool use_phys)=0;
-	std::vector<SCA_DebugProp*>& GetDebugProperties();
-	bool			PropertyInDebugList(class CValue *gameobj, const STR_String &name);
-	bool			ObjectInDebugList(class CValue *gameobj);
-	void			RemoveAllDebugProperties();
-	void			AddDebugProperty(class CValue* debugprop, const STR_String &name);
-	void			RemoveDebugProperty(class CValue *gameobj, const STR_String &name);
-	void			RemoveObjectDebugProperties(class CValue* gameobj);
+
+	virtual class SCA_IObject *AddReplicaObject(class CValue *gameobj, 
+	                                            class CValue *locationobj,
+	                                            float lifespan = 0.0f) = 0;
+	virtual void RemoveObject(class CValue *gameobj) = 0;
+	virtual void DelayedRemoveObject(class CValue *gameobj) = 0;
+	virtual void ReplaceMesh(class CValue *gameobj, void *meshobj, bool use_gfx, bool use_phys) = 0;
+	std::vector<SCA_DebugProp *> &GetDebugProperties();
+	bool PropertyInDebugList(class CValue *gameobj, const STR_String &name);
+	bool ObjectInDebugList(class CValue *gameobj);
+	void RemoveAllDebugProperties();
+	void AddDebugProperty(class CValue *debugprop, const STR_String &name);
+	void RemoveDebugProperty(class CValue *gameobj, const STR_String &name);
+	void RemoveObjectDebugProperties(class CValue *gameobj);
 
 #ifdef WITH_CXX_GUARDEDALLOC
 	MEM_CXX_CLASS_ALLOC_FUNCS("GE:SCA_IScene")
 #endif
 };
 
-#endif  /* __SCA_ISCENE_H__ */
+#endif  //__SCA_ISCENE_H__
