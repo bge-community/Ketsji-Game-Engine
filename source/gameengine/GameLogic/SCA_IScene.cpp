@@ -112,10 +112,12 @@ void SCA_IScene::RemoveDebugProperty(class CValue *gameobj, const STR_String &na
 
 		if (debugobj == gameobj && debugname == name) {
 			delete (*it);
-			m_debugList.erase(it);
+			it = m_debugList.erase(it);
 			break;
 		}
-		++it;
+		else {
+			++it;
+		}
 	}
 }
 
@@ -127,10 +129,12 @@ void SCA_IScene::RemoveObjectDebugProperties(class CValue *gameobj)
 
 		if (debugobj == gameobj) {
 			delete (*it);
-			m_debugList.erase(it);
+			it = m_debugList.erase(it);
 			continue;
 		}
-		++it;
+		else {
+			++it;
+		}
 	}
 }
 
