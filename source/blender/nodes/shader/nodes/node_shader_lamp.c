@@ -64,9 +64,11 @@ static int gpu_shader_lamp(GPUMaterial *mat, bNode *node, bNodeExecData *UNUSED(
 {
 	if (node->id) {
 		GPULamp *lamp = GPU_lamp_from_blender(GPU_material_scene(mat), (Object *)node->id, NULL);
+		GPUMaterialLamp *matlamp = MEM_callocN(sizeof(GPUMaterialLamp), "GPUMaterialLamp");
 		GPUNodeLink *col, *lv, *dist, *visifac, *shadow, *energy;
 
-		visifac = GPU_lamp_get_data(mat, lamp, &col, &lv, &dist, &shadow, &energy);
+		matlamp->lamp = lamp;
+		visifac = GPU_lamp_get_data(mat, matlamp, lamp, &col, &lv, &dist, &shadow, &energy);
 
 		bool ret = GPU_stack_link(mat, "lamp", in, out, col, energy, lv, dist, shadow, visifac);
 		if (GPU_material_use_world_space_shading(mat))

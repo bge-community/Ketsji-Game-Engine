@@ -345,6 +345,11 @@ void GPU_free_shader_export(GPUShaderExport *shader);
 
 /* Lamps */
 
+typedef struct GPUMaterialLamp {
+	int dynproperty;
+	GPULamp *lamp;
+} GPUMaterialLamp;
+
 GPULamp *GPU_lamp_from_blender(struct Scene *scene, struct Object *ob, struct Object *par);
 void GPU_lamp_free(struct Object *ob);
 
@@ -363,7 +368,7 @@ void GPU_lamp_update_distance(GPULamp *lamp, float distance, float att1, float a
 void GPU_lamp_update_spot(GPULamp *lamp, float spotsize, float spotblend);
 int GPU_lamp_shadow_layer(GPULamp *lamp);
 GPUNodeLink *GPU_lamp_get_data(
-        GPUMaterial *mat, GPULamp *lamp,
+        GPUMaterial *mat, GPUMaterialLamp *matlamp, GPULamp *lamp,
         GPUNodeLink **r_col, GPUNodeLink **r_lv, GPUNodeLink **r_dist, GPUNodeLink **r_shadow, GPUNodeLink **r_energy);
 
 /* World */
