@@ -43,8 +43,8 @@
 
 SCA_ArmatureActuator::SCA_ArmatureActuator(SCA_IObject *obj,
                                            int type,
-                                           const char *posechannel,
-                                           const char *constraintname,
+                                           const std::string &posechannel,
+                                           const std::string &constraintname,
                                            KX_GameObject *targetobj,
                                            KX_GameObject *subtargetobj,
                                            float weight,

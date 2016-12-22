@@ -1007,11 +1007,13 @@ void BL_ConvertActuators(const char* maggiename,
 				bArmatureActuator* armAct = (bArmatureActuator*) bact->data;
 				KX_GameObject *tmpgob = converter->FindGameObject(armAct->target);
 				KX_GameObject *subgob = converter->FindGameObject(armAct->subtarget);
+				std::string posechannel = armAct->posechannel;
+				std::string constraint = armAct->constraint;
 				BL_ArmatureActuator* tmparmact = new BL_ArmatureActuator(
 				            gameobj,
 				            armAct->type,
-				            armAct->posechannel,
-				            armAct->constraint,
+				            posechannel,
+				            constraint,
 				            tmpgob,
 				            subgob,
 				            armAct->weight,
