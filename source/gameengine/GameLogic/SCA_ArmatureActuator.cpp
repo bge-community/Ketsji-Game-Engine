@@ -240,7 +240,7 @@ PyAttributeDef SCA_ArmatureActuator::Attributes[] = {
 PyObject *SCA_ArmatureActuator::pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
 {
 	SCA_ArmatureActuator *actuator = static_cast<SCA_ArmatureActuator *>(self);
-	KX_GameObject *target = (!strcmp(attrdef->m_name, "target")) ? actuator->m_gametarget : actuator->m_gamesubtarget;
+	KX_GameObject *target = (attrdef->m_name == "target") ? actuator->m_gametarget : actuator->m_gamesubtarget;
 	if (!target)
 		Py_RETURN_NONE;
 	else
@@ -250,7 +250,7 @@ PyObject *SCA_ArmatureActuator::pyattr_get_object(void *self, const struct KX_PY
 int SCA_ArmatureActuator::pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
 {
 	SCA_ArmatureActuator *actuator = static_cast<SCA_ArmatureActuator *>(self);
-	KX_GameObject *target = (!strcmp(attrdef->m_name, "target")) ? actuator->m_gametarget : actuator->m_gamesubtarget;
+	KX_GameObject *target = (attrdef->m_name == "target") ? actuator->m_gametarget : actuator->m_gamesubtarget;
 	KX_GameObject *gameobj;
 		
 	if (!ConvertPythonToGameObject(actuator->GetLogicManager(), value, &gameobj, true, "actuator.object = value: SCA_ArmatureActuator"))

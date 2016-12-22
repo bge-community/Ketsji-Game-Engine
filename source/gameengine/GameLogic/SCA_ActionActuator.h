@@ -54,8 +54,8 @@ protected:
 	short m_layer;
 	short m_ipo_flags;
 	struct bAction *m_action;
-	STR_String m_propname;
-	STR_String m_framepropname;
+	std::string m_propname;
+	std::string m_framepropname;
 
 	enum {
 		ACT_FLAG_REVERSE		= 1<<0,
@@ -67,8 +67,8 @@ protected:
 
 public:
 	SCA_ActionActuator(SCA_IObject *gameobj,
-	                   const STR_String &propname,
-	                   const STR_String &framepropname,
+	                   const std::string &propname,
+	                   const std::string &framepropname,
 	                   float starttime,
 	                   float endtime,
 	                   struct bAction *action,

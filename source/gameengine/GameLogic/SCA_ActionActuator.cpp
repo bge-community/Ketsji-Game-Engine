@@ -24,7 +24,7 @@
  *  \ingroup gamelogic
  */
 
-
+#include <string>
 #include "SCA_LogicManager.h"
 #include "SCA_ActionActuator.h"
 #include "BL_ArmatureObject.h"
@@ -33,7 +33,6 @@
 #include "BL_ActionManager.h"
 #include "KX_GameObject.h"
 #include "KX_PyMath.h"
-#include "STR_HashedString.h"
 #include "MEM_guardedalloc.h"
 #include "DNA_nla_types.h"
 #include "DNA_action_types.h"
@@ -54,8 +53,8 @@ extern "C" {
 }
 
 SCA_ActionActuator::SCA_ActionActuator(SCA_IObject *gameobj,
-                                       const STR_String &propname,
-                                       const STR_String &framepropname,
+                                       const std::string &propname,
+                                       const std::string &framepropname,
                                        float starttime,
                                        float endtime,
                                        struct bAction *action,
@@ -473,7 +472,7 @@ int SCA_ActionActuator::pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF
 	}
 
 	bAction *action= NULL;
-	STR_String val = _PyUnicode_AsString(value);
+	std::string val = _PyUnicode_AsString(value);
 	
 	if (val != "") {
 		action= (bAction*)self->GetLogicManager()->GetActionByName(val);
