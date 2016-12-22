@@ -65,21 +65,12 @@ std::vector<SCA_DebugProp *> &SCA_IScene::GetDebugProperties()
 	return m_debugList;
 }
 
-<<<<<<< 5ed285505a760083cca565114e9a4809e7f8d3d0
-
-bool SCA_IScene::PropertyInDebugList( class CValue *gameobj, const std::string &name )
-{
-	for (std::vector<SCA_DebugProp*>::iterator it = m_debugList.begin();
-		!(it==m_debugList.end());++it) {
-		std::string debugname = (*it)->m_name;
-=======
-bool SCA_IScene::PropertyInDebugList(class CValue *gameobj, const STR_String &name)
+bool SCA_IScene::PropertyInDebugList(class CValue *gameobj, const std::string &name)
 {
 	for (std::vector<SCA_DebugProp *>::iterator it = m_debugList.begin();
 		!(it == m_debugList.end()); ++it) 
 	{
-		STR_String debugname = (*it)->m_name;
->>>>>>> UPBGE: Update files in GameLogic folder
+		std::string debugname = (*it)->m_name;
 		CValue *debugobj = (*it)->m_obj;
 
 		if (debugobj == gameobj && debugname == name)
@@ -101,13 +92,7 @@ bool SCA_IScene::ObjectInDebugList(class CValue *gameobj)
 	return false;
 }
 
-<<<<<<< 5ed285505a760083cca565114e9a4809e7f8d3d0
-
-void SCA_IScene::AddDebugProperty(class CValue* debugprop,
-								  const std::string &name)
-=======
-void SCA_IScene::AddDebugProperty(class CValue *debugprop, const STR_String &name)
->>>>>>> UPBGE: Update files in GameLogic folder
+void SCA_IScene::AddDebugProperty(class CValue *debugprop, const std::string &name)
 {
 	if (m_debugList.size() < DEBUG_MAX_DISPLAY) {
 		SCA_DebugProp *dprop = new SCA_DebugProp();
@@ -118,13 +103,7 @@ void SCA_IScene::AddDebugProperty(class CValue *debugprop, const STR_String &nam
 	}
 }
 
-<<<<<<< 5ed285505a760083cca565114e9a4809e7f8d3d0
-
-void SCA_IScene::RemoveDebugProperty(class CValue *gameobj,
-								  const std::string &name)
-=======
-void SCA_IScene::RemoveDebugProperty(class CValue *gameobj, const STR_String &name)
->>>>>>> UPBGE: Update files in GameLogic folder
+void SCA_IScene::RemoveDebugProperty(class CValue *gameobj, const std::string &name)
 {
 	std::vector<SCA_DebugProp *>::iterator it = m_debugList.begin();
 	while (it != m_debugList.end()) {
