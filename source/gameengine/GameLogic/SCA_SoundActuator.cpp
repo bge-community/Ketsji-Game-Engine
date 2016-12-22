@@ -520,9 +520,6 @@ int SCA_SoundActuator::pyattr_set_3d_property(void *self, const struct KX_PYATTR
 #endif  // WITH_AUDASPACE
 	}
 	else if (prop == "cone_angle_inner") {
-=======
-	}
-	else if (!strcmp(prop, "cone_angle_inner")) {
 		actuator->m_3d.cone_inner_angle = prop_value;
 #ifdef WITH_AUDASPACE
 		if (actuator->m_handle)

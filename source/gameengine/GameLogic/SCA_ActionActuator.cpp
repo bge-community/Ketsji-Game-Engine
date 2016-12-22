@@ -454,7 +454,7 @@ PyAttributeDef SCA_ActionActuator::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("useContinue", SCA_ActionActuator, pyattr_get_use_continue, pyattr_set_use_continue),
 	KX_PYATTRIBUTE_FLOAT_RW_CHECK("blendTime", 0, MAXFRAMEF, SCA_ActionActuator, m_blendframe, CheckBlendTime),
 	KX_PYATTRIBUTE_SHORT_RW_CHECK("mode", 0, 100, false, SCA_ActionActuator, m_playtype, CheckType),
-	{NULL}	//Sentinel
+	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *SCA_ActionActuator::pyattr_get_action(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)

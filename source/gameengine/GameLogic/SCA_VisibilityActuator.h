@@ -39,23 +39,20 @@ class SCA_VisibilityActuator : public SCA_IActuator
 {
 	Py_Header
 
+private:
+
 	/** Make visible? */
 	bool m_visible;
 	bool m_occlusion;
 	bool m_recursive;
 
- public:
-	SCA_VisibilityActuator(SCA_IObject *gameobj, bool visible, bool occlusion, bool recursive);
+public:
 
+	SCA_VisibilityActuator(SCA_IObject *gameobj, bool visible, bool occlusion, bool recursive);
 	virtual ~SCA_VisibilityActuator(void);
 
 	virtual CValue *GetReplica(void);
-
 	virtual bool Update();
-
-	/* --------------------------------------------------------------------- */
-	/* Python interface ---------------------------------------------------- */
-	/* --------------------------------------------------------------------- */
 
 };
 

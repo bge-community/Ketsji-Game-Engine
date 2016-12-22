@@ -234,7 +234,7 @@ PyAttributeDef SCA_ArmatureActuator::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("weight", 0.0f, 1.0f, SCA_ArmatureActuator, m_weight),
 	KX_PYATTRIBUTE_FLOAT_RW("influence", 0.0f, 1.0f, SCA_ArmatureActuator, m_influence),
 	KX_PYATTRIBUTE_INT_RW("type", 0, ACT_ARM_MAXTYPE, false, SCA_ArmatureActuator, m_type),
-	{ NULL }	//Sentinel
+	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *SCA_ArmatureActuator::pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
