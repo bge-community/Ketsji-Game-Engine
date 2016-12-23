@@ -94,7 +94,6 @@ void SCA_ArmatureSensor::FindConstraint()
 	}
 }
 
-
 CValue *SCA_ArmatureSensor::GetReplica()
 {
 	SCA_ArmatureSensor *replica = new SCA_ArmatureSensor(*this);
@@ -141,7 +140,7 @@ bool SCA_ArmatureSensor::Evaluate()
 			break;
 	}
 
-	if (m_lastresult!=m_result) {
+	if (m_lastresult != m_result) {
 		m_lastresult = m_result;
 		return true;
 	}
@@ -152,10 +151,9 @@ bool SCA_ArmatureSensor::Evaluate()
 #ifdef WITH_PYTHON
 
 /* ------------------------------------------------------------------------- */
-/* Python functions                                                          */
+/* Integration hooks ------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 
-/* Integration hooks ------------------------------------------------------- */
 PyTypeObject SCA_ArmatureSensor::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"SCA_ArmatureSensor",

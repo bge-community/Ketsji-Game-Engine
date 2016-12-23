@@ -78,14 +78,12 @@ public:
 	virtual void Relink(std::map<void *, void *> &obj_map);
 	virtual bool Update(double curtime, bool frame);
 	virtual void ReParent(SCA_IObject *parent);
-	
-#ifdef WITH_PYTHON
 
+#ifdef WITH_PYTHON
 	// These are used to get and set m_target
 	static PyObject *pyattr_get_constraint(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 	static PyObject *pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-
 #endif  // WITH_PYTHON
 };
 

@@ -69,12 +69,7 @@ public:
 	void FindConstraint();
 
 #ifdef WITH_PYTHON
-
-	/* --------------------------------------------------------------------- */
-	/* Python interface ---------------------------------------------------- */
-	/* --------------------------------------------------------------------- */
 	static PyObject *pyattr_get_constraint(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-
 #endif  // WITH_PYTHON
 
 };

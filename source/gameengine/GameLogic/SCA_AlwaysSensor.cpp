@@ -84,6 +84,7 @@ bool SCA_AlwaysSensor::Evaluate()
 /* ------------------------------------------------------------------------- */
 /* Integration hooks ------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
+
 PyTypeObject SCA_AlwaysSensor::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"SCA_AlwaysSensor",

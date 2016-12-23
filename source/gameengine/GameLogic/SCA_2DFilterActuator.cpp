@@ -140,10 +140,9 @@ void SCA_2DFilterActuator::SetShaderText(const std::string &text)
 #ifdef WITH_PYTHON
 
 /* ------------------------------------------------------------------------- */
-/* Python functions                                                          */
+/* Integration hooks ------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 
-/* Integration hooks ------------------------------------------------------- */
 PyTypeObject SCA_2DFilterActuator::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"SCA_2DFilterActuator",

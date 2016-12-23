@@ -197,7 +197,7 @@ bool SCA_ArmatureActuator::Update(double curtime, bool frame)
 #ifdef WITH_PYTHON
 
 /* ------------------------------------------------------------------------- */
-/* Python Integration Hooks					                                 */
+/* Integration Hooks ------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 
 PyTypeObject SCA_ArmatureActuator::Type = {
@@ -221,7 +221,6 @@ PyTypeObject SCA_ArmatureActuator::Type = {
 	0,0,0,0,0,0,
 	py_base_new
 };
-
 
 PyMethodDef SCA_ArmatureActuator::Methods[] = {
 	{NULL,NULL} //Sentinel

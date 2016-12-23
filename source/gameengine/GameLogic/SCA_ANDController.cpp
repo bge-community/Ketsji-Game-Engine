@@ -79,6 +79,7 @@ CValue *SCA_ANDController::GetReplica()
 /* ------------------------------------------------------------------------- */
 /* Integration hooks ------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
+
 PyTypeObject SCA_ANDController::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"SCA_ANDController",
