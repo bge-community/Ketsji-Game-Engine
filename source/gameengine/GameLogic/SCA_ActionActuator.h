@@ -99,16 +99,15 @@ public:
 
 #ifdef WITH_PYTHON
 
-	KX_PYMETHOD_O(SCA_ActionActuator,GetChannel);
-	KX_PYMETHOD_DOC(SCA_ActionActuator,setChannel);
-
 	static PyObject *pyattr_get_action(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_channel_names(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static PyObject *pyattr_get_use_continue(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_use_continue(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject *pyattr_get_frame(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_frame(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+
+	static int CheckBlendTime(void *self, const PyAttributeDef *);
+	static int CheckType(void *self, const PyAttributeDef *);
 
 #endif  // WITH_PYTHON
 };

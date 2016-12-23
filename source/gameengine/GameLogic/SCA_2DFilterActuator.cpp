@@ -132,7 +132,7 @@ void SCA_2DFilterActuator::SetScene(SCA_IScene *scene)
 	m_scene = scene;
 }
 
-void SCA_2DFilterActuator::SetShaderText(const std::string& text)
+void SCA_2DFilterActuator::SetShaderText(const std::string &text)
 {
 	m_shaderText = text;
 }

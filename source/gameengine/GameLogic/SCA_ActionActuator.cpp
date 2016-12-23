@@ -359,54 +359,6 @@ void SCA_ActionActuator::DecLink()
 #ifdef WITH_PYTHON
 
 /* ------------------------------------------------------------------------- */
-/* Python functions                                                          */
-/* ------------------------------------------------------------------------- */
-
-PyObject *SCA_ActionActuator::PyGetChannel(PyObject *value)
-{
-	PyErr_SetString(PyExc_NotImplementedError, "SCA_ActionActuator.getChannel() no longer works, please use BL_ArmatureObject.channels instead");
-	return NULL;
-}
-
-KX_PYMETHODDEF_DOC(SCA_ActionActuator, setChannel,
-"setChannel(channel, matrix)\n"
-"\t - channel   : A string specifying the name of the bone channel.\n"
-"\t - matrix    : A 4x4 matrix specifying the overriding transformation\n"
-"\t               as an offset from the bone's rest position.\n")
-{
-	PyErr_SetString(PyExc_NotImplementedError, "SCA_ActionActuator.setChannel() no longer works, please use BL_ArmatureObject.channels instead");
-	return NULL;
-}
-
-static int CheckBlendTime(void *self, const PyAttributeDef *)
-{
-	SCA_ActionActuator *act = reinterpret_cast<SCA_ActionActuator *>(self);
-
-	if (act->m_blendframe > act->m_blendin)
-		act->m_blendframe = act->m_blendin;
-
-	return 0;
-}
-
-static int CheckType(void *self, const PyAttributeDef *)
-{
-	SCA_ActionActuator *act = reinterpret_cast<SCA_ActionActuator *>(self);
-
-	switch (act->m_playtype) {
-		case ACT_ACTION_PLAY:
-		case ACT_ACTION_PINGPONG:
-		case ACT_ACTION_FLIPPER:
-		case ACT_ACTION_LOOP_STOP:
-		case ACT_ACTION_LOOP_END:
-		case ACT_ACTION_FROM_PROP:
-			return 0;
-		default:
-			PyErr_SetString(PyExc_ValueError, "Action Actuator, invalid play type supplied");
-			return 1;
-	}
-}
-
-/* ------------------------------------------------------------------------- */
 /* Python Integration Hooks                                                  */
 /* ------------------------------------------------------------------------- */
 
@@ -433,8 +385,6 @@ PyTypeObject SCA_ActionActuator::Type = {
 };
 
 PyMethodDef SCA_ActionActuator::Methods[] = {
-	{"getChannel", (PyCFunction) SCA_ActionActuator::sPyGetChannel, METH_O},
-	KX_PYMETHODTABLE(SCA_ActionActuator, setChannel),
 	{NULL,NULL} //Sentinel
 };
 
@@ -443,7 +393,6 @@ PyAttributeDef SCA_ActionActuator::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("frameEnd", 0, MAXFRAMEF, SCA_ActionActuator, m_endframe),
 	KX_PYATTRIBUTE_FLOAT_RW("blendIn", 0, MAXFRAMEF, SCA_ActionActuator, m_blendin),
 	KX_PYATTRIBUTE_RW_FUNCTION("action", SCA_ActionActuator, pyattr_get_action, pyattr_set_action),
-	KX_PYATTRIBUTE_RO_FUNCTION("channelNames", SCA_ActionActuator, pyattr_get_channel_names),
 	KX_PYATTRIBUTE_SHORT_RW("priority", 0, 100, false, SCA_ActionActuator, m_priority),
 	KX_PYATTRIBUTE_SHORT_RW("layer", 0, MAX_ACTION_LAYERS-1, true, SCA_ActionActuator, m_layer),
 	KX_PYATTRIBUTE_FLOAT_RW("layerWeight", 0, 1.0, SCA_ActionActuator, m_layer_weight),
@@ -487,12 +436,6 @@ int SCA_ActionActuator::pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF
 
 }
 
-PyObject *SCA_ActionActuator::pyattr_get_channel_names(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
-{
-	PyErr_SetString(PyExc_NotImplementedError, "SCA_ActionActuator.channelNames no longer works, please use BL_ArmatureObject.channels instead");
-	return NULL;
-}
-
 PyObject *SCA_ActionActuator::pyattr_get_use_continue(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
 	SCA_ActionActuator *self = static_cast<SCA_ActionActuator *>(self_v);
@@ -524,6 +467,34 @@ int SCA_ActionActuator::pyattr_set_frame(void *self_v, const KX_PYATTRIBUTE_DEF 
 	((KX_GameObject *)self->m_gameobj)->SetActionFrame(self->m_layer, PyFloat_AsDouble(value));
 	
 	return PY_SET_ATTR_SUCCESS;
+}
+
+int CheckBlendTime(void *self, const PyAttributeDef *)
+{
+	SCA_ActionActuator *act = reinterpret_cast<SCA_ActionActuator *>(self);
+
+	if (act->m_blendframe > act->m_blendin)
+		act->m_blendframe = act->m_blendin;
+
+	return 0;
+}
+
+int CheckType(void *self, const PyAttributeDef *)
+{
+	SCA_ActionActuator *act = reinterpret_cast<SCA_ActionActuator *>(self);
+
+	switch (act->m_playtype) {
+		case ACT_ACTION_PLAY:
+		case ACT_ACTION_PINGPONG:
+		case ACT_ACTION_FLIPPER:
+		case ACT_ACTION_LOOP_STOP:
+		case ACT_ACTION_LOOP_END:
+		case ACT_ACTION_FROM_PROP:
+			return 0;
+		default:
+			PyErr_SetString(PyExc_ValueError, "Action Actuator, invalid play type supplied");
+			return 1;
+	}
 }
 
 #endif // WITH_PYTHON

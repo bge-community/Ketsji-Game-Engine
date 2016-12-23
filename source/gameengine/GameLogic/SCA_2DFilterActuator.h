@@ -60,7 +60,7 @@ public:
 
 	virtual ~SCA_2DFilterActuator();
 
-	void SetShaderText(const std::string& text);
+	void SetShaderText(const std::string &text);
 	virtual bool Update();
 	void SetScene(SCA_IScene *scene);
 	virtual CValue *GetReplica();
