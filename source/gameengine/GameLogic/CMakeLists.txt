@@ -52,17 +52,25 @@ set(INC_SYS
 
 set(SRC
 	SCA_2DFilterActuator.cpp
-	SCA_ANDController.cpp
+	SCA_ActionActuator.cpp
 	SCA_ActuatorEventManager.cpp
 	SCA_ActuatorSensor.cpp
 	SCA_AddObjectActuator.cpp
 	SCA_AlwaysSensor.cpp
+	SCA_ANDController.cpp
+	SCA_ArmatureActuator.cpp
+	SCA_ArmatureSensor.cpp
 	SCA_BasicEventManager.cpp
+	SCA_CameraActuator.cpp
+	SCA_CollisionEventManager.cpp
+	SCA_CollisionSensor.cpp
+	SCA_ConstraintActuator.cpp
 	SCA_DelaySensor.cpp
 	SCA_DynamicActuator.cpp
 	SCA_EndObjectActuator.cpp
 	SCA_EventManager.cpp
 	SCA_ExpressionController.cpp
+	SCA_GameActuator.cpp
 	SCA_IActuator.cpp
 	SCA_IController.cpp
 	SCA_IInputDevice.cpp
@@ -76,20 +84,30 @@ set(SRC
 	SCA_KeyboardManager.cpp
 	SCA_KeyboardSensor.cpp
 	SCA_LogicManager.cpp
+	SCA_MouseActuator.cpp
+	SCA_MouseFocusSensor.cpp
 	SCA_MouseManager.cpp
 	SCA_MouseSensor.cpp
+	SCA_MovementSensor.cpp
 	SCA_NANDController.cpp
+	SCA_NearSensor.cpp
+	SCA_NetworkMessageActuator.cpp
+	SCA_NetworkMessageSensor.cpp
 	SCA_NORController.cpp
+	SCA_ObjectActuator.cpp
 	SCA_ORController.cpp
+	SCA_ParentActuator.cpp
 	SCA_PropertyActuator.cpp
 	SCA_PropertySensor.cpp
 	SCA_PythonController.cpp
 	SCA_PythonJoystick.cpp
 	SCA_PythonKeyboard.cpp
 	SCA_PythonMouse.cpp
+	SCA_RadarSensor.cpp
 	SCA_RandomActuator.cpp
 	SCA_RandomNumberGenerator.cpp
 	SCA_RandomSensor.cpp
+	SCA_RaySensor.cpp
 	SCA_ReplaceMeshActuator.cpp
 	SCA_SceneActuator.cpp
 	SCA_SoundActuator.cpp
@@ -103,17 +121,25 @@ set(SRC
 	SCA_XORController.cpp
 
 	SCA_2DFilterActuator.h
-	SCA_ANDController.h
+	SCA_ActionActuator.h
 	SCA_ActuatorEventManager.h
 	SCA_ActuatorSensor.h
 	SCA_AddObjectActuator.h
 	SCA_AlwaysSensor.h
+	SCA_ANDController.h
+	SCA_ArmatureActuator.h
+	SCA_ArmatureSensor.h
 	SCA_BasicEventManager.h
+	SCA_CameraActuator.h
+	SCA_CollisionEventManager.h
+	SCA_CollisionSensor.h
+	SCA_ConstraintActuator.h
 	SCA_DelaySensor.h
 	SCA_DynamicActuator.h
 	SCA_EndObjectActuator.h
 	SCA_EventManager.h
 	SCA_ExpressionController.h
+	SCA_GameActuator.h
 	SCA_IActuator.h
 	SCA_IController.h
 	SCA_IInputDevice.h
@@ -127,20 +153,30 @@ set(SRC
 	SCA_KeyboardManager.h
 	SCA_KeyboardSensor.h
 	SCA_LogicManager.h
+	SCA_MouseActuator.h
+	SCA_MouseFocusSensor.h
 	SCA_MouseManager.h
 	SCA_MouseSensor.h
+	SCA_MovementSensor.h
 	SCA_NANDController.h
+	SCA_NearSensor.h
+	SCA_NetworkMessageActuator.h
+	SCA_NetworkMessageSensor.h
 	SCA_NORController.h
+	SCA_ObjectActuator.h
 	SCA_ORController.h
+	SCA_ParentActuator.h
 	SCA_PropertyActuator.h
 	SCA_PropertySensor.h
 	SCA_PythonController.h
 	SCA_PythonJoystick.h
 	SCA_PythonKeyboard.h
 	SCA_PythonMouse.h
+	SCA_RadarSensor.h
 	SCA_RandomActuator.h
 	SCA_RandomNumberGenerator.h
 	SCA_RandomSensor.h
+	SCA_RaySensor.h
 	SCA_ReplaceMeshActuator.h
 	SCA_SceneActuator.h
 	SCA_SoundActuator.h

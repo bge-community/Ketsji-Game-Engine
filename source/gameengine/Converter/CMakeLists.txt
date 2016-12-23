@@ -63,8 +63,6 @@ set(INC_SYS
 )
 
 set(SRC
-	BL_ActionActuator.cpp
-	BL_ArmatureActuator.cpp
 	BL_ArmatureChannel.cpp
 	BL_ArmatureConstraint.cpp
 	BL_ArmatureObject.cpp
@@ -83,8 +81,6 @@ set(SRC
 	KX_LibLoadStatus.cpp
 	KX_SoftBodyDeformer.cpp
 
-	BL_ActionActuator.h
-	BL_ArmatureActuator.h
 	BL_ArmatureChannel.h
 	BL_ArmatureConstraint.h
 	BL_ArmatureObject.h

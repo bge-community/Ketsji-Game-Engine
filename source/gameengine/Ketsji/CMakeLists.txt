@@ -72,20 +72,16 @@ set(SRC
 	BL_Texture.cpp
 	KX_2DFilter.cpp
 	KX_2DFilterManager.cpp
-	KX_ArmatureSensor.cpp
 	KX_BlenderMaterial.cpp
 	KX_BoundingBox.cpp
 	KX_Camera.cpp
-	KX_CameraActuator.cpp
 	KX_CameraIpoSGController.cpp
 	KX_CharacterWrapper.cpp
-	KX_ConstraintActuator.cpp
 	KX_ConstraintWrapper.cpp
 	KX_CubeMap.cpp
 	KX_CubeMapManager.cpp
 	KX_EmptyObject.cpp
 	KX_FontObject.cpp
-	KX_GameActuator.cpp
 	KX_GameObject.cpp
 	KX_Globals.cpp
 	KX_IpoConvert.cpp
@@ -98,16 +94,10 @@ set(SRC
 	KX_MaterialIpoController.cpp
 	KX_MeshProxy.cpp
 	KX_MotionState.cpp
-	KX_MouseActuator.cpp
-	KX_MouseFocusSensor.cpp
-	KX_MovementSensor.cpp
 	KX_NavMeshObject.cpp
-	KX_NearSensor.cpp
 	KX_ObColorIpoSGController.cpp
-	KX_ObjectActuator.cpp
 	KX_ObstacleSimulation.cpp
 	KX_OrientationInterpolator.cpp
-	KX_ParentActuator.cpp
 	KX_PolyProxy.cpp
 	KX_PositionInterpolator.cpp
 	KX_PyConstraintBinding.cpp
@@ -116,9 +106,7 @@ set(SRC
 	KX_PythonInit.cpp
 	KX_PythonInitTypes.cpp
 	KX_PythonMain.cpp
-	KX_RadarSensor.cpp
 	KX_RayCast.cpp
-	KX_RaySensor.cpp
 	KX_SG_BoneParentNodeRelationship.cpp
 	KX_SG_NodeRelationships.cpp
 	KX_ScalarInterpolator.cpp
@@ -127,8 +115,6 @@ set(SRC
 	KX_TextMaterial.cpp
 	KX_TimeCategoryLogger.cpp
 	KX_TimeLogger.cpp
-	KX_CollisionEventManager.cpp
-	KX_CollisionSensor.cpp
 	KX_VehicleWrapper.cpp
 	KX_VertexProxy.cpp
 	KX_WorldInfo.cpp
@@ -142,21 +128,17 @@ set(SRC
 	BL_Texture.h
 	KX_2DFilter.h
 	KX_2DFilterManager.h
-	KX_ArmatureSensor.h
 	KX_BlenderMaterial.h
 	KX_BoundingBox.h
 	KX_Camera.h
-	KX_CameraActuator.h
 	KX_CameraIpoSGController.h
 	KX_CharacterWrapper.h
 	KX_ClientObjectInfo.h
-	KX_ConstraintActuator.h
 	KX_ConstraintWrapper.h
 	KX_CubeMap.h
 	KX_CubeMapManager.h
 	KX_EmptyObject.h
 	KX_FontObject.h
-	KX_GameActuator.h
 	KX_GameObject.h
 	KX_Globals.h
 	KX_IInterpolator.h
@@ -174,16 +156,10 @@ set(SRC
 	KX_MaterialIpoController.h
 	KX_MeshProxy.h
 	KX_MotionState.h
-	KX_MouseActuator.h
-	KX_MouseFocusSensor.h
-	KX_MovementSensor.h
 	KX_NavMeshObject.h
-	KX_NearSensor.h
 	KX_ObColorIpoSGController.h
-	KX_ObjectActuator.h
 	KX_ObstacleSimulation.h
 	KX_OrientationInterpolator.h
-	KX_ParentActuator.h
 	KX_PhysicsEngineEnums.h
 	KX_PolyProxy.h
 	KX_PositionInterpolator.h
@@ -193,9 +169,7 @@ set(SRC
 	KX_PythonInit.h
 	KX_PythonInitTypes.h
 	KX_PythonMain.h
-	KX_RadarSensor.h
 	KX_RayCast.h
-	KX_RaySensor.h
 	KX_SG_BoneParentNodeRelationship.h
 	KX_SG_NodeRelationships.h
 	KX_ScalarInterpolator.h
@@ -204,8 +178,6 @@ set(SRC
 	KX_TextMaterial.h
 	KX_TimeCategoryLogger.h
 	KX_TimeLogger.h
-	KX_CollisionEventManager.h
-	KX_CollisionSensor.h
 	KX_VehicleWrapper.h
 	KX_VertexProxy.h
 	KX_WorldInfo.h
