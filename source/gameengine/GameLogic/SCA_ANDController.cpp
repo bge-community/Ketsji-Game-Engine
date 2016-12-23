@@ -77,10 +77,8 @@ CValue *SCA_ANDController::GetReplica()
 #ifdef WITH_PYTHON
 
 /* ------------------------------------------------------------------------- */
-/* Python functions                                                          */
-/* ------------------------------------------------------------------------- */
-
 /* Integration hooks ------------------------------------------------------- */
+/* ------------------------------------------------------------------------- */
 PyTypeObject SCA_ANDController::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"SCA_ANDController",

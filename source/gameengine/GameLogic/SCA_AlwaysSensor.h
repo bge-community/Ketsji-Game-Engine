@@ -41,6 +41,7 @@ public:
 	SCA_AlwaysSensor(class SCA_EventManager *eventmgr,
 	                 SCA_IObject *gameobj);
 	virtual ~SCA_AlwaysSensor();
+
 	virtual CValue *GetReplica();
 	virtual bool Evaluate();
 	virtual bool IsPositiveTrigger();
