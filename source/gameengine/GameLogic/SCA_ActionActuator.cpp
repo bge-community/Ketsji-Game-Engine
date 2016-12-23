@@ -416,7 +416,8 @@ int SCA_ActionActuator::pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF
 	SCA_ActionActuator *self = static_cast<SCA_ActionActuator *>(self_v);
 	
 	if (!PyUnicode_Check(value)) {
-		PyErr_SetString(PyExc_ValueError, "actuator.action = val: Action Actuator, expected the string name of the action");
+		CM_PythonAttributError("SCA_ActionActuator", "action", "The value passed (" << val
+		                       << ") is not the expected string name of the action");
 		return PY_SET_ATTR_FAIL;
 	}
 
@@ -426,7 +427,7 @@ int SCA_ActionActuator::pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF
 	if (val != "") {
 		action= (bAction*)self->GetLogicManager()->GetActionByName(val);
 		if (!action) {
-			PyErr_SetString(PyExc_ValueError, "actuator.action = val: Action Actuator, action not found!");
+			CM_PythonAttributError("SCA_ActionActuator", "action", "Action supplied (" << val << ") not found!");
 			return PY_SET_ATTR_FAIL;
 		}
 	}
@@ -492,7 +493,7 @@ int CheckType(void *self, const PyAttributeDef *)
 		case ACT_ACTION_FROM_PROP:
 			return 0;
 		default:
-			PyErr_SetString(PyExc_ValueError, "Action Actuator, invalid play type supplied");
+			CM_PythonAttributError("SCA_ActionActuator", "mode", "Invalid play mode (" << act->m_playtype << ") supplied");
 			return 1;
 	}
 }
