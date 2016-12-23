@@ -425,7 +425,7 @@ int SCA_ActionActuator::pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF
 	std::string val = _PyUnicode_AsString(value);
 	
 	if (val != "") {
-		action= (bAction*)self->GetLogicManager()->GetActionByName(val);
+		action= (bAction *)self->GetLogicManager()->GetActionByName(val);
 		if (!action) {
 			CM_PythonAttributError("SCA_ActionActuator", "action", "Action supplied (" << val << ") not found!");
 			return PY_SET_ATTR_FAIL;
@@ -434,7 +434,6 @@ int SCA_ActionActuator::pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF
 	
 	self->SetAction(action);
 	return PY_SET_ATTR_SUCCESS;
-
 }
 
 PyObject *SCA_ActionActuator::pyattr_get_use_continue(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)

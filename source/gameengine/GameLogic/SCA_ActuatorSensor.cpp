@@ -105,22 +105,9 @@ void SCA_ActuatorSensor::Update()
 #ifdef WITH_PYTHON
 
 /* ------------------------------------------------------------------------- */
-/* Python functions                                                          */
+/* Integration hooks ------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 
-static int SCA_ActuatorSensor::CheckActuator(void *self, const PyAttributeDef *)
-{
-	SCA_ActuatorSensor *sensor = reinterpret_cast<SCA_ActuatorSensor *>(self);
-	SCA_IActuator *act = sensor->GetParent()->FindActuator(sensor->m_checkactname);
-	if (act) {
-		sensor->m_actuator = act;
-		return 0;
-	}
-	PyErr_SetString(PyExc_AttributeError, "string does not correspond to an actuator");
-	return 1;
-}
-
-/* Integration hooks ------------------------------------------------------- */
 PyTypeObject SCA_ActuatorSensor::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"SCA_ActuatorSensor",
@@ -151,5 +138,18 @@ PyAttributeDef SCA_ActuatorSensor::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW_CHECK("actuator", 0, MAX_PROP_NAME, false, SCA_ActuatorSensor, m_checkactname, CheckActuator),
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
+
+int SCA_ActuatorSensor::CheckActuator(void *self, const PyAttributeDef *)
+{
+	SCA_ActuatorSensor *sensor = reinterpret_cast<SCA_ActuatorSensor *>(self);
+	SCA_IActuator *act = sensor->GetParent()->FindActuator(sensor->m_checkactname);
+	if (act) {
+		sensor->m_actuator = act;
+		return 0;
+	}
+	CM_PythonAttributError("SCA_ActuatorSensor", "actuator", "String supplied (" << val
+	                       << ") does not correspond to an actuator.");
+	return 1;
+}
 
 #endif // WITH_PYTHON

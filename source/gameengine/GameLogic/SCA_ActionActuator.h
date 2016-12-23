@@ -98,7 +98,6 @@ public:
 	virtual void DecLink();
 
 #ifdef WITH_PYTHON
-
 	static PyObject *pyattr_get_action(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_action(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject *pyattr_get_use_continue(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
@@ -108,7 +107,6 @@ public:
 
 	static int CheckBlendTime(void *self, const PyAttributeDef *);
 	static int CheckType(void *self, const PyAttributeDef *);
-
 #endif  // WITH_PYTHON
 };
 

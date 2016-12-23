@@ -55,6 +55,10 @@ public:
 	virtual bool IsPositiveTrigger();
 	virtual void ReParent(SCA_IObject *parent);
 	void Update();
+
+#ifdef WITH_PYTHON
+	static int SCA_ActuatorSensor::CheckActuator(void *self, const PyAttributeDef *);
+#endif  // WITH_PYTHON
 };
 
 #endif  //__SCA_ACTUATORSENSOR_H__
