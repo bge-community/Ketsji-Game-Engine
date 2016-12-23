@@ -108,6 +108,11 @@ void SCA_AddObjectActuator::ProcessReplica()
 	SCA_IActuator::ProcessReplica();
 }
 
+void SCA_AddObjectActuator::Replace_IScene(SCA_IScene *val)
+{
+	m_scene = val;
+}
+
 bool SCA_AddObjectActuator::UnlinkObject(SCA_IObject *clientobj)
 {
 	if (clientobj == m_OriginalObject) {
@@ -173,10 +178,9 @@ void SCA_AddObjectActuator::InstantAddObject()
 #ifdef WITH_PYTHON
 
 /* ------------------------------------------------------------------------- */
-/* Python functions                                                          */
+/* Integration hooks ------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 
-/* Integration hooks ------------------------------------------------------- */
 PyTypeObject SCA_AddObjectActuator::Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"SCA_AddObjectActuator",

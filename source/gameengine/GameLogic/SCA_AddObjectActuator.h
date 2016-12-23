@@ -66,7 +66,7 @@ public:
 
 	CValue *GetReplica();
 	virtual void ProcessReplica();
-	virtual void Replace_IScene(SCA_IScene *val) { m_scene = val; }
+	virtual void Replace_IScene(SCA_IScene *val);
 	virtual bool UnlinkObject(SCA_IObject *clientobj);
 	virtual void Relink(std::map<void *, void *> &obj_map);
 	virtual bool Update();
@@ -74,15 +74,12 @@ public:
 	void InstantAddObject();
 
 #ifdef WITH_PYTHON
-
 	KX_PYMETHOD_DOC_NOARGS(SCA_AddObjectActuator, InstantAddObject);
 
 	static PyObject *pyattr_get_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_object(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject *pyattr_get_objectLastCreated(void *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-	
 #endif  // WITH_PYTHON
-
 };
 
 #endif  //__SCA_ADDOBJECTACTUATOR_H__
