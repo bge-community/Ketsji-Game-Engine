@@ -108,7 +108,6 @@ KX_GameObject::KX_GameObject(
       m_layer(0),
       m_lodManager(NULL),
       m_currentLodLevel(0),
-      m_previousLodLevel(0),
       m_meshUser(NULL),
       m_pBlenderObject(NULL),
       m_pBlenderGroupObject(NULL),
@@ -795,8 +794,7 @@ void KX_GameObject::RemoveMeshes()
 
 void KX_GameObject::SetLodManager(KX_LodManager *lodManager)
 {
-	// Reset lod level to avoid bugs on KX_LodManager::GetLevel.
-	m_previousLodLevel = -1;
+	// Reset lod level to avoid overflow index in KX_LodManager::GetLevel.
 	m_currentLodLevel = 0;
 
 	// Restore object original mesh.
@@ -822,16 +820,15 @@ void KX_GameObject::UpdateLod(const MT_Vector3& cam_pos, float lodfactor)
 
 	KX_Scene *scene = GetScene();
 	const float distance2 = NodeGetWorldPosition().distance2(cam_pos) * (lodfactor * lodfactor);
-	KX_LodLevel *lodLevel = m_lodManager->GetLevel(scene, m_previousLodLevel, distance2);
-	const unsigned short level = lodLevel->GetLevel();
+	KX_LodLevel *lodLevel = m_lodManager->GetLevel(scene, m_currentLodLevel, distance2);
 
-	if (m_previousLodLevel != level) {
+	if (lodLevel) {
 		RAS_MeshObject *mesh = lodLevel->GetMesh();
 		if (mesh != m_meshes[0]) {
 			scene->ReplaceMesh(this, mesh, true, false);
 		}
-		m_currentLodLevel = level;
-		m_previousLodLevel = level;
+
+		m_currentLodLevel = lodLevel->GetLevel();
 	}
 }
 
@@ -1963,6 +1960,7 @@ PyAttributeDef KX_GameObject::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("linVelocityMax",		KX_GameObject, pyattr_get_lin_vel_max, pyattr_set_lin_vel_max),
 	KX_PYATTRIBUTE_RW_FUNCTION("angularVelocityMin", KX_GameObject, pyattr_get_ang_vel_min, pyattr_set_ang_vel_min),
 	KX_PYATTRIBUTE_RW_FUNCTION("angularVelocityMax", KX_GameObject, pyattr_get_ang_vel_max, pyattr_set_ang_vel_max),
+	KX_PYATTRIBUTE_RW_FUNCTION("layer", KX_GameObject, pyattr_get_layer, pyattr_set_layer),
 	KX_PYATTRIBUTE_RW_FUNCTION("visible",	KX_GameObject, pyattr_get_visible,	pyattr_set_visible),
 	KX_PYATTRIBUTE_RO_FUNCTION("culled", KX_GameObject, pyattr_get_culled),
 	KX_PYATTRIBUTE_RO_FUNCTION("cullingBox",	KX_GameObject, pyattr_get_cullingBox),
@@ -2577,6 +2575,37 @@ int KX_GameObject::pyattr_set_ang_vel_max(void *self_v, const KX_PYATTRIBUTE_DEF
 	return PY_SET_ATTR_SUCCESS;
 }
 
+
+PyObject *KX_GameObject::pyattr_get_layer(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+{
+	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
+	return PyLong_FromLong(self->GetLayer());
+}
+
+#define MAX_LAYERS ((1 << 20) - 1)
+int KX_GameObject::pyattr_set_layer(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+{
+	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
+	int layer = PyLong_AsLong(value);
+
+	if (layer == -1 && PyErr_Occurred()) {
+		PyErr_Format(PyExc_TypeError, "expected an integer for attribute \"%s\"", attrdef->m_name.c_str());
+		return PY_SET_ATTR_FAIL;
+	}
+
+	if (layer < 1) {
+		PyErr_Format(PyExc_TypeError, "expected an integer greater than 1 for attribute \"%s\"", attrdef->m_name.c_str());
+		return PY_SET_ATTR_FAIL;
+	}
+	else if (layer > MAX_LAYERS) {
+		PyErr_Format(PyExc_TypeError, "expected an integer less than %i for attribute \"%s\"", MAX_LAYERS, attrdef->m_name.c_str());
+		return PY_SET_ATTR_FAIL;
+	}
+
+	self->SetLayer(layer);
+	return PY_SET_ATTR_SUCCESS;
+}
+#undef MAX_LAYERS
 
 PyObject *KX_GameObject::pyattr_get_visible(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {

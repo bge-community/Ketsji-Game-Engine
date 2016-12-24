@@ -90,7 +90,6 @@ protected:
 	std::vector<RAS_MeshObject*>		m_meshes;
 	KX_LodManager						*m_lodManager;
 	short								m_currentLodLevel;
-	short								m_previousLodLevel;
 	RAS_MeshUser						*m_meshUser;
 	struct Object*						m_pBlenderObject;
 	struct Object*						m_pBlenderGroupObject;
@@ -1011,6 +1010,8 @@ public:
 	static int			pyattr_set_ang_vel_min(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject*	pyattr_get_ang_vel_max(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int			pyattr_set_ang_vel_max(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_layer(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static int			pyattr_set_layer(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject*	pyattr_get_visible(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int			pyattr_set_visible(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject*	pyattr_get_culled(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
