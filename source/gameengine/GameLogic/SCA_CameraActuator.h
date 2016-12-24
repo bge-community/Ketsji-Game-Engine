@@ -1,7 +1,4 @@
 /*
- * KX_CameraActuator.h
- *
- *
  * ***** BEGIN GPL LICENSE BLOCK *****
  *
  * This program is free software; you can redistribute it and/or
@@ -18,115 +15,68 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_CameraActuator.h
- *  \ingroup ketsji
+/** \file SCA_CameraActuator.h
+ *  \ingroup gamelogic
  */
 
-#ifndef __KX_CAMERAACTUATOR_H__
-#define __KX_CAMERAACTUATOR_H__
+#ifndef __SCA_CAMERAACTUATOR_H__
+#define __SCA_CAMERAACTUATOR_H__
 
 #include "SCA_IActuator.h"
-#include "MT_Scalar.h"
 #include "SCA_LogicManager.h"
 
-/**
- * The camera actuator does a Robbie Muller perspective for you. This is a
- * weird set of rules that positions the camera sort of behind the object,
- * tracking, while avoiding any objects between the 'ideal' position and the
- * actor being tracked.
- */
 
+ // The camera actuator does a Robbie Muller perspective for you. This is a
+ // weird set of rules that positions the camera sort of behind the object,
+ // tracking, while avoiding any objects between the 'ideal' position and the
+ // actor being tracked.
 
-class KX_CameraActuator : public SCA_IActuator
+class SCA_CameraActuator : public SCA_IActuator
 {
 	Py_Header
-private :
-	/** Object that will be tracked. */
-	SCA_IObject *m_ob;
 
-	/** height (float), */
-	//const MT_Scalar m_height;
-	/** min (float), */
-	//const MT_Scalar m_minHeight;
-	/** max (float), */
-	//const MT_Scalar m_maxHeight;
-	
-	/** height (float), */
+private :
+	// Object that will be tracked.
+	SCA_IObject *m_ob;
+	// height
 	float m_height;
-	
-	/** min (float), */
+	// min height
 	float m_minHeight;
-	
-	/** max (float), */
+	// max height
 	float m_maxHeight;
-	
-	/** axis the camera tries to get behind: +x/+y/-x/-y */
+	// axis the camera tries to get behind: +x/+y/-x/-y
 	short m_axis;
-	
-	/** damping (float), */
+	// damping
 	float m_damping;
 
 public:
-	static std::string X_AXIS_STRING;
-	static std::string Y_AXIS_STRING;
-	
-	/**
-	 * Set the bool toggle to true to use x lock, false for y lock
-	 */
-	KX_CameraActuator(
+	 //Set the bool toggle to true to use x lock, false for y lock
+	SCA_CameraActuator(SCA_IObject *gameobj,
+	                   SCA_IObject *ob,
+	                   float height,
+	                   float minheight,
+	                   float maxheight,
+	                   short axis,
+	                   float damping);
 
-		SCA_IObject *gameobj,
-		//const CValue *ob,
-		SCA_IObject *ob,
-		float hght,
-		float minhght,
-		float maxhght,
-		short axis,
-		float damping
-	);
+	~SCA_CameraActuator();
 
-
-	~KX_CameraActuator();
-
-
-
-	/** Methods Inherited from  CValue */
-	CValue* GetReplica();
+	CValue *GetReplica();
 	virtual void ProcessReplica();
-	
-
-	/** Methods inherited from SCA_IActuator */
-	virtual bool Update(
-		double curtime,
-		bool frame
-	);
-	virtual bool	UnlinkObject(SCA_IObject* clientobj);
-
-	/** Methods inherited from SCA_ILogicBrick */
-	virtual void	Relink(std::map<void *, void *>& obj_map);
+	virtual bool Update(double curtime, bool frame);
+	virtual bool UnlinkObject(SCA_IObject *clientobj);
+	virtual void Relink(std::map<void *, void *> &obj_map);
 
 #ifdef WITH_PYTHON
-
-	/* --------------------------------------------------------------------- */
-	/* Python interface ---------------------------------------------------- */
-	/* --------------------------------------------------------------------- */
-
-	/* set object to look at */
-	static PyObject*	pyattr_get_object(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_object(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-
+	// set&get object to look at */
+	static PyObject *pyattr_get_object(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static int pyattr_set_object(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 #endif  /* WITH_PYTHON */
-
 };
 
-#endif  /* __KX_CAMERAACTUATOR_H__ */
+#endif  /* __SCA_CAMERAACTUATOR_H__ */
