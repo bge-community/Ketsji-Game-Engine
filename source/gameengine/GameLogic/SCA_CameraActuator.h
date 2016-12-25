@@ -76,7 +76,7 @@ public:
 	// set&get object to look at */
 	static PyObject *pyattr_get_object(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_object(void *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-#endif  /* WITH_PYTHON */
+#endif  // WITH_PYTHON
 };
 
-#endif  /* __SCA_CAMERAACTUATOR_H__ */
+#endif  //__SCA_CAMERAACTUATOR_H__

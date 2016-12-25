@@ -90,8 +90,8 @@ public:
 	virtual void Init();
 	virtual void ReParent(SCA_IObject *parent);
 
-	virtual void RegisterSumo(KX_CollisionEventManager *collisionman);
-	virtual void UnregisterSumo(KX_CollisionEventManager *collisionman);
+	virtual void RegisterBullet(KX_CollisionEventManager *collisionman);
+	virtual void UnregisterBullet(KX_CollisionEventManager *collisionman);
 	virtual void UnregisterToManager();
 
 	virtual bool NewHandleCollision(void *obj1, void *obj2, const PHY_CollData *colldata);

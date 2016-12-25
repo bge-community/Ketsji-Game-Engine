@@ -25,37 +25,36 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file gameengine/Ketsji/KX_CollisionEventManager.cpp
- *  \ingroup ketsji
+/** \file gameengine/GameLogic/SCA_CollisionEventManager.cpp
+ *  \ingroup gamelogic
  */
 
 
-#include "KX_CollisionEventManager.h"
+#include "SCA_CollisionEventManager.h"
 #include "SCA_ISensor.h"
-#include "KX_CollisionSensor.h"
+#include "SCA_CollisionSensor.h"
 #include "KX_GameObject.h"
 #include "KX_CollisionContactPoints.h"
 #include "PHY_IPhysicsEnvironment.h"
 #include "PHY_IPhysicsController.h"
 
 
-KX_CollisionEventManager::KX_CollisionEventManager(class SCA_LogicManager *logicmgr,
+SCA_CollisionEventManager::SCA_CollisionEventManager(class SCA_LogicManager *logicmgr,
                                                    PHY_IPhysicsEnvironment *physEnv)
-	:SCA_EventManager(logicmgr, TOUCH_EVENTMGR),
-	m_physEnv(physEnv)
+	: SCA_EventManager(logicmgr, TOUCH_EVENTMGR),
+      m_physEnv(physEnv)
 {
-	m_physEnv->AddCollisionCallback(PHY_OBJECT_RESPONSE, KX_CollisionEventManager::newCollisionResponse, this);
-	m_physEnv->AddCollisionCallback(PHY_SENSOR_RESPONSE, KX_CollisionEventManager::newCollisionResponse, this);
-	m_physEnv->AddCollisionCallback(PHY_BROADPH_RESPONSE, KX_CollisionEventManager::newBroadphaseResponse, this);
-
+	m_physEnv->AddCollisionCallback(PHY_OBJECT_RESPONSE, SCA_CollisionEventManager::newCollisionResponse, this);
+	m_physEnv->AddCollisionCallback(PHY_SENSOR_RESPONSE, SCA_CollisionEventManager::newCollisionResponse, this);
+	m_physEnv->AddCollisionCallback(PHY_BROADPH_RESPONSE, SCA_CollisionEventManager::newBroadphaseResponse, this);
 }
 
-KX_CollisionEventManager::~KX_CollisionEventManager()
+SCA_CollisionEventManager::~SCA_CollisionEventManager()
 {
 	RemoveNewCollisions();
 }
 
-void KX_CollisionEventManager::RemoveNewCollisions()
+void SCA_CollisionEventManager::RemoveNewCollisions()
 {
 	for (std::set<NewCollision>::iterator it = m_newCollisions.begin(), end = m_newCollisions.end(); it != end; ++it) {
 		delete it->colldata;
@@ -63,7 +62,7 @@ void KX_CollisionEventManager::RemoveNewCollisions()
 	m_newCollisions.clear();
 }
 
-bool KX_CollisionEventManager::NewHandleCollision(void *object1, void *object2, const PHY_CollData *coll_data)
+bool SCA_CollisionEventManager::NewHandleCollision(void *object1, void *object2, const PHY_CollData *coll_data)
 {
 	PHY_IPhysicsController *obj1 = static_cast<PHY_IPhysicsController *>(object1);
 	PHY_IPhysicsController *obj2 = static_cast<PHY_IPhysicsController *>(object2);
@@ -74,17 +73,17 @@ bool KX_CollisionEventManager::NewHandleCollision(void *object1, void *object2, 
 }
 
 
-bool KX_CollisionEventManager::newCollisionResponse(void *client_data,
+bool SCA_CollisionEventManager::newCollisionResponse(void *client_data,
                                                     void *object1,
                                                     void *object2,
                                                     const PHY_CollData *coll_data)
 {
-	KX_CollisionEventManager *collisionmgr = (KX_CollisionEventManager *)client_data;
+	SCA_CollisionEventManager *collisionmgr = (SCA_CollisionEventManager *)client_data;
 	collisionmgr->NewHandleCollision(object1, object2, coll_data);
 	return false;
 }
 
-bool KX_CollisionEventManager::newBroadphaseResponse(void *client_data,
+bool SCA_CollisionEventManager::newBroadphaseResponse(void *client_data,
                                                      void *object1,
                                                      void *object2,
                                                      const PHY_CollData *coll_data)
@@ -119,14 +118,17 @@ bool KX_CollisionEventManager::newBroadphaseResponse(void *client_data,
 	switch (info1->m_type)
 	{
 		case KX_ClientObjectInfo::SENSOR:
+		{
 			if (info1->m_sensors.size() == 1) {
 				// only one sensor for this type of object
-				KX_CollisionSensor *collisionsensor = static_cast<KX_CollisionSensor *>(*info1->m_sensors.begin());
+				SCA_CollisionSensor *collisionsensor = static_cast<SCA_CollisionSensor *>(*info1->m_sensors.begin());
 				return collisionsensor->BroadPhaseFilterCollision(object1, object2);
 			}
 			break;
+		}
 		case KX_ClientObjectInfo::OBSENSOR:
 		case KX_ClientObjectInfo::OBACTORSENSOR:
+		{
 			// this object may have multiple collision sensors,
 			// check is any of them is interested in this object
 			for (std::list<SCA_ISensor *>::iterator it = info1->m_sensors.begin();
@@ -134,7 +136,7 @@ bool KX_CollisionEventManager::newBroadphaseResponse(void *client_data,
 			     ++it)
 			{
 				if ((*it)->GetSensorType() == SCA_ISensor::ST_TOUCH) {
-					KX_CollisionSensor *collisionsensor = static_cast<KX_CollisionSensor *>(*it);
+					SCA_CollisionSensor *collisionsensor = static_cast<SCA_CollisionSensor *>(*it);
 					if (collisionsensor->BroadPhaseSensorFilterCollision(object1, object2)) {
 						return true;
 					}
@@ -142,7 +144,7 @@ bool KX_CollisionEventManager::newBroadphaseResponse(void *client_data,
 			}
 
 			return has_py_callbacks;
-
+		}
 		// quiet the compiler
 		case KX_ClientObjectInfo::STATIC:
 		case KX_ClientObjectInfo::ACTOR:
@@ -153,39 +155,45 @@ bool KX_CollisionEventManager::newBroadphaseResponse(void *client_data,
 	return true;
 }
 
-void KX_CollisionEventManager::RegisterSensor(SCA_ISensor *sensor)
+void SCA_CollisionEventManager::RegisterSensor(SCA_ISensor *sensor)
 {
-	KX_CollisionSensor *collisionsensor = static_cast<KX_CollisionSensor *>(sensor);
+	SCA_CollisionSensor *collisionsensor = static_cast<SCA_CollisionSensor *>(sensor);
 	if (m_sensors.AddBack(collisionsensor)) {
 		// the sensor was effectively inserted, register it
-		collisionsensor->RegisterSumo(this);
+		collisionsensor->RegisterBullet(this);
 	}
 }
 
-void KX_CollisionEventManager::RemoveSensor(SCA_ISensor *sensor)
+void SCA_CollisionEventManager::RemoveSensor(SCA_ISensor *sensor)
 {
-	KX_CollisionSensor *collisionsensor = static_cast<KX_CollisionSensor *>(sensor);
+	SCA_CollisionSensor *collisionsensor = static_cast<SCA_CollisionSensor *>(sensor);
 	if (collisionsensor->Delink()) {
 		// the sensor was effectively removed, unregister it
-		collisionsensor->UnregisterSumo(this);
+		collisionsensor->UnregisterBullet(this);
 	}
 }
 
-
-
-void KX_CollisionEventManager::EndFrame()
+SCA_LogicManager *SCA_CollisionEventManager::GetLogicManager()
 {
-	SG_DList::iterator<KX_CollisionSensor> it(m_sensors);
+	return m_logicmgr;
+}
+
+PHY_IPhysicsEnvironment *SCA_CollisionEventManager::GetPhysicsEnvironment()
+{
+	return m_physEnv;
+}
+
+void SCA_CollisionEventManager::EndFrame()
+{
+	SG_DList::iterator<SCA_CollisionSensor> it(m_sensors);
 	for (it.begin(); !it.end(); ++it) {
 		(*it)->EndFrame();
 	}
 }
 
-
-
-void KX_CollisionEventManager::NextFrame()
+void SCA_CollisionEventManager::NextFrame()
 {
-	SG_DList::iterator<KX_CollisionSensor> it(m_sensors);
+	SG_DList::iterator<SCA_CollisionSensor> it(m_sensors);
 	for (it.begin(); !it.end(); ++it) {
 		(*it)->SynchronizeTransform();
 	}
@@ -204,7 +212,7 @@ void KX_CollisionEventManager::NextFrame()
 		// Invoke sensor response for each object
 		if (client_info) {
 			for (sit = client_info->m_sensors.begin(); sit != client_info->m_sensors.end(); ++sit) {
-				static_cast<KX_CollisionSensor *>(*sit)->NewHandleCollision(ctrl1, ctrl2, NULL);
+				static_cast<SCA_CollisionSensor *>(*sit)->NewHandleCollision(ctrl1, ctrl2, NULL);
 			}
 		}
 
@@ -214,7 +222,7 @@ void KX_CollisionEventManager::NextFrame()
 		KX_GameObject *kxObj2 = KX_GameObject::GetClientObject(client_info);
 		if (client_info) {
 			for (sit = client_info->m_sensors.begin(); sit != client_info->m_sensors.end(); ++sit) {
-				static_cast<KX_CollisionSensor *>(*sit)->NewHandleCollision(ctrl2, ctrl1, NULL);
+				static_cast<SCA_CollisionSensor *>(*sit)->NewHandleCollision(ctrl2, ctrl1, NULL);
 			}
 		}
 		// Run python callbacks
@@ -232,23 +240,23 @@ void KX_CollisionEventManager::NextFrame()
 	RemoveNewCollisions();
 }
 
-KX_CollisionEventManager::NewCollision::NewCollision(PHY_IPhysicsController *first,
+SCA_CollisionEventManager::NewCollision::NewCollision(PHY_IPhysicsController *first,
                                                      PHY_IPhysicsController *second,
                                                      const PHY_CollData *colldata)
-	:first(first),
-	second(second),
-	colldata(colldata)
+	: first(first),
+      second(second),
+      colldata(colldata)
 {
 }
 
-KX_CollisionEventManager::NewCollision::NewCollision(const NewCollision &to_copy)
-	:first(to_copy.first),
-	second(to_copy.second),
-	colldata(to_copy.colldata)
+SCA_CollisionEventManager::NewCollision::NewCollision(const NewCollision &to_copy)
+	: first(to_copy.first),
+      second(to_copy.second),
+      colldata(to_copy.colldata)
 {
 }
 
-bool KX_CollisionEventManager::NewCollision::operator<(const NewCollision &other) const
+bool SCA_CollisionEventManager::NewCollision::operator<(const NewCollision &other) const
 {
 	//see strict weak ordering: https://support.microsoft.com/en-us/kb/949171
 	if (first == other.first) {

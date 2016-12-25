@@ -15,39 +15,32 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The Original Code is Copyright (C) 2001-2002 by NaN Holding BV.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
  * Contributor(s): none yet.
  *
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_CollisionEventManager.h
- *  \ingroup ketsji
+/** \file SCA_CollisionEventManager.h
+ *  \ingroup gamelogic
  */
 
-#ifndef __KX_TOUCHEVENTMANAGER_H__
-#define __KX_TOUCHEVENTMANAGER_H__
+#ifndef __KX_COLLISIONEVENTMANAGER_H__
+#define __KX_COLLISIONEVENTMANAGER_H__
 
-
-#include "SCA_EventManager.h"
-#include "KX_CollisionSensor.h"
-#include "KX_GameObject.h"
 
 #include <vector>
 #include <set>
+#include "SCA_EventManager.h"
+#include "SCA_CollisionSensor.h"
+#include "KX_GameObject.h"
+
 
 class SCA_ISensor;
 class PHY_IPhysicsEnvironment;
 
-class KX_CollisionEventManager : public SCA_EventManager
+class SCA_CollisionEventManager : public SCA_EventManager
 {
-	/**
-	 * Contains two colliding objects and the first contact point.
-	 */
+	// Contains two colliding objects and the first contact point.
 	class NewCollision
 	{
 	public:
@@ -55,60 +48,40 @@ class KX_CollisionEventManager : public SCA_EventManager
 		PHY_IPhysicsController *second;
 		const PHY_CollData *colldata;
 
-		/**
-		 * Creates a copy of the given PHY_CollData; freeing that copy should be done by the owner of
-		 * the NewCollision object.
-		 *
-		 * This allows us to efficiently store NewCollision objects in a std::set without creating more
-		 * copies of colldata, as the NewCollision copy constructor reuses the pointer and doesn't clone
-		 * it again. */
-		NewCollision(PHY_IPhysicsController *first,
-		             PHY_IPhysicsController *second,
-		             const PHY_CollData *colldata);
+		// Creates a copy of the given PHY_CollData; freeing that copy should be done by the owner of
+		// the NewCollision object.
+		// This allows us to efficiently store NewCollision objects in a std::set without creating more
+		// copies of colldata, as the NewCollision copy constructor reuses the pointer and doesn't clone
+		// it again.
+		NewCollision(PHY_IPhysicsController *first, PHY_IPhysicsController *second, const PHY_CollData *colldata);
 		NewCollision(const NewCollision &to_copy);
 		bool operator<(const NewCollision &other) const;
 	};
 
 	PHY_IPhysicsEnvironment *m_physEnv;
-
 	std::set<NewCollision> m_newCollisions;
 
-	static bool newCollisionResponse(void *client_data,
-	                                 void *object1,
-	                                 void *object2,
-	                                 const PHY_CollData *coll_data);
-
-	static bool newBroadphaseResponse(void *client_data,
-	                                  void *object1,
-	                                  void *object2,
-	                                  const PHY_CollData *coll_data);
-
-	virtual bool NewHandleCollision(void *obj1, void *obj2,
-									const PHY_CollData *coll_data);
-
+	static bool newCollisionResponse(void *client_data, void *object1, void *object2, const PHY_CollData *coll_data);
+	static bool newBroadphaseResponse(void *client_data, void *object1, void *object2, const PHY_CollData *coll_data);
+	virtual bool NewHandleCollision(void *obj1, void *obj2, const PHY_CollData *coll_data);
 	void RemoveNewCollisions();
 
 public:
-	KX_CollisionEventManager(class SCA_LogicManager *logicmgr,
-	                         PHY_IPhysicsEnvironment *physEnv);
-	virtual ~KX_CollisionEventManager();
+	SCA_CollisionEventManager(class SCA_LogicManager *logicmgr,
+	                          PHY_IPhysicsEnvironment *physEnv);
+	virtual ~SCA_CollisionEventManager();
+
 	virtual void NextFrame();
 	virtual void EndFrame();
 	virtual void RegisterSensor(SCA_ISensor *sensor);
 	virtual void RemoveSensor(SCA_ISensor *sensor);
 
-	SCA_LogicManager *GetLogicManager()
-	{
-		return m_logicmgr;
-	}
-	PHY_IPhysicsEnvironment *GetPhysicsEnvironment()
-	{
-		return m_physEnv;
-	}
+	SCA_LogicManager *GetLogicManager();
+	PHY_IPhysicsEnvironment *GetPhysicsEnvironment();
 
 #ifdef WITH_CXX_GUARDEDALLOC
-	MEM_CXX_CLASS_ALLOC_FUNCS("GE:KX_CollisionEventManager")
+	MEM_CXX_CLASS_ALLOC_FUNCS("GE:SCA_CollisionEventManager")
 #endif
 };
 
-#endif  // __KX_TOUCHEVENTMANAGER_H__
+#endif  //__KX_COLLISIONEVENTMANAGER_H__
