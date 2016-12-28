@@ -301,10 +301,10 @@ void GPU_framebuffer_bind_no_save(GPUFrameBuffer *fb, int slot)
 
 void GPU_framebuffer_bind_simple(GPUFrameBuffer *fb)
 {
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb->object);
+	glBindFramebuffer(GL_FRAMEBUFFER, fb->object);
 	/* last bound prevails here, better allow explicit control here too */
-	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	GG.currentfb = fb->object;
 }
@@ -333,7 +333,6 @@ bool GPU_framebuffer_check_valid(GPUFrameBuffer *fb, char err_out[256])
 int GPU_framebuffer_renderbuffer_attach(GPUFrameBuffer *fb, GPURenderBuffer *rb, int slot)
 {
 	GLenum attachement;
-	GLenum error;
 
 	if (slot >= GPU_FB_MAX_SLOTS) {
 		fprintf(stderr,
@@ -343,16 +342,16 @@ int GPU_framebuffer_renderbuffer_attach(GPUFrameBuffer *fb, GPURenderBuffer *rb,
 	}
 
 	if (GPU_renderbuffer_depth(rb)) {
-		attachement = GL_DEPTH_ATTACHMENT_EXT;
+		attachement = GL_DEPTH_ATTACHMENT;
 	}
 	else {
-		attachement = GL_COLOR_ATTACHMENT0_EXT + slot;
+		attachement = GL_COLOR_ATTACHMENT0 + slot;
 	}
 
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb->object);
+	glBindFramebuffer(GL_FRAMEBUFFER, fb->object);
 	GG.currentfb = fb->object;
 
-	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, attachement, GL_RENDERBUFFER_EXT, GPU_renderbuffer_bindcode(rb));
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachement, GL_RENDERBUFFER, GPU_renderbuffer_bindcode(rb));
 
 	if (GPU_renderbuffer_depth(rb))
 		fb->depthrb = rb;
@@ -374,21 +373,21 @@ void GPU_framebuffer_renderbuffer_detach(GPURenderBuffer *rb)
 		return;
 
 	if (GG.currentfb != fb->object) {
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb->object);
+		glBindFramebuffer(GL_FRAMEBUFFER, fb->object);
 		GG.currentfb = fb->object;
 	}
 
 	if (GPU_renderbuffer_depth(rb)) {
 		fb->depthrb = NULL;
-		attachment = GL_DEPTH_ATTACHMENT_EXT;
+		attachment = GL_DEPTH_ATTACHMENT;
 	}
 	else {
 		BLI_assert(fb->colorrb[fb_attachment] == rb);
 		fb->colorrb[fb_attachment] = NULL;
-		attachment = GL_COLOR_ATTACHMENT0_EXT + fb_attachment;
+		attachment = GL_COLOR_ATTACHMENT0 + fb_attachment;
 	}
 
-	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, attachment, GL_RENDERBUFFER_EXT, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, 0);
 
 	GPU_renderbuffer_framebuffer_set(rb, NULL, -1);
 }
@@ -544,14 +543,14 @@ GPURenderBuffer *GPU_renderbuffer_create(int width, int height, int samples, GPU
 	rb->height = height;
 	rb->samples = samples;
 
-	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rb->bindcode);
+	glBindRenderbuffer(GL_RENDERBUFFER, rb->bindcode);
 
 	if (type == GPU_RENDERBUFFER_DEPTH) {
 		if (samples > 0) {
-			glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, samples, GL_DEPTH_COMPONENT, width, height);
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
 		}
 		else {
-			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 		}
 		rb->depth = true;
 	}
@@ -576,14 +575,14 @@ GPURenderBuffer *GPU_renderbuffer_create(int width, int height, int samples, GPU
 			}
 		}
 		if (samples > 0) {
-			glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, samples, internalformat, width, height);
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat, width, height);
 		}
 		else {
-			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, internalformat, width, height);
+			glRenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
 		}
 	}
 
-	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	return rb;
 }
@@ -591,7 +590,7 @@ GPURenderBuffer *GPU_renderbuffer_create(int width, int height, int samples, GPU
 void GPU_renderbuffer_free(GPURenderBuffer *rb)
 {
 	if (rb->bindcode) {
-		glDeleteRenderbuffersEXT(1, &rb->bindcode);
+		glDeleteRenderbuffers(1, &rb->bindcode);
 	}
 
 	MEM_freeN(rb);
@@ -864,11 +863,11 @@ void GPU_offscreen_blit(GPUOffScreen *srcofs, GPUOffScreen *dstofs, bool color, 
 {
 	BLI_assert(color || depth);
 
-	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, srcofs->fb->object);
-	glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, dstofs->fb->object);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, srcofs->fb->object);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstofs->fb->object);
 
-	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	int height = min_ff(GPU_offscreen_height(srcofs), GPU_offscreen_height(dstofs));
 	int width = min_ff(GPU_offscreen_width(srcofs), GPU_offscreen_width(dstofs));
@@ -882,7 +881,7 @@ void GPU_offscreen_blit(GPUOffScreen *srcofs, GPUOffScreen *dstofs, bool color, 
 		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
-	glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, mask, GL_NEAREST);
+	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, mask, GL_NEAREST);
 
 	// Call GPU_framebuffer_bind_simple to change GG.currentfb.
 	GPU_framebuffer_bind_simple(dstofs->fb);
