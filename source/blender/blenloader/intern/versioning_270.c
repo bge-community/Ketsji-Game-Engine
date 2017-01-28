@@ -1492,4 +1492,8 @@ void blo_do_versions_270(FileData *fd, Library *UNUSED(lib), Main *main)
 			}
 		}
 	}
+
+	for (Scene *scene = main->scene.first; scene != NULL; scene = scene->id.next) {
+		scene->gm.matmode = GAME_MAT_GLSL;
+	}
 }
