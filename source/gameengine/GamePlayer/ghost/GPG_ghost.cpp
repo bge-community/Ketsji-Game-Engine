@@ -447,6 +447,7 @@ int main(
 	bool samplesParFound = false;
 	GHOST_TUns16 aasamples = 0;
 	int alphaBackground = 0;
+	char *pythonMainLoop = NULL;
 	
 #ifdef WIN32
 	char **argv;
@@ -849,6 +850,12 @@ int main(
 				alphaBackground = 1;
 				break;
 			}
+			case 'p':
+			{
+				++i;
+				pythonMainLoop = argv[i++];
+				break;
+			}
 			default:  //not recognized
 			{
 				printf("Unknown argument: %s\n", argv[i++]);
@@ -1126,8 +1133,21 @@ int main(
 #ifdef WITH_PYTHON
 						python_main = KX_GetPythonMain(scene);
 #endif // WITH_PYTHON
-						if (python_main) {
-							char *python_code = KX_GetPythonCode(maggie, python_main);
+						if (python_main || pythonMainLoop) {
+							char *python_code = NULL;
+							if (pythonMainLoop) {
+								if (BLI_is_file(pythonMainLoop)) {
+									size_t filesize = 0;
+									python_code = (char *)BLI_file_read_text_as_mem(pythonMainLoop, 1, &filesize);
+									python_code[filesize] = '\0';
+								}
+								else {
+									std::cout << "cannot yield control to Python: no file named '" << pythonMainLoop << "'" << std::endl;
+								}
+							}
+							else {
+								python_code = KX_GetPythonCode(maggie, python_main);
+							}
 							if (python_code) {
 #ifdef WITH_PYTHON
 								// Set python environement variable.
