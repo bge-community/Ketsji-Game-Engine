@@ -1140,6 +1140,7 @@ int main(
 									size_t filesize = 0;
 									python_code = (char *)BLI_file_read_text_as_mem(pythonMainLoop, 1, &filesize);
 									python_code[filesize] = '\0';
+									appendPythonPath(pythonMainLoop);
 								}
 								else {
 									std::cout << "cannot yield control to Python: no file named '" << pythonMainLoop << "'" << std::endl;

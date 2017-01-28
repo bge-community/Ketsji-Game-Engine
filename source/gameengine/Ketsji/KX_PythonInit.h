@@ -67,6 +67,8 @@ int saveGamePythonConfig(char **marshal_buffer);
 int loadGamePythonConfig(char *marshal_buffer, int marshal_length);
 #endif
 
+void appendPythonPath(const char *path);
+
 void addImportMain(struct Main *maggie);
 void removeImportMain(struct Main *maggie);
 

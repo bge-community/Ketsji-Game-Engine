@@ -2208,6 +2208,12 @@ static void restorePySysObjects(void)
 //	PyObject_Print(sys_path, stderr, 0);
 }
 
+void appendPythonPath(const char *path)
+{
+	PyObject *sys_path = PySys_GetObject("path");
+	initPySysObjects__append(sys_path, path);
+}
+
 void addImportMain(struct Main *maggie)
 {
 	bpy_import_main_extra_add(maggie);
