@@ -722,7 +722,7 @@ void RAS_OpenGLRasterizer::RenderText3D(
 
 	BLF_size(fontid, size, dpi);
 	BLF_position(fontid, 0, 0, 0);
-	BLF_draw(fontid, text.c_str(), text.size());
+	BLF_draw_ge(fontid, text.c_str(), text.size());
 
 	BLF_disable(fontid, BLF_MATRIX | BLF_ASPECT);
 
