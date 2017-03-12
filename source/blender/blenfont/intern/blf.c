@@ -629,7 +629,7 @@ void BLF_draw(int fontid, const char *str, size_t len)
 
 void BLF_draw_ge_ex(
 	int fontid, const char *str, size_t len,
-struct ResultBLF *r_info)
+	struct ResultBLF *r_info)
 {
 	FontBLF *font = blf_get(fontid);
 
