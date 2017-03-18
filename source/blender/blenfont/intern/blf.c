@@ -539,9 +539,6 @@ static void blf_draw_ge_gl__start(FontBLF *font)
 	* in BLF_position (old ui_rasterpos_safe).
 	*/
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 #ifndef BLF_STANDALONE
 	GPU_basic_shader_bind(GPU_SHADER_TEXTURE_2D | GPU_SHADER_USE_COLOR);
 #endif
@@ -599,7 +596,6 @@ static void blf_draw_ge_gl__end()
 #ifndef BLF_STANDALONE
 	GPU_basic_shader_bind(GPU_SHADER_USE_COLOR);
 #endif
-	glDisable(GL_BLEND);
 }
 
 void BLF_draw_ex(

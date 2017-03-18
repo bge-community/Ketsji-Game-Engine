@@ -147,8 +147,9 @@ void RAS_OpenGLDebugDraw::Flush(RAS_IRasterizer *rasty, RAS_ICanvas *canvas, RAS
 		glEnd();
 	}
 
+	rasty->BeginRenderText();
+
 	rasty->Disable(RAS_IRasterizer::RAS_DEPTH_TEST);
-	rasty->DisableForText();
 
 	rasty->PushMatrix();
 	rasty->LoadIdentity();
@@ -190,7 +191,7 @@ void RAS_OpenGLDebugDraw::Flush(RAS_IRasterizer *rasty, RAS_ICanvas *canvas, RAS
 
 		glColor4fv(text2d.m_color.getValue());
 		BLF_position(blf_mono_font, xco, yco, 0.0f);
-		BLF_draw(blf_mono_font, text.c_str(), text.size());
+		BLF_draw_ge(blf_mono_font, text.c_str(), text.size());
 	}
 	BLF_disable(blf_mono_font, BLF_SHADOW);
 
@@ -198,4 +199,6 @@ void RAS_OpenGLDebugDraw::Flush(RAS_IRasterizer *rasty, RAS_ICanvas *canvas, RAS
 	rasty->SetMatrixMode(RAS_IRasterizer::RAS_MODELVIEW);
 
 	rasty->PopMatrix();
+
+	rasty->EndRenderText();
 }

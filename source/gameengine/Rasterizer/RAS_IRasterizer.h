@@ -751,7 +751,8 @@ public:
 	 */
 	void GetTransform(float *origmat, int objectdrawmode, float mat[16]);
 
-	void DisableForText();
+	void BeginRenderText();
+	void EndRenderText();
 	/**
 	 * Renders 3D text string using BFL.
 	 * \param fontid	The id of the font.

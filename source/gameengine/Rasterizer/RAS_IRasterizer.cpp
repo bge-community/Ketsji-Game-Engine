@@ -1548,16 +1548,22 @@ void RAS_IRasterizer::GetTransform(float *origmat, int objectdrawmode, float mat
 	}
 }
 
-void RAS_IRasterizer::DisableForText()
+void RAS_IRasterizer::BeginRenderText()
 {
 	SetAlphaBlend(GPU_BLEND_ALPHA);
 	SetLines(false); /* needed for texture fonts otherwise they render as wireframe */
+	SetFrontFace(true);
 
 	Enable(RAS_CULL_FACE);
 
 	DisableLights();
 
 	m_impl->DisableForText();
+}
+
+void RAS_IRasterizer::EndRenderText()
+{
+	SetAlphaBlend(GPU_BLEND_SOLID);
 }
 
 void RAS_IRasterizer::RenderText3D(

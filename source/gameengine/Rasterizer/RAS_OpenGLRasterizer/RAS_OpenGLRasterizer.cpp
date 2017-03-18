@@ -518,8 +518,7 @@ void RAS_OpenGLRasterizer::RenderText3D(
         const float color[4], const float mat[16], float aspect)
 {
 	/* gl prepping */
-	m_rasterizer->DisableForText();
-	SetFrontFace(true);
+	m_rasterizer->BeginRenderText();
 
 	/* the actual drawing */
 	glColor4fv(color);
@@ -539,7 +538,7 @@ void RAS_OpenGLRasterizer::RenderText3D(
 
 	BLF_disable(fontid, BLF_MATRIX | BLF_ASPECT);
 
-	m_rasterizer->SetAlphaBlend(GPU_BLEND_SOLID);
+	m_rasterizer->EndRenderText();
 }
 
 void RAS_OpenGLRasterizer::PushMatrix()
