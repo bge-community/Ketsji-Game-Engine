@@ -1367,6 +1367,7 @@ void KX_Scene::CalculateVisibleMeshes(KX_CullingNodeList& nodes, KX_Camera *cam,
 	}
 
 	bool dbvt_culling = false;
+#if 0
 	if (m_dbvt_culling) {
 		/* Reset KX_GameObject m_bCulled to true before doing culling
 		 * since DBVT culling will only set it to false.
@@ -1394,11 +1395,12 @@ void KX_Scene::CalculateVisibleMeshes(KX_CullingNodeList& nodes, KX_Camera *cam,
 		                                                 KX_GetActiveEngine()->GetCanvas()->GetViewPort(),
 		                                                 mvmat, pmat);
 	}
+#endif
 	if (!dbvt_culling) {
 		KX_CullingHandler handler(nodes, cam->GetFrustum());
 		for (CListValue::iterator<KX_GameObject> it = m_objectlist->GetBegin(), end = m_objectlist->GetEnd(); it != end; ++it) {
 			KX_GameObject *gameobj = *it;
-			if (gameobj->GetVisible() && gameobj->GetMeshCount() > 0 && (layer == 0 || gameobj->GetLayer() & layer)) {
+			if (gameobj->GetVisible() && (gameobj->GetMeshCount() > 0 || gameobj->GetGameObjectType() == SCA_IObject::OBJ_TEXT) /*(layer == 0 || gameobj->GetLayer() & layer)*/) {
 				handler.Process(gameobj->GetCullingNode());
 			}
 		}
@@ -1408,7 +1410,7 @@ void KX_Scene::CalculateVisibleMeshes(KX_CullingNodeList& nodes, KX_Camera *cam,
 void KX_Scene::DrawDebug(RAS_DebugDraw& debugDraw, const KX_CullingNodeList& nodes)
 {
 	const KX_DebugOption showBoundingBox = KX_GetActiveEngine()->GetShowBoundingBox();
-	if (showBoundingBox != KX_DebugOption::DISABLE) {
+	if (true /*showBoundingBox != KX_DebugOption::DISABLE*/) {
 		for (KX_CullingNode *node : nodes) {
 			KX_GameObject *gameobj = node->GetObject();
 

@@ -60,6 +60,8 @@ public:
 		return OBJ_TEXT;
 	}
 
+	// Update text and bounding box.
+	void SetText(const std::vector<std::string>& texts);
 	/// Return text dimensions in blender unit.
 	const MT_Vector2 GetTextDimensions();
 

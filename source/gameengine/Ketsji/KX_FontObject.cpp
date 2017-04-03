@@ -94,12 +94,12 @@ KX_FontObject::KX_FontObject(void *sgReplicationInfo,
 	m_do_color_management(do_color_management)
 {
 	Curve *text = static_cast<Curve *> (ob->data);
-	m_text = split_string(text->str);
 	m_fsize = text->fsize;
 	m_line_spacing = text->linedist;
 	m_offset = MT_Vector3(text->xof, text->yof, 0.0f);
 
 	m_fontid = GetFontId(text->vfont);
+	SetText(split_string(text->str));
 }
 
 KX_FontObject::~KX_FontObject()
@@ -160,7 +160,7 @@ void KX_FontObject::UpdateBuckets()
 
 	// Allow for some logic brick control
 	if (GetProperty("Text")) {
-		m_text = split_string(GetProperty("Text")->GetText());
+		SetText(split_string(GetProperty("Text")->GetText()));
 	}
 
 	// Font Objects don't use the glsl shader, this color management code is copied from gpu_shader_material.glsl
@@ -195,6 +195,52 @@ void KX_FontObject::UpdateBuckets()
 	textUser->SetSpacing(spacing);
 	textUser->SetTexts(m_text);
 	textUser->ActivateMeshSlots();
+}
+
+void KX_FontObject::SetText(const std::vector<std::string>& texts)
+{
+	m_text = texts;
+
+	BLF_enable(m_fontid, BLF_ASPECT);
+
+	const float RES = BGE_FONT_RES * m_resolution;
+
+	const float size = m_fsize * RES;
+	const float aspect = m_fsize / size;
+	CM_Debug("fsize : " << m_fsize << ", size : " << size << ", aspect : " << aspect);
+
+	/* aspect is the inverse scale that allows you to increase
+	 * your resolution without sizing the final text size
+	 * the bigger the size, the smaller the aspect */
+// 	BLF_aspect(m_fontid, aspect, aspect, aspect);
+
+	BLF_size(m_fontid, size, m_dpi);
+// 	BLF_position(m_fontid, 0.0f, 0.0f, 0.0f);
+
+	MT_Vector3 min(0.0f, 0.0f, 0.0f);
+	MT_Vector3 max(0.0f, 0.0f, 0.0f);
+	for (unsigned short i = 0, size = m_text.size(); i < size; ++i) {
+		rctf box;
+		const std::string& text = m_text[i];
+		BLF_boundbox(m_fontid, text.c_str(), text.size(), &box);
+		CM_Debug("text : \"" << text << "\", " << (box.xmin * aspect) << ", " << (box.xmax * aspect) << ", " <<
+					(box.ymin * aspect + m_line_spacing * i) << ", " << (box.ymax * aspect + m_line_spacing * i));
+		if (i == 0) {
+			min.x() = box.xmin;
+			min.y() = box.ymin;
+			max.x() = box.xmax;
+			max.y() = box.ymax;
+		}
+		else {
+			min.x() = std::min(min.x(), box.xmin);
+			min.y() = std::min(min.y(), box.ymin - m_line_spacing / aspect * i);
+			max.x() = std::max(max.x(), box.xmax);
+			max.y() = std::max(max.y(), box.ymax - m_line_spacing / aspect * i);
+		}
+	}
+	SetBoundsAabb(min * aspect, max * aspect);
+
+	BLF_disable(m_fontid, BLF_ASPECT);
 }
 
 const MT_Vector2 KX_FontObject::GetTextDimensions()
@@ -341,7 +387,7 @@ int KX_FontObject::pyattr_set_text(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DE
 		newstringprop->Release();
 	}
 	else {
-		self->m_text = split_string(std::string(chars));
+		self->SetText(split_string(std::string(chars)));
 	}
 
 	return PY_SET_ATTR_SUCCESS;

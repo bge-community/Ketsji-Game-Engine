@@ -28,7 +28,7 @@ void KX_CullingHandler::Process(KX_CullingNode *node)
 	}
 
 	node->SetCulled(culled);
-	if (!culled) {
+// 	if (!culled) {
 		m_activeNodes.push_back(node);
-	}
+// 	}
 }
