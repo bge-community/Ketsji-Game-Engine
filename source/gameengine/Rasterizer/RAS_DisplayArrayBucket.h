@@ -49,8 +49,6 @@ class RAS_Deformer;
 class RAS_IStorageInfo;
 class RAS_InstancingBuffer;
 
-typedef std::vector<RAS_Deformer *> RAS_DeformerList;
-
 class RAS_DisplayArrayBucket : public CM_RefCount<RAS_DisplayArrayBucket>
 {
 private:
@@ -65,10 +63,7 @@ private:
 	/// The list fo all visible mesh slots to render this frame.
 	RAS_MeshSlotList m_activeMeshSlots;
 	/// The list of all deformer usign this display array.
-	RAS_DeformerList m_deformerList;
-
-	/// As m_useDisplayList but without rasterizer value.
-	bool m_useVao;
+	RAS_Deformer *m_deformer;
 
 	/// True if a deformer is dynamic or the mesh i modified this frame.
 	bool m_meshModified;
@@ -76,7 +71,7 @@ private:
 	/** Info created by the storage and freed by this class.
 	 * So it's an unique instance by display array bucket.
 	 * It contains all infos about special redering e.g
-	 * VBO and IBO ID for VBO storage, DL for VA storage.
+	 * VBO and IBO ID for VBO storage.
 	 */
 	RAS_IStorageInfo *m_storageInfo;
 
@@ -88,11 +83,16 @@ private:
 
 	RAS_DisplayArrayDownwardNode m_downwardNode;
 	RAS_DisplayArrayUpwardNode m_upwardNode;
+
 	RAS_DisplayArrayDownwardNode m_instancingNode;
 	RAS_DisplayArrayDownwardNode m_batchingNode;
 
+	void BindPrimitives(RAS_Rasterizer *rasty);
+	void UnbindPrimitives(RAS_Rasterizer *rasty);
+
 public:
-	RAS_DisplayArrayBucket(RAS_MaterialBucket *bucket, RAS_IDisplayArray *array, RAS_MeshObject *mesh, RAS_MeshMaterial *meshmat);
+	RAS_DisplayArrayBucket(RAS_MaterialBucket *bucket, RAS_IDisplayArray *array,
+						   RAS_MeshObject *mesh, RAS_MeshMaterial *meshmat, RAS_Deformer *deformer);
 	~RAS_DisplayArrayBucket();
 
 	/// \section Replication
@@ -103,6 +103,7 @@ public:
 	RAS_IDisplayArray *GetDisplayArray() const;
 	RAS_MeshObject *GetMesh() const;
 	RAS_MeshMaterial *GetMeshMaterial() const;
+	RAS_IStorageInfo *GetStorageInfo() const;
 
 	/// \section Active Mesh Slots Management.
 	void ActivateMesh(RAS_MeshSlot *slot);
@@ -112,24 +113,14 @@ public:
 	void RemoveActiveMeshSlots();
 
 	/// \section Deformer
-	/// Add a deformer user.
-	void AddDeformer(RAS_Deformer *deformer);
-	/// Remove the given deformer.
-	void RemoveDeformer(RAS_Deformer *deformer);
+	void SetDeformer(RAS_Deformer *deformer);
 
 	/// \section Render Infos
-	bool UseVao() const;
 	bool UseBatching() const;
 
 	/// Update render infos.
 	void UpdateActiveMeshSlots(RAS_Rasterizer *rasty);
-	/// Set the mesh object as unmodified flag.
-	void SetDisplayArrayUnmodified();
-	/// Notice the storage info that the indices list (polygons) changed.
-	void SetPolygonsModified(RAS_Rasterizer *rasty);
 
-	RAS_IStorageInfo *GetStorageInfo() const;
-	void SetStorageInfo(RAS_IStorageInfo *info);
 	void DestructStorageInfo();
 
 	/** Generate the attribute's layers for the used mesh and material couple.
@@ -139,11 +130,12 @@ public:
 
 	void SetAttribLayers(RAS_Rasterizer *rasty) const;
 
-	void GenerateTree(RAS_MaterialDownwardNode *downwardRoot, RAS_MaterialUpwardNode *upwardRoot,
-					  RAS_UpwardTreeLeafs *upwardLeafs, RAS_Rasterizer *rasty, bool sort, bool instancing);
+	void GenerateTree(RAS_MaterialDownwardNode& downwardRoot, RAS_MaterialUpwardNode& upwardRoot,
+					  RAS_UpwardTreeLeafs& upwardLeafs, RAS_Rasterizer *rasty, bool sort, bool instancing);
 	void BindUpwardNode(const RAS_RenderNodeArguments& args);
 	void UnbindUpwardNode(const RAS_RenderNodeArguments& args);
 	void RunDownwardNode(const RAS_RenderNodeArguments& args);
+	void RunDownwardNodeNoArray(const RAS_RenderNodeArguments& args);
 	void RunInstancingNode(const RAS_RenderNodeArguments& args);
 	void RunBatchingNode(const RAS_RenderNodeArguments& args);
 

@@ -173,8 +173,8 @@ void RAS_MaterialBucket::DesactivateMaterial(RAS_Rasterizer *rasty)
 	m_material->Desactivate(rasty);
 }
 
-void RAS_MaterialBucket::GenerateTree(RAS_ManagerDownwardNode *downwardRoot, RAS_ManagerUpwardNode *upwardRoot,
-									  RAS_UpwardTreeLeafs *upwardLeafs, RAS_Rasterizer *rasty, bool sort)
+void RAS_MaterialBucket::GenerateTree(RAS_ManagerDownwardNode& downwardRoot, RAS_ManagerUpwardNode& upwardRoot,
+									  RAS_UpwardTreeLeafs& upwardLeafs, RAS_Rasterizer *rasty, bool sort)
 {
 	if (m_displayArrayBucketList.size() == 0) {
 		return;
@@ -182,13 +182,13 @@ void RAS_MaterialBucket::GenerateTree(RAS_ManagerDownwardNode *downwardRoot, RAS
 
 	const bool instancing = UseInstancing();
 	for (RAS_DisplayArrayBucket *displayArrayBucket : m_displayArrayBucketList) {
-		displayArrayBucket->GenerateTree(&m_downwardNode, &m_upwardNode, upwardLeafs, rasty, sort, instancing);
+		displayArrayBucket->GenerateTree(m_downwardNode, m_upwardNode, upwardLeafs, rasty, sort, instancing);
 	}
 
-	downwardRoot->AddChild(&m_downwardNode);
+	downwardRoot.AddChild(&m_downwardNode);
 
 	if (sort) {
-		m_upwardNode.SetParent(upwardRoot);
+		m_upwardNode.SetParent(&upwardRoot);
 	}
 }
 
@@ -205,23 +205,6 @@ void RAS_MaterialBucket::UnbindNode(const RAS_RenderNodeArguments& args)
 	if (!args.m_shaderOverride) {
 		DesactivateMaterial(args.m_rasty);
 	}
-}
-
-void RAS_MaterialBucket::SetDisplayArrayUnmodified()
-{
-	for (RAS_DisplayArrayBucket *displayArrayBucket : m_displayArrayBucketList) {
-		displayArrayBucket->SetDisplayArrayUnmodified();
-	}
-}
-
-RAS_DisplayArrayBucket *RAS_MaterialBucket::FindDisplayArrayBucket(RAS_IDisplayArray *array, RAS_MeshObject *mesh)
-{
-	for (RAS_DisplayArrayBucket *displayArrayBucket : m_displayArrayBucketList) {
-		if (displayArrayBucket->GetDisplayArray() == array && displayArrayBucket->GetMesh() == mesh) {
-			return displayArrayBucket;
-		}
-	}
-	return nullptr;
 }
 
 void RAS_MaterialBucket::AddDisplayArrayBucket(RAS_DisplayArrayBucket *bucket)

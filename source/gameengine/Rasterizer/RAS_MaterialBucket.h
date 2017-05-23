@@ -60,8 +60,8 @@ public:
 	void DesactivateMaterial(RAS_Rasterizer *rasty);
 
 	// Render nodes.
-	void GenerateTree(RAS_ManagerDownwardNode *downwardRoot, RAS_ManagerUpwardNode *upwardRoot,
-					  RAS_UpwardTreeLeafs *upwardLeafs, RAS_Rasterizer *rasty, bool sort);
+	void GenerateTree(RAS_ManagerDownwardNode& downwardRoot, RAS_ManagerUpwardNode& upwardRoot,
+					  RAS_UpwardTreeLeafs& upwardLeafs, RAS_Rasterizer *rasty, bool sort);
 	void BindNode(const RAS_RenderNodeArguments& args);
 	void UnbindNode(const RAS_RenderNodeArguments& args);
 
@@ -75,13 +75,9 @@ public:
 	void RemoveMesh(RAS_MeshSlot *ms);
 	/// Remove all mesh slot using the given mesh object.
 	void RemoveMeshObject(RAS_MeshObject *mesh);
-	/// Set the mesh object as unmodified flag.
-	void SetDisplayArrayUnmodified();
 	void RemoveActiveMeshSlots();
 	unsigned int GetNumActiveMeshSlots();
 
-	/// Find a display array bucket for the given display array.
-	RAS_DisplayArrayBucket *FindDisplayArrayBucket(RAS_IDisplayArray *array, RAS_MeshObject *mesh);
 	void AddDisplayArrayBucket(RAS_DisplayArrayBucket *bucket);
 	void RemoveDisplayArrayBucket(RAS_DisplayArrayBucket *bucket);
 

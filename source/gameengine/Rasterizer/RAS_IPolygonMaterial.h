@@ -42,9 +42,7 @@
 
 #include <map>
 
-struct MTexPoly;
 struct Material;
-struct Image;
 struct Scene;
 class SCA_IScene;
 struct GameSettings;
@@ -55,7 +53,6 @@ enum MaterialProps
 	RAS_BLENDERGLSL = (1 << 3),
 	RAS_CASTSHADOW = (1 << 4),
 	RAS_ONLYSHADOW = (1 << 5),
-	RAS_OBJECTCOLOR = (1 << 6),
 };
 
 enum MaterialRasterizerModes
@@ -115,15 +112,12 @@ public:
 	virtual std::string GetName();
 	unsigned int GetFlag() const;
 	bool IsAlphaShadow() const;
-	bool UsesObjectColor() const;
 	bool CastsShadows() const;
 	bool OnlyShadow() const;
 	RAS_Texture *GetTexture(unsigned int index);
 
 	virtual const std::string GetTextureName() const = 0;
 	virtual Material *GetBlenderMaterial() const = 0;
-	virtual Image *GetBlenderImage() const = 0;
-	virtual MTexPoly *GetMTexPoly() const = 0;
 	virtual Scene *GetBlenderScene() const = 0;
 	virtual SCA_IScene *GetScene() const = 0;
 	virtual bool UseInstancing() const = 0;
