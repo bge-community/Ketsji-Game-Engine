@@ -45,6 +45,8 @@
 #  endif
 #  include <Python.h>
 
+#include "pybind.h"
+
 extern "C" {
 	#  include "BLI_utildefines.h"
 	#  include "python_utildefines.h"
@@ -1961,6 +1963,8 @@ PyMODINIT_FUNC initBGE()
 	PyObject *modules = PyThreadState_GET()->interp->modules;
 	PyObject *mod = PyModule_Create(&BGE_module_def);
 
+	addSubModule(modules, mod, pybindinit(), "bge.bgetest");
+
 	addSubModule(modules, mod, initApplicationPythonBinding(), "bge.app");
 	addSubModule(modules, mod, initConstraintPythonBinding(), "bge.constraints");
 	addSubModule(modules, mod, initGameKeysPythonBinding(), "bge.events");
@@ -2063,7 +2067,7 @@ PyObject *initGamePlayerPythonScripting(Main *maggie, int argc, char** argv)
 	PyDict_SetItemString(PyImport_GetModuleDict(), "bge", initBGE());
 
 	first_time = false;
-	
+
 	PyObjectPlus::ClearDeprecationWarning();
 
 	return PyC_DefaultNameSpace(nullptr);

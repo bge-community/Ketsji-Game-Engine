@@ -32,6 +32,7 @@
 #ifdef WITH_PYTHON
 
 #include "KX_PythonInitTypes.h"
+#include "pybind.h"
 
 /* Only for Class::Parents */
 #include "BL_BlenderShader.h"
@@ -207,6 +208,7 @@ PyMODINIT_FUNC initGameTypesPythonBinding(void)
 	dict = PyModule_GetDict(m);
 
 	for (int init_getset= 1; init_getset > -1; init_getset--) { /* run twice, once to init the getsets another to run PyType_Ready */
+		PyType_Ready_Attr(dict, TestCValue, init_getset);
 		PyType_Ready_Attr(dict, BL_ActionActuator, init_getset);
 		PyType_Ready_Attr(dict, BL_Shader, init_getset);
 		PyType_Ready_Attr(dict, BL_ArmatureObject, init_getset);

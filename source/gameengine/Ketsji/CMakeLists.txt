@@ -150,6 +150,7 @@ set(SRC
 	KX_WorldInfo.cpp
 	KX_WorldIpoController.cpp
 	KX_CollisionContactPoints.cpp
+	pybind.cpp
 
 	BL_Action.h
 	BL_ActionManager.h
@@ -241,6 +242,7 @@ set(SRC
 	KX_WorldInfo.h
 	KX_WorldIpoController.h
 	KX_CollisionContactPoints.h
+	pybind.h
 
 	# orphan headers (not apart of a library)
 	../Physics/Common/PHY_DynamicTypes.h
