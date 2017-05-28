@@ -29,50 +29,46 @@
  *  \ingroup ketsji
  */
 
-
 #include "KX_TimeCategoryLogger.h"
+#include "RAS_DebugDraw.h"
 
-KX_TimeCategoryLogger::KX_TimeCategoryLogger(unsigned int maxNumMeasurements)
-	:m_maxNumMeasurements(maxNumMeasurements),
-	m_lastCategory(-1)
+#include "boost/format.hpp"
+
+const std::string profileLabels[KX_TimeLogger::NUM_CATEGORY] = {
+	"Physics", // PHYSICS
+	"Logic", // LOGIC
+	"Animation", // ANIMATIONS
+	"Network", // NETWORK
+	"Scenegraph", // SCENEGRAPH
+	"Rasterizer", // RASTERIZER
+	"Services", // SERVICES
+	"Overhead", // OVERHEAD
+	"Outside", // OUTSIDE
+	"GPU Latency" // LATENCY
+};
+
+KX_TimeCategoryLogger::KX_TimeCategoryLogger()
+	:m_lastCategory(KX_TimeLogger::NONE)
 {
+	for (double& avg : m_lastAverages) {
+		avg = 0.0;
+	}
 }
 
 KX_TimeCategoryLogger::~KX_TimeCategoryLogger()
 {
 }
 
-void KX_TimeCategoryLogger::SetMaxNumMeasurements(unsigned int maxNumMeasurements)
+void KX_TimeCategoryLogger::StartLog(KX_TimeLogger::Category tc, double now)
 {
-	for (TimeLoggerMap::iterator it = m_loggers.begin(), end = m_loggers.end(); it != end; ++it) {
-		it->second.SetMaxNumMeasurements(maxNumMeasurements);
-	}
-	m_maxNumMeasurements = maxNumMeasurements;
-}
-
-unsigned int KX_TimeCategoryLogger::GetMaxNumMeasurements() const
-{
-	return m_maxNumMeasurements;
-}
-
-void KX_TimeCategoryLogger::AddCategory(TimeCategory tc)
-{
-	// Only add if not already present
-	if (m_loggers.find(tc) == m_loggers.end()) {
-		m_loggers.emplace(TimeLoggerMap::value_type(tc, KX_TimeLogger(m_maxNumMeasurements)));
-	}
-}
-
-void KX_TimeCategoryLogger::StartLog(TimeCategory tc, double now)
-{
-	if (m_lastCategory != -1) {
+	if (m_lastCategory != KX_TimeLogger::NONE) {
 		m_loggers[m_lastCategory].EndLog(now);
 	}
 	m_loggers[tc].StartLog(now);
 	m_lastCategory = tc;
 }
 
-void KX_TimeCategoryLogger::EndLog(TimeCategory tc, double now)
+void KX_TimeCategoryLogger::EndLog(KX_TimeLogger::Category tc, double now)
 {
 	m_loggers[tc].EndLog(now);
 }
@@ -80,17 +76,17 @@ void KX_TimeCategoryLogger::EndLog(TimeCategory tc, double now)
 void KX_TimeCategoryLogger::EndLog(double now)
 {
 	m_loggers[m_lastCategory].EndLog(now);
-	m_lastCategory = -1;
+	m_lastCategory = KX_TimeLogger::NONE;
 }
 
 void KX_TimeCategoryLogger::NextMeasurement(double now)
 {
-	for (TimeLoggerMap::iterator it = m_loggers.begin(), end = m_loggers.end(); it != end; ++it) {
-		it->second.NextMeasurement(now);
+	for (KX_TimeLogger& logger : m_loggers) {
+		logger.NextMeasurement(now);
 	}
 }
 
-double KX_TimeCategoryLogger::GetAverage(TimeCategory tc)
+double KX_TimeCategoryLogger::GetAverage(KX_TimeLogger::Category tc)
 {
 	return m_loggers[tc].GetAverage();
 }
@@ -99,9 +95,34 @@ double KX_TimeCategoryLogger::GetAverage()
 {
 	double time = 0.0;
 
-	for (TimeLoggerMap::iterator it = m_loggers.begin(), end = m_loggers.end(); it != end; ++it) {
-		time += it->second.GetAverage();
+	for (const KX_TimeLogger& logger : m_loggers) {
+		time += logger.GetAverage();
 	}
 
 	return time;
+}
+
+const std::array<double, KX_TimeLogger::NUM_CATEGORY>& KX_TimeCategoryLogger::GetLastAverages() const
+{
+	return m_lastAverages;
+}
+
+void KX_TimeCategoryLogger::RenderCategories(RAS_DebugDraw& debugDraw, double tottime, int xindent, int ysize,
+											 int& xcoord, int& ycoord, int profileIndent)
+{
+	static const MT_Vector4 white(1.0f, 1.0f, 1.0f, 1.0f);
+
+	for (unsigned short tc = 0; tc < KX_TimeLogger::NUM_CATEGORY; ++tc) {
+		debugDraw.RenderText2D(profileLabels[tc] + ":", MT_Vector2(xcoord + xindent, ycoord), white);
+
+		double time = m_loggers[tc].GetAverage();
+		m_lastAverages[tc] = time;
+
+		const std::string debugtxt = (boost::format("%5.2fms | %d%%") % (time*1000.f) % (int)(time/tottime * 100.f)).str();
+		debugDraw.RenderText2D(debugtxt, MT_Vector2(xcoord + xindent + profileIndent, ycoord), white);
+
+		const MT_Vector2 boxSize(50 * (time / tottime), 10);
+		debugDraw.RenderBox2D(MT_Vector2(xcoord + (int)(2.2 * profileIndent), ycoord), boxSize, white);
+		ycoord += ysize;
+	}
 }
