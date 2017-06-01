@@ -57,7 +57,7 @@ extern "C" {
 
 #include "EXP_ListWrapper.h"
 
-#include "MT_Matrix4x4.h"
+#include "MT_Transform.h"
 
 #include "CM_Message.h"
 
@@ -512,12 +512,12 @@ double BL_ArmatureObject::GetLastFrame()
 	return m_lastframe;
 }
 
-bool BL_ArmatureObject::GetBoneMatrix(Bone *bone, MT_Matrix4x4& matrix)
+bool BL_ArmatureObject::GetBoneTransform(Bone *bone, MT_Transform& trans)
 {
 	ApplyPose();
 	bPoseChannel *pchan = BKE_pose_channel_find_name(m_objArma->pose, bone->name);
 	if (pchan) {
-		matrix.setValue(&pchan->pose_mat[0][0]);
+		trans.setValue(&pchan->pose_mat[0][0]);
 	}
 
 	return (pchan != nullptr);
