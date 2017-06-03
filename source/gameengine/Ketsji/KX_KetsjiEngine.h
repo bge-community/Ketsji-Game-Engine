@@ -286,9 +286,6 @@ public:
 	void SetCanvas(RAS_ICanvas *canvas);
 	void SetRasterizer(RAS_Rasterizer *rasterizer);
 	void SetNetworkMessageManager(KX_NetworkMessageManager *manager);
-#ifdef WITH_PYTHON
-	PyObject *GetPyProfileDict();
-#endif
 	void SetConverter(KX_BlenderConverter *converter);
 	KX_BlenderConverter *GetConverter()
 	{
@@ -316,6 +313,8 @@ public:
 	{
 		return m_taskscheduler;
 	}
+
+	std::map<std::string, double> GetProfileDict();
 
 	/// returns true if an update happened to indicate -> Render
 	bool NextFrame();
