@@ -105,7 +105,6 @@ double KX_TimeCategoryLogger::GetAverage() const
 
 double KX_TimeCategoryLogger::GetAverageFrameRate() const
 {
-	double tottime = m_lastTotalAverage;
 	if (m_lastTotalAverage < 1e-6) {
 		// Equivalent to 1.0 / 1e-6.
 		return 1e6f;
@@ -124,10 +123,26 @@ std::map<std::string, double> KX_TimeCategoryLogger::GetProfileDict()
 	return dict;
 }
 
-void KX_TimeCategoryLogger::RenderCategories(RAS_DebugDraw& debugDraw, double tottime, int xindent, int ysize,
+static const MT_Vector4 white(1.0f, 1.0f, 1.0f, 1.0f);
+
+void KX_TimeCategoryLogger::RenderFrameRate(RAS_DebugDraw& debugDraw, int xindent, int ysize,
 											 int& xcoord, int& ycoord, int profileIndent)
 {
-	static const MT_Vector4 white(1.0f, 1.0f, 1.0f, 1.0f);
+	debugDraw.RenderText2D("Frametime :", MT_Vector2(xcoord + xindent, ycoord), white);
+
+	const std::string debugtxt = (boost::format("%5.2fms (%.1ffps)") %  (m_lastTotalAverage * 1000.0f) % GetAverageFrameRate()).str();
+	debugDraw.RenderText2D(debugtxt, MT_Vector2(xcoord + xindent + profileIndent, ycoord), white);
+	// Increase the indent by default increase
+	ycoord += ysize;
+}
+
+void KX_TimeCategoryLogger::RenderCategories(RAS_DebugDraw& debugDraw, int xindent, int ysize,
+											 int& xcoord, int& ycoord, int profileIndent)
+{
+	double tottime = m_lastTotalAverage;
+	if (tottime < 1e-6) {
+		tottime = 1e-6;
+	}
 
 	for (unsigned short tc = 0; tc < KX_TimeLogger::NUM_CATEGORY; ++tc) {
 		debugDraw.RenderText2D(profileLabels[tc] + ":", MT_Vector2(xcoord + xindent, ycoord), white);

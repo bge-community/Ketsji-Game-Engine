@@ -1104,11 +1104,6 @@ void KX_KetsjiEngine::RenderDebugProperties()
 
 	int profile_indent = 72;
 
-	float tottime = m_logger.GetAverage();
-	if (tottime < 1e-6f) {
-		tottime = 1e-6f;
-	}
-
 	static const MT_Vector4 white(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Use nullptrfor no scene.
@@ -1127,19 +1122,12 @@ void KX_KetsjiEngine::RenderDebugProperties()
 
 	// Framerate display
 	if (m_flags & SHOW_FRAMERATE) {
-		debugDraw.RenderText2D("Frametime :",
-		                           MT_Vector2(xcoord + const_xindent,
-		                           ycoord), white);
-
-		debugtxt = (boost::format("%5.2fms (%.1ffps)") %  (tottime * 1000.0f) % (1.0f / tottime)).str();
-		debugDraw.RenderText2D(debugtxt, MT_Vector2(xcoord + const_xindent + profile_indent, ycoord), white);
-		// Increase the indent by default increase
-		ycoord += const_ysize;
+		m_logger.RenderFrameRate(debugDraw, const_xindent, const_ysize, xcoord, ycoord, profile_indent);
 	}
 
 	// Profile display
 	if (m_flags & SHOW_PROFILE) {
-		m_logger.RenderCategories(debugDraw, tottime, const_xindent, const_ysize, xcoord, ycoord, profile_indent);
+		m_logger.RenderCategories(debugDraw, const_xindent, const_ysize, xcoord, ycoord, profile_indent);
 	}
 	// Add the ymargin for titles below the other section of debug info
 	ycoord += title_y_top_margin;
