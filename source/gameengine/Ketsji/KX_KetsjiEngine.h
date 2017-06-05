@@ -212,9 +212,6 @@ private:
 	/// Time logger.
 	KX_TimeCategoryLogger m_logger;
 
-	/// Last estimated framerate
-	double m_average_framerate;
-
 	/// Enable debug draw of culling bounding boxes.
 	KX_DebugOption m_showBoundingBox;
 	/// Enable debug draw armatures.
