@@ -590,7 +590,7 @@ void psys_free(Object *ob, ParticleSystem *psys)
 
 		BLI_bvhtree_free(psys->bvhtree);
 		BLI_kdtree_free(psys->tree);
- 
+
 		if (psys->fluid_springs)
 			MEM_freeN(psys->fluid_springs);
 
@@ -633,8 +633,9 @@ void psys_render_set(Object *ob, ParticleSystem *psys, float viewmat[4][4], floa
 	data->childcachebufs.last = psys->childcachebufs.last;
 	data->totchildcache = psys->totchildcache;
 
-	if (psmd->dm_final)
-		data->dm = CDDM_copy(psmd->dm_final);
+	if (psmd->dm_final) {
+		data->dm = CDDM_copy_with_tessface(psmd->dm_final);
+	}
 	data->totdmvert = psmd->totdmvert;
 	data->totdmedge = psmd->totdmedge;
 	data->totdmface = psmd->totdmface;
@@ -3325,7 +3326,7 @@ void BKE_particlesettings_rough_curve_init(ParticleSettings *part)
 	part->roughcurve = cumap;
 }
 
-ParticleSettings *BKE_particlesettings_copy(Main *bmain, ParticleSettings *part)
+ParticleSettings *BKE_particlesettings_copy(Main *bmain, const ParticleSettings *part)
 {
 	ParticleSettings *partn;
 	int a;
@@ -3465,7 +3466,8 @@ static void get_cpa_texture(DerivedMesh *dm, ParticleSystem *psys, ParticleSetti
 				case TEXCO_UV:
 					if (fw && get_particle_uv(dm, NULL, face_index, fw, mtex->uvname, texvec))
 						break;
-				/* no break, failed to get uv's, so let's try orco's */
+					/* no break, failed to get uv's, so let's try orco's */
+					ATTR_FALLTHROUGH;
 				case TEXCO_ORCO:
 					copy_v3_v3(texvec, orco);
 					break;
@@ -3537,7 +3539,8 @@ void psys_get_texture(ParticleSimulationData *sim, ParticleData *pa, ParticleTex
 				case TEXCO_UV:
 					if (get_particle_uv(sim->psmd->dm_final, pa, 0, pa->fuv, mtex->uvname, texvec))
 						break;
-				/* no break, failed to get uv's, so let's try orco's */
+					/* no break, failed to get uv's, so let's try orco's */
+					ATTR_FALLTHROUGH;
 				case TEXCO_ORCO:
 					psys_particle_on_emitter(sim->psmd, sim->psys->part->from, pa->num, pa->num_dmcache, pa->fuv, pa->foffset, co, 0, 0, 0, texvec, 0);
 					

@@ -40,6 +40,8 @@ struct bGPdata;
 struct bGPDstroke;
 struct bGPDspoint;
 
+struct GHash;
+
 struct ARegion;
 struct View2D;
 struct wmOperatorType;
@@ -154,6 +156,9 @@ int gp_brush_crt_presets_poll(bContext *C);
 /* gpencil_edit.c */
 
 extern ListBase gp_strokes_copypastebuf;
+
+/* Build a map for converting between old colornames and destination-color-refs */
+struct GHash *gp_copybuf_validate_colormap(bGPdata *gpd);
 
 /* Stroke Editing ------------------------------------ */
 
@@ -287,6 +292,8 @@ void GPENCIL_OT_unlock_all(struct wmOperatorType *ot);
 void GPENCIL_OT_layer_isolate(struct wmOperatorType *ot);
 void GPENCIL_OT_layer_merge(struct wmOperatorType *ot);
 
+void GPENCIL_OT_blank_frame_add(struct wmOperatorType *ot);
+
 void GPENCIL_OT_active_frame_delete(struct wmOperatorType *ot);
 void GPENCIL_OT_active_frames_delete_all(struct wmOperatorType *ot);
 
@@ -340,6 +347,7 @@ void gpencil_undo_finish(void);
 
 void GPENCIL_OT_interpolate(struct wmOperatorType *ot);
 void GPENCIL_OT_interpolate_sequence(struct wmOperatorType *ot);
+void GPENCIL_OT_interpolate_reverse(struct wmOperatorType *ot);
 
 /* ****************************************************** */
 /* FILTERED ACTION DATA - TYPES  ---> XXX DEPRECEATED OLD ANIM SYSTEM CODE! */

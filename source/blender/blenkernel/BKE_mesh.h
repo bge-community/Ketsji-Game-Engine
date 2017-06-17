@@ -87,7 +87,7 @@ int BKE_mesh_edge_other_vert(const struct MEdge *e, int v);
 void BKE_mesh_free(struct Mesh *me);
 void BKE_mesh_init(struct Mesh *me);
 struct Mesh *BKE_mesh_add(struct Main *bmain, const char *name);
-struct Mesh *BKE_mesh_copy(struct Main *bmain, struct Mesh *me);
+struct Mesh *BKE_mesh_copy(struct Main *bmain, const struct Mesh *me);
 void BKE_mesh_update_customdata_pointers(struct Mesh *me, const bool do_ensure_tess_cd);
 void BKE_mesh_ensure_skin_customdata(struct Mesh *me);
 
@@ -131,8 +131,7 @@ bool BKE_mesh_uv_cdlayer_rename(struct Mesh *me, const char *old_name, const cha
 
 float (*BKE_mesh_vertexCos_get(const struct Mesh *me, int *r_numVerts))[3];
 
-void BKE_mesh_calc_normals_split(struct Mesh *mesh);
-void BKE_mesh_split_faces(struct Mesh *mesh);
+void BKE_mesh_split_faces(struct Mesh *mesh, bool free_loop_normals);
 
 struct Mesh *BKE_mesh_new_from_object(struct Main *bmain, struct Scene *sce, struct Object *ob,
                                       int apply_modifiers, int settings, int calc_tessface, int calc_undeformed);
@@ -227,6 +226,9 @@ void BKE_lnor_space_custom_data_to_normal(MLoopNorSpace *lnor_space, const short
 void BKE_lnor_space_custom_normal_to_data(MLoopNorSpace *lnor_space, const float custom_lnor[3], short r_clnor_data[2]);
 
 bool BKE_mesh_has_custom_loop_normals(struct Mesh *me);
+
+void BKE_mesh_calc_normals_split(struct Mesh *mesh);
+void BKE_mesh_calc_normals_split_ex(struct Mesh *mesh, struct MLoopNorSpaceArray *r_lnors_spacearr);
 
 void BKE_mesh_normals_loop_split(
         const struct MVert *mverts, const int numVerts, struct MEdge *medges, const int numEdges,

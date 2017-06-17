@@ -1000,7 +1000,7 @@ void reset_particle(ParticleSimulationData *sim, ParticleData *pa, float dtime, 
 	part=psys->part;
 	
 	/* get precise emitter matrix if particle is born */
-	if (part->type!=PART_HAIR && dtime > 0.f && pa->time < cfra && pa->time >= sim->psys->cfra) {
+	if (part->type != PART_HAIR && dtime > 0.f && pa->time < cfra && pa->time >= sim->psys->cfra) {
 		evaluate_emitter_anim(sim->scene, sim->ob, pa->time);
 
 		psys->flag |= PSYS_OB_ANIM_RESTORE;
@@ -1183,7 +1183,7 @@ static void set_keyed_keys(ParticleSimulationData *sim)
 				key->time = pa->time;
 		}
 
-		if (psys->flag & PSYS_KEYED_TIMING && pt->duration!=0.0f)
+		if (psys->flag & PSYS_KEYED_TIMING && pt->duration != 0.0f)
 			k++;
 
 		ksim.psys->flag |= keyed_flag;
@@ -4328,12 +4328,12 @@ void BKE_particlesystem_id_loop(ParticleSystem *psys, ParticleSystemIDFunc func,
 {
 	ParticleTarget *pt;
 
-	func(psys, (ID **)&psys->part, userdata, IDWALK_USER | IDWALK_NEVER_NULL);
-	func(psys, (ID **)&psys->target_ob, userdata, IDWALK_NOP);
-	func(psys, (ID **)&psys->parent, userdata, IDWALK_NOP);
+	func(psys, (ID **)&psys->part, userdata, IDWALK_CB_USER | IDWALK_CB_NEVER_NULL);
+	func(psys, (ID **)&psys->target_ob, userdata, IDWALK_CB_NOP);
+	func(psys, (ID **)&psys->parent, userdata, IDWALK_CB_NOP);
 
 	for (pt = psys->targets.first; pt; pt = pt->next) {
-		func(psys, (ID **)&pt->ob, userdata, IDWALK_NOP);
+		func(psys, (ID **)&pt->ob, userdata, IDWALK_CB_NOP);
 	}
 
 	/* Even though psys->part should never be NULL, this can happen as an exception during deletion.
@@ -4343,7 +4343,7 @@ void BKE_particlesystem_id_loop(ParticleSystem *psys, ParticleSystemIDFunc func,
 		int p;
 
 		for (p = 0, pa = psys->particles; p < psys->totpart; p++, pa++) {
-			func(psys, (ID **)&pa->boid->ground, userdata, IDWALK_NOP);
+			func(psys, (ID **)&pa->boid->ground, userdata, IDWALK_CB_NOP);
 		}
 	}
 }

@@ -184,7 +184,7 @@ void BKE_rigidbody_free_constraint(Object *ob)
  * be added to relevant groups later...
  */
 
-RigidBodyOb *BKE_rigidbody_copy_object(Object *ob)
+RigidBodyOb *BKE_rigidbody_copy_object(const Object *ob)
 {
 	RigidBodyOb *rboN = NULL;
 
@@ -204,7 +204,7 @@ RigidBodyOb *BKE_rigidbody_copy_object(Object *ob)
 	return rboN;
 }
 
-RigidBodyCon *BKE_rigidbody_copy_constraint(Object *ob)
+RigidBodyCon *BKE_rigidbody_copy_constraint(const Object *ob)
 {
 	RigidBodyCon *rbcN = NULL;
 
@@ -822,7 +822,7 @@ static void rigidbody_validate_sim_constraint(RigidBodyWorld *rbw, Object *ob, b
 					RB_constraint_set_damping_6dof_spring(rbc->physics_constraint, RB_LIMIT_ANG_Z, rbc->spring_damping_ang_z);
 
 					RB_constraint_set_equilibrium_6dof_spring(rbc->physics_constraint);
-					/* fall-through */
+					ATTR_FALLTHROUGH;
 				case RBC_TYPE_6DOF:
 					if (rbc->type == RBC_TYPE_6DOF) /* a litte awkward but avoids duplicate code for limits */
 						rbc->physics_constraint = RB_constraint_new_6dof(loc, rot, rb1, rb2);
@@ -974,14 +974,14 @@ void BKE_rigidbody_world_groups_relink(RigidBodyWorld *rbw)
 
 void BKE_rigidbody_world_id_loop(RigidBodyWorld *rbw, RigidbodyWorldIDFunc func, void *userdata)
 {
-	func(rbw, (ID **)&rbw->group, userdata, IDWALK_NOP);
-	func(rbw, (ID **)&rbw->constraints, userdata, IDWALK_NOP);
-	func(rbw, (ID **)&rbw->effector_weights->group, userdata, IDWALK_NOP);
+	func(rbw, (ID **)&rbw->group, userdata, IDWALK_CB_NOP);
+	func(rbw, (ID **)&rbw->constraints, userdata, IDWALK_CB_NOP);
+	func(rbw, (ID **)&rbw->effector_weights->group, userdata, IDWALK_CB_NOP);
 
 	if (rbw->objects) {
 		int i;
 		for (i = 0; i < rbw->numbodies; i++) {
-			func(rbw, (ID **)&rbw->objects[i], userdata, IDWALK_NOP);
+			func(rbw, (ID **)&rbw->objects[i], userdata, IDWALK_CB_NOP);
 		}
 	}
 }
@@ -1622,8 +1622,8 @@ void BKE_rigidbody_do_simulation(Scene *scene, float ctime)
 #  pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-struct RigidBodyOb *BKE_rigidbody_copy_object(Object *ob) { return NULL; }
-struct RigidBodyCon *BKE_rigidbody_copy_constraint(Object *ob) { return NULL; }
+struct RigidBodyOb *BKE_rigidbody_copy_object(const Object *ob) { return NULL; }
+struct RigidBodyCon *BKE_rigidbody_copy_constraint(const Object *ob) { return NULL; }
 void BKE_rigidbody_validate_sim_world(Scene *scene, RigidBodyWorld *rbw, bool rebuild) {}
 void BKE_rigidbody_calc_volume(Object *ob, float *r_vol) { if (r_vol) *r_vol = 0.0f; }
 void BKE_rigidbody_calc_center_of_mass(Object *ob, float r_center[3]) { zero_v3(r_center); }

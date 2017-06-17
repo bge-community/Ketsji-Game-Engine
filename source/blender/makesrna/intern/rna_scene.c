@@ -40,6 +40,7 @@
 #include "IMB_imbuf_types.h"
 
 #include "BLI_math.h"
+#include "BLI_string_utils.h"
 
 #include "BLT_translation.h"
 
@@ -87,7 +88,8 @@ EnumPropertyItem rna_enum_exr_codec_items[] = {
 	{R_IMF_EXR_CODEC_B44, "B44", 0, "B44 (lossy)", ""},
 	{R_IMF_EXR_CODEC_B44A, "B44A", 0, "B44A (lossy)", ""},
 	{R_IMF_EXR_CODEC_DWAA, "DWAA", 0, "DWAA (lossy)", ""},
-	{R_IMF_EXR_CODEC_DWAB, "DWAB", 0, "DWAB (lossy)", ""},
+	/* NOTE: Commented out for until new OpenEXR is released, see T50673. */
+	/* {R_IMF_EXR_CODEC_DWAB, "DWAB", 0, "DWAB (lossy)", ""}, */
 	{0, NULL, 0, NULL, NULL}
 };
 #endif
@@ -406,9 +408,34 @@ EnumPropertyItem rna_enum_bake_pass_filter_type_items[] = {
 	{0, NULL, 0, NULL, NULL}
 };
 
+EnumPropertyItem rna_enum_gpencil_interpolation_mode_items[] = {
+	/* interpolation */
+	{0, "", 0, N_("Interpolation"), "Standard transitions between keyframes"},
+	{GP_IPO_LINEAR,   "LINEAR", ICON_IPO_LINEAR, "Linear", "Straight-line interpolation between A and B (i.e. no ease in/out)"},
+	{GP_IPO_CURVEMAP, "CUSTOM", ICON_IPO_BEZIER, "Custom", "Custom interpolation defined using a curve map"},
+	
+	/* easing */
+	{0, "", 0, N_("Easing (by strength)"), "Predefined inertial transitions, useful for motion graphics (from least to most ''dramatic'')"},
+	{GP_IPO_SINE, "SINE", ICON_IPO_SINE, "Sinusoidal", "Sinusoidal easing (weakest, almost linear but with a slight curvature)"},
+	{GP_IPO_QUAD, "QUAD", ICON_IPO_QUAD, "Quadratic", "Quadratic easing"},
+	{GP_IPO_CUBIC, "CUBIC", ICON_IPO_CUBIC, "Cubic", "Cubic easing"},
+	{GP_IPO_QUART, "QUART", ICON_IPO_QUART, "Quartic", "Quartic easing"},
+	{GP_IPO_QUINT, "QUINT", ICON_IPO_QUINT, "Quintic", "Quintic easing"},
+	{GP_IPO_EXPO, "EXPO", ICON_IPO_EXPO, "Exponential", "Exponential easing (dramatic)"},
+	{GP_IPO_CIRC, "CIRC", ICON_IPO_CIRC, "Circular", "Circular easing (strongest and most dynamic)"},
+	
+	{0, "", 0, N_("Dynamic Effects"), "Simple physics-inspired easing effects"},
+	{GP_IPO_BACK, "BACK", ICON_IPO_BACK, "Back", "Cubic easing with overshoot and settle"},
+	{GP_IPO_BOUNCE, "BOUNCE", ICON_IPO_BOUNCE, "Bounce", "Exponentially decaying parabolic bounce, like when objects collide"},
+	{GP_IPO_ELASTIC, "ELASTIC", ICON_IPO_ELASTIC, "Elastic", "Exponentially decaying sine wave, like an elastic band"},
+	
+	{0, NULL, 0, NULL, NULL}
+};
+
 #ifdef RNA_RUNTIME
 
 #include "DNA_anim_types.h"
+#include "DNA_color_types.h"
 #include "DNA_node_types.h"
 #include "DNA_object_types.h"
 #include "DNA_mesh_types.h"
@@ -419,8 +446,10 @@ EnumPropertyItem rna_enum_bake_pass_filter_type_items[] = {
 #include "MEM_guardedalloc.h"
 
 #include "BKE_brush.h"
+#include "BKE_colortools.h"
 #include "BKE_context.h"
 #include "BKE_global.h"
+#include "BKE_idprop.h"
 #include "BKE_image.h"
 #include "BKE_main.h"
 #include "BKE_node.h"
@@ -445,6 +474,29 @@ EnumPropertyItem rna_enum_bake_pass_filter_type_items[] = {
 #ifdef WITH_FREESTYLE
 #include "FRS_freestyle.h"
 #endif
+
+/* Grease Pencil Interpolation settings */
+static char *rna_GPencilInterpolateSettings_path(PointerRNA *UNUSED(ptr))
+{
+	return BLI_strdup("tool_settings.gpencil_interpolate");
+}
+
+static void rna_GPencilInterpolateSettings_type_set(PointerRNA *ptr, int value)
+{
+	GP_Interpolate_Settings *settings = (GP_Interpolate_Settings *)ptr->data;
+	
+	/* NOTE: This cast should be fine, as we have a small + finite set of values (eGP_Interpolate_Type)
+	 * that should fit well within a char
+	 */
+	settings->type = (char)value;
+	
+	/* init custom interpolation curve here now the first time it's used */
+	if ((settings->type == GP_IPO_CURVEMAP) &&
+	    (settings->custom_ipo == NULL))
+	{
+		settings->custom_ipo = curvemapping_add(1, 0.0f, 0.0f, 1.0f, 1.0f);
+	}
+}
 
 /* Grease pencil Drawing Brushes */
 static bGPDbrush *rna_GPencil_brush_new(ToolSettings *ts, const char *name, int setactive)
@@ -742,6 +794,21 @@ static void rna_Scene_frame_current_set(PointerRNA *ptr, int value)
 	data->r.cfra = value;
 }
 
+static float rna_Scene_frame_float_get(PointerRNA *ptr)
+{
+	Scene *data = (Scene *)ptr->data;
+	return (float)data->r.cfra + data->r.subframe;
+}
+
+static void rna_Scene_frame_float_set(PointerRNA *ptr, float value)
+{
+	Scene *data = (Scene *)ptr->data;
+	/* if negative frames aren't allowed, then we can't use them */
+	FRAMENUMBER_MIN_CLAMP(value);
+	data->r.cfra = (int)value;
+	data->r.subframe = value - data->r.cfra;
+}
+
 static float rna_Scene_frame_current_final_get(PointerRNA *ptr)
 {
 	Scene *scene = (Scene *)ptr->data;
@@ -820,6 +887,12 @@ static void rna_Scene_preview_range_end_frame_set(PointerRNA *ptr, int value)
 	/* now set normally */
 	CLAMP(value, data->r.psfra, MAXFRAME);
 	data->r.pefra = value;
+}
+
+static void rna_Scene_show_subframe_update(Main *UNUSED(bmain), Scene *UNUSED(current_scene), PointerRNA *ptr)
+{
+	Scene *scene = (Scene *)ptr->id.data;
+	scene->r.subframe = 0.0f;
 }
 
 static void rna_Scene_frame_update(Main *bmain, Scene *UNUSED(current_scene), PointerRNA *ptr)
@@ -1537,6 +1610,18 @@ static void rna_Scene_use_view_map_cache_update(Main *UNUSED(bmain), Scene *UNUS
 #endif
 }
 
+static IDProperty *rna_SceneRenderLayer_idprops(PointerRNA *ptr, bool create)
+{
+	SceneRenderLayer *srl = (SceneRenderLayer *)ptr->data;
+
+	if (create && !srl->prop) {
+		IDPropertyTemplate val = {0};
+		srl->prop = IDP_New(IDP_GROUP, &val, "SceneRenderLayer ID properties");
+	}
+
+	return srl->prop;
+}
+
 static void rna_SceneRenderLayer_name_set(PointerRNA *ptr, const char *value)
 {
 	Scene *scene = (Scene *)ptr->id.data;
@@ -1641,9 +1726,16 @@ static void rna_SceneRenderLayer_pass_update(Main *bmain, Scene *activescene, Po
 	Scene *scene = (Scene *)ptr->id.data;
 
 	if (scene->nodetree)
-		ntreeCompositForceHidden(scene->nodetree);
-	
+		ntreeCompositUpdateRLayers(scene->nodetree);
+
 	rna_Scene_glsl_update(bmain, activescene, ptr);
+}
+
+static void rna_SceneRenderLayer_update_render_passes(ID *id)
+{
+	Scene *scene = (Scene *)id;
+	if (scene->nodetree)
+		ntreeCompositUpdateRLayers(scene->nodetree);
 }
 
 static void rna_Scene_use_nodes_update(bContext *C, PointerRNA *ptr)
@@ -1724,7 +1816,7 @@ static void object_simplify_update(Object *ob)
 	}
 }
 
-static void rna_Scene_use_simplify_update(Main *bmain, Scene *UNUSED(scene), PointerRNA *ptr)
+static void rna_Scene_use_simplify_update(Main *bmain, Scene *scene, PointerRNA *ptr)
 {
 	Scene *sce = ptr->id.data;
 	Scene *sce_iter;
@@ -1735,6 +1827,7 @@ static void rna_Scene_use_simplify_update(Main *bmain, Scene *UNUSED(scene), Poi
 		object_simplify_update(base->object);
 	
 	WM_main_add_notifier(NC_GEOM | ND_DATA, NULL);
+	DAG_id_tag_update(&scene->id, 0);
 }
 
 static void rna_Scene_simplify_update(Main *bmain, Scene *UNUSED(scene), PointerRNA *ptr)
@@ -2136,6 +2229,73 @@ static int rna_gpu_is_hq_supported_get(PointerRNA *UNUSED(ptr))
 }
 
 #else
+
+/* Grease Pencil Interpolation tool settings */
+static void rna_def_gpencil_interpolate(BlenderRNA *brna)
+{
+	StructRNA *srna;
+	PropertyRNA *prop;
+	
+	srna = RNA_def_struct(brna, "GPencilInterpolateSettings", NULL);
+	RNA_def_struct_sdna(srna, "GP_Interpolate_Settings");
+	RNA_def_struct_path_func(srna, "rna_GPencilInterpolateSettings_path");
+	RNA_def_struct_ui_text(srna, "Grease Pencil Interpolate Settings",
+	                       "Settings for Grease Pencil interpolation tools");
+	
+	/* flags */
+	prop = RNA_def_property(srna, "interpolate_all_layers", PROP_BOOLEAN, PROP_NONE);
+	RNA_def_property_boolean_sdna(prop, NULL, "flag", GP_TOOLFLAG_INTERPOLATE_ALL_LAYERS);
+	RNA_def_property_ui_text(prop, "Interpolate All Layers", "Interpolate all layers, not only active");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+
+	prop = RNA_def_property(srna, "interpolate_selected_only", PROP_BOOLEAN, PROP_NONE);
+	RNA_def_property_boolean_sdna(prop, NULL, "flag", GP_TOOLFLAG_INTERPOLATE_ONLY_SELECTED);
+	RNA_def_property_ui_text(prop, "Interpolate Selected Strokes", "Interpolate only selected strokes in the original frame");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+	
+	/* interpolation type */
+	prop = RNA_def_property(srna, "type", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_sdna(prop, NULL, "type");
+	RNA_def_property_enum_items(prop, rna_enum_gpencil_interpolation_mode_items);
+	RNA_def_property_enum_funcs(prop, NULL, "rna_GPencilInterpolateSettings_type_set", NULL);
+	RNA_def_property_ui_text(prop, "Type",
+	                         "Interpolation method to use the next time 'Interpolate Sequence' is run");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+	
+	/* easing */
+	prop = RNA_def_property(srna, "easing", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_sdna(prop, NULL, "easing");
+	RNA_def_property_enum_items(prop, rna_enum_beztriple_interpolation_easing_items);
+	RNA_def_property_ui_text(prop, "Easing", 
+	                         "Which ends of the segment between the preceding and following grease pencil frames "
+	                         "easing interpolation is applied to");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+	
+	/* easing options */
+	prop = RNA_def_property(srna, "back", PROP_FLOAT, PROP_NONE);
+	RNA_def_property_float_sdna(prop, NULL, "back");
+	RNA_def_property_ui_text(prop, "Back", "Amount of overshoot for 'back' easing");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+	
+	prop = RNA_def_property(srna, "amplitude", PROP_FLOAT, PROP_NONE);
+	RNA_def_property_float_sdna(prop, NULL, "amplitude");
+	RNA_def_property_range(prop, 0.0f, FLT_MAX); /* only positive values... */
+	RNA_def_property_ui_text(prop, "Amplitude", "Amount to boost elastic bounces for 'elastic' easing");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+	
+	prop = RNA_def_property(srna, "period", PROP_FLOAT, PROP_NONE);
+	RNA_def_property_float_sdna(prop, NULL, "period");
+	RNA_def_property_ui_text(prop, "Period", "Time between bounces for elastic easing");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+	
+	/* custom curvemap */
+	prop = RNA_def_property(srna, "interpolation_curve", PROP_POINTER, PROP_NONE);
+	RNA_def_property_pointer_sdna(prop, NULL, "custom_ipo");
+	RNA_def_property_struct_type(prop, "CurveMapping");
+	RNA_def_property_ui_text(prop, "Interpolation Curve", 
+	                         "Custom curve to control 'sequence' interpolation between Grease Pencil frames");
+	RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL);
+}
 
 /* Grease Pencil Drawing Brushes */
 static void rna_def_gpencil_brush(BlenderRNA *brna)
@@ -2672,7 +2832,14 @@ static void rna_def_tool_settings(BlenderRNA  *brna)
 	prop = RNA_def_property(srna, "gpencil_sculpt", PROP_POINTER, PROP_NONE);
 	RNA_def_property_pointer_sdna(prop, NULL, "gp_sculpt");
 	RNA_def_property_struct_type(prop, "GPencilSculptSettings");
-	RNA_def_property_ui_text(prop, "Grease Pencil Sculpt", "");
+	RNA_def_property_ui_text(prop, "Grease Pencil Sculpt",
+	                         "Settings for stroke sculpting tools and brushes");
+	
+	prop = RNA_def_property(srna, "gpencil_interpolate", PROP_POINTER, PROP_NONE);
+	RNA_def_property_pointer_sdna(prop, NULL, "gp_interpolate");
+	RNA_def_property_struct_type(prop, "GPencilInterpolateSettings");
+	RNA_def_property_ui_text(prop, "Grease Pencil Interpolate", 
+	                        "Settings for Grease Pencil Interpolation tools");
 
 	/* Grease Pencil - Drawing brushes */
 	prop = RNA_def_property(srna, "gpencil_brushes", PROP_COLLECTION, PROP_NONE);
@@ -4927,13 +5094,19 @@ static void rna_def_scene_render_layer(BlenderRNA *brna)
 {
 	StructRNA *srna;
 	PropertyRNA *prop;
+	FunctionRNA *func;
 
 	srna = RNA_def_struct(brna, "SceneRenderLayer", NULL);
 	RNA_def_struct_ui_text(srna, "Scene Render Layer", "Render layer");
 	RNA_def_struct_ui_icon(srna, ICON_RENDERLAYERS);
 	RNA_def_struct_path_func(srna, "rna_SceneRenderLayer_path");
+	RNA_def_struct_idprops_func(srna, "rna_SceneRenderLayer_idprops");
 
 	rna_def_render_layer_common(srna, 1);
+
+	func = RNA_def_function(srna, "update_render_passes", "rna_SceneRenderLayer_update_render_passes");
+	RNA_def_function_ui_description(func, "Requery the enabled render passes from the render engine");
+	RNA_def_function_flag(func, FUNC_USE_SELF_ID | FUNC_NO_SELF);
 
 	/* Freestyle */
 	rna_def_freestyle_settings(brna);
@@ -5245,7 +5418,7 @@ static void rna_def_scene_image_format_data(BlenderRNA *brna)
 	prop = RNA_def_property(srna, "jpeg2k_codec", PROP_ENUM, PROP_NONE);
 	RNA_def_property_enum_sdna(prop, NULL, "jp2_codec");
 	RNA_def_property_enum_items(prop, jp2_codec_items);
-	RNA_def_property_ui_text(prop, "Codec", "Codec settings for Jpek2000");
+	RNA_def_property_ui_text(prop, "Codec", "Codec settings for Jpeg2000");
 	RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, NULL);
 #endif
 
@@ -6597,14 +6770,6 @@ static void rna_def_scene_render_data(BlenderRNA *brna)
 	RNA_def_property_struct_type(prop, "BakeSettings");
 	RNA_def_property_ui_text(prop, "Bake Data", "");
 
-	/* Debugging settings. */
-#ifdef WITH_CYCLES_DEBUG
-	prop = RNA_def_property(srna, "debug_pass_type", PROP_ENUM, PROP_NONE);
-	RNA_def_property_enum_items(prop, rna_enum_render_pass_debug_type_items);
-	RNA_def_property_ui_text(prop, "Debug Pass Type", "Type of the debug pass to use");
-	RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, NULL);
-#endif
-
 	/* Nestled Data  */
 	/* *** Non-Animated *** */
 	RNA_define_animate_sdna(false);
@@ -6957,8 +7122,19 @@ void RNA_def_scene(BlenderRNA *brna)
 	prop = RNA_def_property(srna, "frame_subframe", PROP_FLOAT, PROP_TIME);
 	RNA_def_property_float_sdna(prop, NULL, "r.subframe");
 	RNA_def_property_ui_text(prop, "Current Sub-Frame", "");
-	RNA_def_property_clear_flag(prop, PROP_ANIMATABLE | PROP_EDITABLE);
-	
+	RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
+	RNA_def_property_range(prop, 0.0f, 1.0f);
+	RNA_def_property_ui_range(prop, 0.0f, 1.0f, 0.01, 2);
+	RNA_def_property_update(prop, NC_SCENE | ND_FRAME, "rna_Scene_frame_update");
+
+	prop = RNA_def_property(srna, "frame_float", PROP_FLOAT, PROP_TIME);
+	RNA_def_property_ui_text(prop, "Current Sub-Frame", "");
+	RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
+	RNA_def_property_range(prop, MINAFRAME, MAXFRAME);
+	RNA_def_property_ui_range(prop, MINAFRAME, MAXFRAME, 0.1, 2);
+	RNA_def_property_float_funcs(prop, "rna_Scene_frame_float_get", "rna_Scene_frame_float_set", NULL);
+	RNA_def_property_update(prop, NC_SCENE | ND_FRAME, "rna_Scene_frame_update");
+
 	prop = RNA_def_property(srna, "frame_start", PROP_INT, PROP_TIME);
 	RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
 	RNA_def_property_int_sdna(prop, NULL, "r.sfra");
@@ -7023,7 +7199,15 @@ void RNA_def_scene(BlenderRNA *brna)
 	RNA_def_property_int_funcs(prop, NULL, "rna_Scene_preview_range_end_frame_set", NULL);
 	RNA_def_property_ui_text(prop, "Preview Range End Frame", "Alternative end frame for UI playback");
 	RNA_def_property_update(prop, NC_SCENE | ND_FRAME, NULL);
-	
+
+	/* Subframe for moblur debug. */
+	prop = RNA_def_property(srna, "show_subframe", PROP_BOOLEAN, PROP_NONE);
+	RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
+	RNA_def_property_boolean_sdna(prop, NULL, "r.flag", SCER_SHOW_SUBFRAME);
+	RNA_def_property_ui_text(prop, "Show Subframe",
+	                         "Show current scene subframe and allow set it using interface tools");
+	RNA_def_property_update(prop, NC_SCENE | ND_FRAME, "rna_Scene_show_subframe_update");
+
 	/* Timeline / Time Navigation settings */
 	prop = RNA_def_property(srna, "show_keys_from_selected_only", PROP_BOOLEAN, PROP_NONE);
 	RNA_def_property_boolean_negative_sdna(prop, NULL, "flag", SCE_KEYS_NO_SELONLY);
@@ -7266,6 +7450,7 @@ void RNA_def_scene(BlenderRNA *brna)
 	RNA_define_animate_sdna(false);
 	rna_def_tool_settings(brna);
 	rna_def_gpencil_brush(brna);
+	rna_def_gpencil_interpolate(brna);
 	rna_def_unified_paint_settings(brna);
 	rna_def_curve_paint_settings(brna);
 	rna_def_statvis(brna);

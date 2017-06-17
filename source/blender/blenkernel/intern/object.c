@@ -127,6 +127,7 @@
 #endif
 
 #include "CCGSubSurf.h"
+#include "atomic_ops.h"
 
 #include "GPU_material.h"
 
@@ -319,19 +320,24 @@ void BKE_object_link_modifiers(struct Object *ob_dst, const struct Object *ob_sr
 /* free data derived from mesh, called when mesh changes or is freed */
 void BKE_object_free_derived_caches(Object *ob)
 {
-	/* also serves as signal to remake texspace */
+	/* Also serves as signal to remake texspace.
+	 *
+	 * NOTE: This function can be called from threads on different objects
+	 * sharing same data datablock. So we need to ensure atomic nature of
+	 * data modification here.
+	 */
 	if (ob->type == OB_MESH) {
 		Mesh *me = ob->data;
 
 		if (me && me->bb) {
-			me->bb->flag |= BOUNDBOX_DIRTY;
+			atomic_fetch_and_or_uint32((uint*)&me->bb->flag, BOUNDBOX_DIRTY);
 		}
 	}
 	else if (ELEM(ob->type, OB_SURF, OB_CURVE, OB_FONT)) {
 		Curve *cu = ob->data;
 
 		if (cu && cu->bb) {
-			cu->bb->flag |= BOUNDBOX_DIRTY;
+			atomic_fetch_and_or_uint32((uint*)&cu->bb->flag, BOUNDBOX_DIRTY);
 		}
 	}
 
@@ -876,7 +882,7 @@ SoftBody *copy_softbody(const SoftBody *sb, bool copy_caches)
 	return sbn;
 }
 
-BulletSoftBody *copy_bulletsoftbody(BulletSoftBody *bsb)
+BulletSoftBody *copy_bulletsoftbody(const BulletSoftBody *bsb)
 {
 	BulletSoftBody *bsbn;
 
@@ -1008,7 +1014,7 @@ void BKE_object_copy_softbody(Object *ob_dst, const Object *ob_src)
 	}
 }
 
-static void copy_object_pose(Object *obn, Object *ob)
+static void copy_object_pose(Object *obn, const Object *ob)
 {
 	bPoseChannel *chan;
 	
@@ -1041,7 +1047,7 @@ static void copy_object_pose(Object *obn, Object *ob)
 	}
 }
 
-static void copy_object_lod(Object *obn, Object *ob)
+static void copy_object_lod(Object *obn, const Object *ob)
 {
 	BLI_duplicatelist(&obn->lodlevels, &ob->lodlevels);
 
@@ -1092,7 +1098,7 @@ void BKE_object_transform_copy(Object *ob_tar, const Object *ob_src)
 	copy_v3_v3(ob_tar->size, ob_src->size);
 }
 
-Object *BKE_object_copy_ex(Main *bmain, Object *ob, bool copy_caches)
+Object *BKE_object_copy_ex(Main *bmain, const Object *ob, bool copy_caches)
 {
 	Object *obn;
 	ModifierData *md;
@@ -1139,6 +1145,7 @@ Object *BKE_object_copy_ex(Main *bmain, Object *ob, bool copy_caches)
 
 	/* increase user numbers */
 	id_us_plus((ID *)obn->data);
+	id_us_plus((ID *)obn->poselib);
 	id_us_plus((ID *)obn->gpd);
 	id_us_plus((ID *)obn->dup_group);
 
@@ -1180,7 +1187,7 @@ Object *BKE_object_copy_ex(Main *bmain, Object *ob, bool copy_caches)
 }
 
 /* copy objects, will re-initialize cached simulation data */
-Object *BKE_object_copy(Main *bmain, Object *ob)
+Object *BKE_object_copy(Main *bmain, const Object *ob)
 {
 	return BKE_object_copy_ex(bmain, ob, false);
 }
@@ -1204,7 +1211,7 @@ void BKE_object_make_local_ex(Main *bmain, Object *ob, const bool lib_local, con
 	if (lib_local || is_local) {
 		if (!is_lib) {
 			id_clear_lib_data(bmain, &ob->id);
-			BKE_id_expand_local(&ob->id);
+			BKE_id_expand_local(bmain, &ob->id);
 			if (clear_proxy) {
 				if (ob->proxy_from != NULL) {
 					ob->proxy_from->proxy = NULL;
@@ -2236,78 +2243,6 @@ void BKE_boundbox_minmax(const BoundBox *bb, float obmat[4][4], float r_min[3], 
 	}
 }
 
-void BKE_boundbox_scale(struct BoundBox *bb_dst, const struct BoundBox *bb_src, float scale)
-{
-	float cent[3];
-	BKE_boundbox_calc_center_aabb(bb_src, cent);
-
-	for (int i = 0; i < ARRAY_SIZE(bb_dst->vec); i++) {
-		bb_dst->vec[i][0] = ((bb_src->vec[i][0] - cent[0]) * scale) + cent[0];
-		bb_dst->vec[i][1] = ((bb_src->vec[i][1] - cent[1]) * scale) + cent[1];
-		bb_dst->vec[i][2] = ((bb_src->vec[i][2] - cent[2]) * scale) + cent[2];
-	}
-}
-
-/**
- * Returns a BBox which each dimensions are at least epsilon.
- * \note In case a given dimension needs to be enlarged, its final value will be in [epsilon, 3 * epsilon] range.
- *
- * \param bb the input bbox to check.
- * \param bb_temp the temp bbox to modify (\a bb content is never changed).
- * \param epsilon the minimum dimension to ensure.
- * \return either bb (if nothing needed to be changed) or bb_temp.
- */
-BoundBox *BKE_boundbox_ensure_minimum_dimensions(BoundBox *bb, BoundBox *bb_temp, const float epsilon)
-{
-	if (fabsf(bb->vec[0][0] - bb->vec[4][0]) < epsilon) {
-		/* Flat along X axis... */
-		*bb_temp = *bb;
-		bb = bb_temp;
-		bb->vec[0][0] -= epsilon;
-		bb->vec[1][0] -= epsilon;
-		bb->vec[2][0] -= epsilon;
-		bb->vec[3][0] -= epsilon;
-		bb->vec[4][0] += epsilon;
-		bb->vec[5][0] += epsilon;
-		bb->vec[6][0] += epsilon;
-		bb->vec[7][0] += epsilon;
-	}
-
-	if (fabsf(bb->vec[0][1] - bb->vec[3][1]) < epsilon) {
-		/* Flat along Y axis... */
-		if (bb != bb_temp) {
-			*bb_temp = *bb;
-			bb = bb_temp;
-		}
-		bb->vec[0][1] -= epsilon;
-		bb->vec[1][1] -= epsilon;
-		bb->vec[4][1] -= epsilon;
-		bb->vec[5][1] -= epsilon;
-		bb->vec[2][1] += epsilon;
-		bb->vec[3][1] += epsilon;
-		bb->vec[6][1] += epsilon;
-		bb->vec[7][1] += epsilon;
-	}
-
-	if (fabsf(bb->vec[0][2] - bb->vec[1][2]) < epsilon) {
-		/* Flat along Z axis... */
-		if (bb != bb_temp) {
-			*bb_temp = *bb;
-			bb = bb_temp;
-		}
-		bb->vec[0][2] -= epsilon;
-		bb->vec[3][2] -= epsilon;
-		bb->vec[4][2] -= epsilon;
-		bb->vec[7][2] -= epsilon;
-		bb->vec[1][2] += epsilon;
-		bb->vec[2][2] += epsilon;
-		bb->vec[5][2] += epsilon;
-		bb->vec[6][2] += epsilon;
-	}
-
-	return bb;
-}
-
 BoundBox *BKE_object_boundbox_get(Object *ob)
 {
 	BoundBox *bb = NULL;
@@ -2814,45 +2749,6 @@ int BKE_object_obdata_texspace_get(Object *ob, short **r_texflag, float **r_loc,
 			return 0;
 	}
 	return 1;
-}
-
-/*
- * Test a bounding box for ray intersection
- * assumes the ray is already local to the boundbox space
- */
-bool BKE_boundbox_ray_hit_check(
-        const struct BoundBox *bb,
-        const float ray_start[3], const float ray_normal[3],
-        float *r_lambda)
-{
-	const int triangle_indexes[12][3] = {
-	    {0, 1, 2}, {0, 2, 3},
-	    {3, 2, 6}, {3, 6, 7},
-	    {1, 2, 6}, {1, 6, 5},
-	    {5, 6, 7}, {4, 5, 7},
-	    {0, 3, 7}, {0, 4, 7},
-	    {0, 1, 5}, {0, 4, 5}};
-
-	bool result = false;
-	int i;
-
-	for (i = 0; i < 12 && (!result || r_lambda); i++) {
-		float lambda;
-		int v1, v2, v3;
-		v1 = triangle_indexes[i][0];
-		v2 = triangle_indexes[i][1];
-		v3 = triangle_indexes[i][2];
-		if (isect_ray_tri_v3(ray_start, ray_normal, bb->vec[v1], bb->vec[v2], bb->vec[v3], &lambda, NULL) &&
-		    (!r_lambda || *r_lambda > lambda))
-		{
-			result = true;
-			if (r_lambda) {
-				*r_lambda = lambda;
-			}
-		}
-	}
-
-	return result;
 }
 
 static int pc_cmp(const void *a, const void *b)
