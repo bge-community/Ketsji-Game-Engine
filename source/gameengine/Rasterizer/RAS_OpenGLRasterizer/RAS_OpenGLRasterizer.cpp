@@ -342,7 +342,6 @@ void RAS_OpenGLRasterizer::ClearDepthBuffer()
 	m_2DCanvas->ClearBuffer(RAS_ICanvas::DEPTH_BUFFER);
 }
 
-
 void RAS_OpenGLRasterizer::ClearCachingInfo(void)
 {
 	m_materialCachingInfo = 0;

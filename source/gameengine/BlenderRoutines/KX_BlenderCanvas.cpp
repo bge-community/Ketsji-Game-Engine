@@ -323,21 +323,12 @@ static unsigned int *screenshot(ScrArea *curarea, int *dumpsx, int *dumpsy)
 
 void KX_BlenderCanvas::MakeScreenShot(const char *filename)
 {
-	ScrArea area_dummy= {0};
 	bScreen *screen = m_win->screen;
-	unsigned int *dumprect;
-	int dumpsx, dumpsy;
 
-	area_dummy.totrct.xmin = m_frame_rect.GetLeft();
-	area_dummy.totrct.xmax = m_frame_rect.GetRight();
-	area_dummy.totrct.ymin = m_frame_rect.GetBottom();
-	area_dummy.totrct.ymax = m_frame_rect.GetTop();
-
-	dumprect = screenshot(&area_dummy, &dumpsx, &dumpsy);
-	if (!dumprect) {
-		std::cerr << "KX_BlenderCanvas: Unable to take screenshot!" << std::endl;
-		return;
-	}
+	int x = m_area_rect.GetLeft();
+	int y = m_area_rect.GetBottom();
+	int width = m_area_rect.GetWidth();
+	int height = m_area_rect.GetHeight();
 
 	/* initialize image file format data */
 	Scene *scene = (screen)? screen->scene: NULL;
@@ -348,6 +339,5 @@ void KX_BlenderCanvas::MakeScreenShot(const char *filename)
 	else
 		BKE_imformat_defaults(im_format);
 
-	/* save_screenshot() frees dumprect and im_format */
-	save_screenshot(filename, dumpsx, dumpsy, dumprect, im_format);
+	AddScreenshot(filename, x, y, width, height, im_format);
 }

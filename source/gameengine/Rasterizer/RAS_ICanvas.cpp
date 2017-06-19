@@ -40,6 +40,9 @@ extern "C" {
 #include "IMB_imbuf_types.h"
 }
 
+#include <iostream>
+
+#include "GPU_glew.h"
 
 // Task data for saving screenshots in a different thread.
 struct ScreenshotTaskData
@@ -47,7 +50,7 @@ struct ScreenshotTaskData
 	unsigned int *dumprect;
 	int dumpsx;
 	int dumpsy;
-	char *path;
+	char path[FILE_MAX];
 	ImageFormatData *im_format;
 };
 
@@ -82,6 +85,28 @@ RAS_ICanvas::~RAS_ICanvas()
 }
 
 
+void RAS_ICanvas::FlushScreenshots()
+{
+	for (const Screenshot& screenshot : m_screenshots) {
+		SaveScreeshot(screenshot);
+	}
+
+	m_screenshots.clear();
+}
+
+void RAS_ICanvas::AddScreenshot(const char *path, int x, int y, int width, int height, ImageFormatData *format)
+{
+	Screenshot screenshot;
+	screenshot.path = path;
+	screenshot.x = x;
+	screenshot.y = y;
+	screenshot.width = width;
+	screenshot.height = height;
+	screenshot.format = format;
+
+	m_screenshots.push_back(screenshot);
+}
+
 void save_screenshot_thread_func(TaskPool *__restrict UNUSED(pool), void *taskdata, int UNUSED(threadid))
 {
 	ScreenshotTaskData *task = static_cast<ScreenshotTaskData *>(taskdata);
@@ -95,30 +120,34 @@ void save_screenshot_thread_func(TaskPool *__restrict UNUSED(pool), void *taskda
 	ibuf->rect = NULL;
 	IMB_freeImBuf(ibuf);
 	MEM_freeN(task->dumprect);
-	MEM_freeN(task->path);
 	MEM_freeN(task->im_format);
 }
 
 
-void RAS_ICanvas::save_screenshot(const char *filename, int dumpsx, int dumpsy, unsigned int *dumprect,
-                                  ImageFormatData * im_format)
+void RAS_ICanvas::SaveScreeshot(const Screenshot& screenshot)
 {
-	/* create file path */
-	char *path = (char *)MEM_mallocN(FILE_MAX, "screenshot-path");
-	BLI_strncpy(path, filename, FILE_MAX);
-	BLI_path_abs(path, G.main->name);
-	BLI_path_frame(path, m_frame, 0);
-	m_frame++;
-	BKE_image_path_ensure_ext_from_imtype(path, im_format->imtype);
+	unsigned int *pixels = (unsigned int *)MEM_mallocN(sizeof(int) * screenshot.width * screenshot.height, "pixels");
+
+	if (!pixels) {
+		std::cout << "Cannot allocate pixels array" << std::endl;
+		return;
+	}
+
+	glReadPixels(screenshot.x, screenshot.y, screenshot.width, screenshot.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	/* Save the actual file in a different thread, so that the
 	 * game engine can keep running at full speed. */
 	ScreenshotTaskData *task = (ScreenshotTaskData *)MEM_mallocN(sizeof(ScreenshotTaskData), "screenshot-data");
-	task->dumprect = dumprect;
-	task->dumpsx = dumpsx;
-	task->dumpsy = dumpsy;
-	task->path = path;
-	task->im_format = im_format;
+	task->dumprect = pixels;
+	task->dumpsx = screenshot.width;
+	task->dumpsy = screenshot.height;
+	task->im_format = screenshot.format;
+
+	BLI_strncpy(task->path, screenshot.path, FILE_MAX);
+	BLI_path_abs(task->path, G.main->name);
+	BLI_path_frame(task->path, m_frame, 0);
+	m_frame++;
+	BKE_image_path_ensure_ext_from_imtype(task->path, task->im_format->imtype);
 
 	BLI_task_pool_push(m_taskpool,
 	                   save_screenshot_thread_func,

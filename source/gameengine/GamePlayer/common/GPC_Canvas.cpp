@@ -149,20 +149,11 @@ MakeScreenShot(
 	// copy image data
 	unsigned int dumpsx = GetWidth();
 	unsigned int dumpsy = GetHeight();
-	unsigned int *pixels = (unsigned int *)MEM_mallocN(sizeof(int) * dumpsx * dumpsy, "pixels");
-
-	if (!pixels) {
-		std::cout << "Cannot allocate pixels array" << std::endl;
-		return;
-	}
-
-	glReadPixels(0, 0, dumpsx, dumpsy, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	// initialize image file format data
 	ImageFormatData *im_format = (ImageFormatData *)MEM_mallocN(sizeof(ImageFormatData), "im_format");
 	BKE_imformat_defaults(im_format);
 
-	/* save_screenshot() frees dumprect and im_format */
-	save_screenshot(filename, dumpsx, dumpsy, pixels, im_format);
+	AddScreenshot(filename, 0, 0, dumpsx, dumpsy, im_format);
 }
 
