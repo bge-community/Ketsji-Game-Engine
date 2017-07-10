@@ -193,11 +193,10 @@ SCA_IScene *KX_BlenderMaterial::GetScene() const
 	return m_scene;
 }
 
-void KX_BlenderMaterial::ReloadMaterial()
+void KX_BlenderMaterial::ReleaseMaterial()
 {
-	if (m_blenderShader) {
+	if (m_blenderShader)
 		m_blenderShader->ReloadMaterial();
-	}
 }
 
 void KX_BlenderMaterial::InitTextures()
@@ -218,7 +217,7 @@ void KX_BlenderMaterial::InitScene(KX_Scene *scene)
 	m_scene = scene;
 
 	if (!m_blenderShader) {
-		m_blenderShader = new BL_BlenderShader(m_scene, m_material, m_lightLayer, this);
+		m_blenderShader = new BL_BlenderShader(m_scene, m_material, m_lightLayer);
 	}
 
 	if (!m_blenderShader->Ok()) {
@@ -858,7 +857,14 @@ EXP_PYMETHODDEF_DOC(KX_BlenderMaterial, getShader, "getShader()")
 	// the calling script will need to check
 
 	if (!m_shader) {
-		m_shader = new BL_Shader(this);
+		m_shader = new BL_Shader();
+<<<<<<< HEAD
+		m_shader->InitTexCo(m_textures);
+=======
+		// Set the material to use custom shader.
+		m_flag &= ~RAS_BLENDERGLSL;
+>>>>>>> Add new attribute implementation.
+		m_scene->GetBucketManager()->UpdateShaders(this);
 	}
 
 	if (!m_shader->GetError()) {

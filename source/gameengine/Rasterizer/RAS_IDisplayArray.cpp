@@ -25,6 +25,7 @@
  */
 
 #include "RAS_DisplayArray.h"
+#include "RAS_DisplayArrayStorage.h"
 #include "RAS_MeshObject.h"
 
 #include "GPU_glew.h"
@@ -54,6 +55,19 @@ struct PolygonSort
 		}
 	};
 };
+
+RAS_IDisplayArray::RAS_IDisplayArray(const RAS_IDisplayArray& other)
+	:m_type(other.m_type),
+	m_modifiedFlag(NONE_MODIFIED),
+	m_format(other.m_format),
+	m_vertexInfos(other.m_vertexInfos),
+	m_vertexDataPtrs(other.m_vertexDataPtrs),
+	m_primitiveIndices(other.m_primitiveIndices),
+	m_triangleIndices(other.m_triangleIndices),
+	m_maxOrigIndex(other.m_maxOrigIndex),
+	m_polygonCenters(other.m_polygonCenters)
+{
+}
 
 RAS_IDisplayArray::RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format)
 	:m_type(type),
@@ -222,4 +236,14 @@ const RAS_VertexFormat& RAS_IDisplayArray::GetFormat() const
 RAS_IDisplayArray::Type RAS_IDisplayArray::GetType() const
 {
 	return NORMAL;
+}
+
+RAS_DisplayArrayStorage *RAS_IDisplayArray::GetStorage() const
+{
+	return m_storage.get();
+}
+
+void RAS_IDisplayArray::UpdateStorage()
+{
+	m_storage->UpdateSize();
 }

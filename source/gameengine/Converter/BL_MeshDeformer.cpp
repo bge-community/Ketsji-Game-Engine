@@ -74,7 +74,7 @@ void BL_MeshDeformer::Apply(RAS_MeshMaterial *UNUSED(meshmat), RAS_IDisplayArray
 }
 
 BL_MeshDeformer::BL_MeshDeformer(BL_DeformableGameObject *gameobj, Object *obj, RAS_MeshObject *meshobj)
-	:RAS_Deformer(meshobj),
+	:RAS_Deformer(meshobj, false),
 	m_bmesh((Mesh *)(obj->data)),
 	m_objMesh(obj),
 	m_gameobj(gameobj),

@@ -81,10 +81,6 @@ public:
 		// we have two pointers to deal with but we cannot do it now, will be done in Relink
 		m_bDynamic = false;
 	}
-	virtual bool SkipVertexTransform()
-	{
-		return true;
-	}
 };
 
 #endif

@@ -213,6 +213,7 @@ void RAS_MeshObject::EndConversion(RAS_BoundingBoxManager *boundingBoxManager)
 	for (RAS_MeshMaterial *meshmat : m_materials) {
 		RAS_IDisplayArray *array = meshmat->GetDisplayArray();
 		array->UpdateCache();
+		array->UpdateStorage();
 
 		const std::string materialname = meshmat->GetBucket()->GetPolyMaterial()->GetName();
 		if (array->GetVertexCount() == 0) {
@@ -271,12 +272,4 @@ void RAS_MeshObject::EndConversion(RAS_BoundingBoxManager *boundingBoxManager)
 const RAS_MeshObject::LayersInfo& RAS_MeshObject::GetLayersInfo() const
 {
 	return m_layersInfo;
-}
-
-void RAS_MeshObject::GenerateAttribLayers()
-{
-	for (RAS_MeshMaterial *mmat : m_materials) {
-		RAS_DisplayArrayBucket *displayArrayBucket = mmat->GetDisplayArrayBucket();
-		displayArrayBucket->GenerateAttribLayers();
-	}
 }

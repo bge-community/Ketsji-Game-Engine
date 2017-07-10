@@ -29,8 +29,12 @@
 
 #include "RAS_VertexData.h"
 #include "RAS_Vertex.h"
+
 #include <vector>
 #include <algorithm>
+#include <memory>
+
+class RAS_DisplayArrayStorage;
 
 class RAS_IDisplayArray
 {
@@ -70,6 +74,11 @@ protected:
 	 */
 	std::vector<MT_Vector3> m_polygonCenters;
 
+	/// The data OpenGL storage used for rendering.
+	std::unique_ptr<RAS_DisplayArrayStorage> m_storage;
+
+	RAS_IDisplayArray(const RAS_IDisplayArray& other);
+
 public:
 	RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format);
 	virtual ~RAS_IDisplayArray();
@@ -83,11 +92,11 @@ public:
 	static RAS_IDisplayArray *ConstructArray(PrimitiveType type, const RAS_VertexFormat &format);
 
 	virtual unsigned int GetVertexMemorySize() const = 0;
-	virtual void *GetVertexXYZOffset() const = 0;
-	virtual void *GetVertexNormalOffset() const = 0;
-	virtual void *GetVertexTangentOffset() const = 0;
-	virtual void *GetVertexUVOffset() const = 0;
-	virtual void *GetVertexColorOffset() const = 0;
+	virtual intptr_t GetVertexXYZOffset() const = 0;
+	virtual intptr_t GetVertexNormalOffset() const = 0;
+	virtual intptr_t GetVertexTangentOffset() const = 0;
+	virtual intptr_t GetVertexUVOffset() const = 0;
+	virtual intptr_t GetVertexColorOffset() const = 0;
 	virtual unsigned short GetVertexUvSize() const = 0;
 	virtual unsigned short GetVertexColorSize() const = 0;
 
@@ -226,6 +235,9 @@ public:
 
 	/// Return the type of the display array.
 	virtual Type GetType() const;
+
+	RAS_DisplayArrayStorage *GetStorage() const;
+	void UpdateStorage();
 };
 
 typedef std::vector<RAS_IDisplayArray *> RAS_IDisplayArrayList;

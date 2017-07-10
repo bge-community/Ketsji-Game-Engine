@@ -23,9 +23,10 @@
 #include "RAS_Deformer.h"
 #include "RAS_MeshObject.h"
 
-RAS_Deformer::RAS_Deformer(RAS_MeshObject *mesh)
+RAS_Deformer::RAS_Deformer(RAS_MeshObject *mesh, bool skipTransform)
 	:m_mesh(mesh),
 	m_bDynamic(false),
+	m_skipTransform(skipTransform),
 	m_boundingBox(nullptr)
 {
 }
@@ -50,8 +51,6 @@ void RAS_Deformer::InitializeDisplayArrays()
 		RAS_IDisplayArray *array = meshmat->GetDisplayArray()->GetReplica();
 
 		RAS_DisplayArrayBucket *arrayBucket = new RAS_DisplayArrayBucket(meshmat->GetBucket(), array, m_mesh, meshmat, this);
-		// Generate attribute layers.
-		arrayBucket->GenerateAttribLayers();
 
 		m_displayArrayList.push_back(array);
 		m_displayArrayBucketList.push_back(arrayBucket);
@@ -65,9 +64,7 @@ void RAS_Deformer::ProcessReplica()
 	for (unsigned short i = 0, size = m_displayArrayList.size(); i < size; ++i) {
 		RAS_IDisplayArray *array = m_displayArrayList[i] = m_displayArrayList[i]->GetReplica();
 		RAS_MeshMaterial *meshmat = m_displayArrayBucketList[i]->GetMeshMaterial();
-		RAS_DisplayArrayBucket *arrayBucket = m_displayArrayBucketList[i] = 
-				new RAS_DisplayArrayBucket(meshmat->GetBucket(), array, m_mesh, meshmat, this);
-		arrayBucket->GenerateAttribLayers();
+		m_displayArrayBucketList[i] = new RAS_DisplayArrayBucket(meshmat->GetBucket(), array, m_mesh, meshmat, this);
 	}
 }
 

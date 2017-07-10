@@ -119,9 +119,13 @@ public:
 		}
 
 		// Update the cache to avoid accessing dangling vertex pointer from GetVertex().
+<<<<<<< HEAD
+		RAS_DisplayArray<VertexData>::UpdateCache();
+=======
 		UpdateCache();
 		// Update OpenGl storage.
 		UpdateStorage();
+>>>>>>> Add new attribute implementation.
 
 		return (m_parts.size() - 1);
 	}

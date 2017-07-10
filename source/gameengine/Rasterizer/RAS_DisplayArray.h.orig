@@ -44,15 +44,17 @@ friend class RAS_BatchDisplayArray<VertexData>;
 protected:
 	std::vector<VertexData> m_vertexes;
 
+<<<<<<< HEAD
 	// Temporary vertex data storage.
 	static boost::object_pool<VertexData> m_vertexPool;
-
+=======
 	RAS_DisplayArray(const RAS_DisplayArray& other)
 		:RAS_IDisplayArray(other),
 		m_vertexes(other.m_vertexes)
 	{
 		m_storage.reset(new RAS_DisplayArrayStorage(this));
 	}
+>>>>>>> Add new attribute implementation.
 
 public:
 	RAS_DisplayArray(PrimitiveType type, const RAS_VertexFormat& format)

@@ -50,7 +50,7 @@
 #include "btBulletDynamicsCommon.h"
 
 KX_SoftBodyDeformer::KX_SoftBodyDeformer(RAS_MeshObject *pMeshObject, BL_DeformableGameObject *gameobj)
-	:RAS_Deformer(pMeshObject),
+	:RAS_Deformer(pMeshObject, true),
 	m_gameobj(gameobj),
 	m_needUpdateAabb(true)
 {
