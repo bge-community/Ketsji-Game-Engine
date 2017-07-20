@@ -887,11 +887,11 @@ class MATERIAL_PT_game_shadow(MaterialButtonsPanel, Panel):
 
         split = layout.split()
 
-        if simple_material(base_mat):
-            col = split.column()
+        #if simple_material(base_mat):
+        col = split.column()
 
-            col.prop(mat, "use_cast_shadows", text="Cast")
-            col.prop(mat, "use_cast_shadows_only", text="Cast Only")
+        col.prop(mat, "use_cast_shadows", text="Cast")
+        #col.prop(mat, "use_cast_shadows_only", text="Cast Only")
 
         col = split.column()
         col.prop(mat, "use_shadows", text="Receive")

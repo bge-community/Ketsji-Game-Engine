@@ -883,7 +883,7 @@ void KX_KetsjiEngine::RenderShadowBuffers(KX_Scene *scene)
 
 			KX_CullingNodeList nodes;
 			/* update scene */
-			scene->CalculateVisibleMeshes(nodes, cam, raslight->GetShadowLayer());
+			scene->CalculateVisibleMeshes(nodes, scene->GetActiveCamera(), raslight->GetShadowLayer());
 
 			m_logger.StartLog(tc_animations, m_kxsystem->GetTimeInSeconds());
 			UpdateAnimations(scene);
