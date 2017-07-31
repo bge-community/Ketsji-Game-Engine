@@ -1732,6 +1732,8 @@ typedef struct Scene {
 
 	struct EEVEE_Data *eevee_data;
 	IDProperty *eevee_properties;
+	struct RegionView3D *eevee_rv3d;
+	struct View3D *eevee_v3d;
 
 	int pad5[2];
 } Scene;

@@ -36,6 +36,7 @@ class RAS_Rasterizer;
 class RAS_OffScreen;
 struct DRWShadingGroup;
 struct IDProperty;
+class KX_Scene;
 
 class RAS_EeveeEffectsManager
 {
@@ -52,7 +53,7 @@ private:
 	DRWShadingGroup *m_bloomShGroup[BLOOM_MAX];
 
 public:
-	RAS_EeveeEffectsManager(EEVEE_Data *vedata, RAS_ICanvas *canvas, IDProperty *props);
+	RAS_EeveeEffectsManager(EEVEE_Data *vedata, RAS_ICanvas *canvas, IDProperty *props, KX_Scene *scene);
 	virtual ~RAS_EeveeEffectsManager();
 
 	/** Applies the filters to the scene.
@@ -77,6 +78,9 @@ public:
 	void InitBloomShaders();
 	void InitBloom();
 
+	void InitDof();
+	void InitDofShaders();
+
 private:
 	EEVEE_EffectsInfo *m_effectsInfo;
 	EEVEE_PassList *m_psl;
@@ -87,6 +91,7 @@ private:
 
 	RAS_ICanvas *m_canvas;
 	IDProperty *m_props;
+	KX_Scene *m_scene;
 
 	/** Creates a filter matching the given filter data. Returns nullptr if no
 	* filter can be created with such information.

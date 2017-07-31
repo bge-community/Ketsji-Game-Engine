@@ -219,8 +219,10 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 
 	m_eeveeData = m_blenderScene->eevee_data;
 	m_props = m_blenderScene->eevee_properties;
+	m_rv3d = m_blenderScene->eevee_rv3d;
+	m_v3d = m_blenderScene->eevee_v3d;
 
-	m_effectsManager = new RAS_EeveeEffectsManager(m_eeveeData, canvas, m_props);
+	m_effectsManager = new RAS_EeveeEffectsManager(m_eeveeData, canvas, m_props, this);
 
 #ifdef WITH_PYTHON
 	m_attr_dict = nullptr;
@@ -342,6 +344,16 @@ RAS_SceneLayerData *KX_Scene::GetSceneLayerData() const
 EEVEE_Data *KX_Scene::GetEeveeData()
 {
 	return m_eeveeData;
+}
+
+RegionView3D *KX_Scene::GetRegionView3D()
+{
+	return m_rv3d;
+}
+
+View3D *KX_Scene::GetView3D()
+{
+	return m_v3d;
 }
 
 RAS_BucketManager* KX_Scene::GetBucketManager() const

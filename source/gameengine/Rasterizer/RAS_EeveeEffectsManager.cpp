@@ -35,14 +35,21 @@
 
 #include "BLI_math.h"
 
+#include "KX_Scene.h"
+#include "KX_Camera.h"
+
 
 extern "C" {
+#  include "DNA_camera_types.h"
+#  include "DNA_view3d_types.h"
+#  include "BKE_camera.h"
 #  include "DRW_render.h"
 }
 
-RAS_EeveeEffectsManager::RAS_EeveeEffectsManager(EEVEE_Data *vedata, RAS_ICanvas *canvas, IDProperty *props):
+RAS_EeveeEffectsManager::RAS_EeveeEffectsManager(EEVEE_Data *vedata, RAS_ICanvas *canvas, IDProperty *props, KX_Scene *scene):
 m_canvas(canvas),
-m_props(props)
+m_props(props),
+m_scene(scene)
 {
 	m_psl = vedata->psl;
 	m_txl = vedata->txl;
@@ -52,6 +59,7 @@ m_props(props)
 
 	InitBloom();
 	InitBloomShaders();
+	InitDof();
 }
 
 RAS_EeveeEffectsManager::~RAS_EeveeEffectsManager()
@@ -110,6 +118,74 @@ void RAS_EeveeEffectsManager::InitBloom()
 			m_effects->downsamp_texel_size[i][0] = 1.0f / (float)texsize[0];
 			m_effects->downsamp_texel_size[i][1] = 1.0f / (float)texsize[1];
 		}
+	}
+}
+
+void RAS_EeveeEffectsManager::InitDof()
+{
+	if (m_effects->enabled_effects & EFFECT_DOF) {//BKE_collection_engine_property_value_get_bool(props, "dof_enable")) {
+		/* Depth Of Field */
+
+		RegionView3D *rv3d = m_scene->GetRegionView3D();
+		View3D *v3d = m_scene->GetView3D();
+		/* Retreive Near and Far distance */
+		Camera *blenderCam = (Camera *)m_scene->GetBlenderScene()->camera;
+		m_effects->dof_near_far[0] = -blenderCam->clipsta;
+		m_effects->dof_near_far[1] = -blenderCam->clipend;
+
+		int buffer_size[2] = { (int)m_canvas->GetWidth() / 2, (int)m_canvas->GetHeight() / 2 };
+
+		struct GPUTexture **dof_down_near = &m_txl->dof_down_near;
+		bool fb_reset = false;
+
+		/* Reuse buffer from Bloom if available */
+		/* WATCH IT : must have the same size */
+		if ((m_effects->enabled_effects & EFFECT_BLOOM) != 0) {
+			dof_down_near = &m_txl->bloom_downsample[0]; /* should always exists */
+			if ((m_effects->enabled_effects & EFFECT_BLOOM) == 0) {
+				fb_reset = true;
+			}
+		}
+		else if ((m_effects->enabled_effects & EFFECT_BLOOM) != 0) {
+			fb_reset = true;
+		}
+
+		/* if framebuffer config must be changed */
+		if (fb_reset && (m_fbl->dof_down_fb != NULL)) {
+			DRW_framebuffer_free(m_fbl->dof_down_fb);
+			m_fbl->dof_down_fb = NULL;
+		}
+
+		/* Parameters */
+		/* TODO UI Options */
+		float fstop = blenderCam->gpu_dof.fstop;
+		float blades = blenderCam->gpu_dof.num_blades;
+		float rotation = blenderCam->gpu_dof.rotation;
+		float ratio = 1.0f / blenderCam->gpu_dof.ratio;
+		float sensor = BKE_camera_sensor_size(blenderCam->sensor_fit, blenderCam->sensor_x, blenderCam->sensor_y);
+		float focus_dist = BKE_camera_object_dof_distance(v3d->camera);
+		float focal_len = blenderCam->lens;
+
+		UNUSED_VARS(rotation, ratio);
+
+		/* this is factor that converts to the scene scale. focal length and sensor are expressed in mm
+		* unit.scale_length is how many meters per blender unit we have. We want to convert to blender units though
+		* because the shader reads coordinates in world space, which is in blender units.
+		* Note however that focus_distance is already in blender units and shall not be scaled here (see T48157). */
+		float scale = (m_scene->GetBlenderScene()->unit.system) ? m_scene->GetBlenderScene()->unit.scale_length : 1.0f;
+		float scale_camera = 0.001f / scale;
+		/* we want radius here for the aperture number  */
+		float aperture = 0.5f * scale_camera * focal_len / fstop;
+		float focal_len_scaled = scale_camera * focal_len;
+		float sensor_scaled = scale_camera * sensor;
+
+		m_effects->dof_params[0] = aperture * fabsf(focal_len_scaled / (focus_dist - focal_len_scaled));
+		m_effects->dof_params[1] = -focus_dist;
+		m_effects->dof_params[2] = m_canvas->GetWidth() / (rv3d->viewcamtexcofac[0] * sensor_scaled);
+		m_effects->dof_bokeh[0] = blades;
+		m_effects->dof_bokeh[1] = rotation;
+		m_effects->dof_bokeh[2] = ratio;
+		m_effects->dof_bokeh[3] = BKE_collection_engine_property_value_get_float(m_props, "bokeh_max_size");
 	}
 }
 

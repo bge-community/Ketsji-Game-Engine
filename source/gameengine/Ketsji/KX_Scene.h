@@ -98,6 +98,8 @@ class KX_ObstacleSimulation;
 struct TaskPool;
 struct EEVEE_Data;
 struct IDProperty;
+struct RegionView3D;
+struct View3D;
 
 /* for ID freeing */
 #define IS_TAGGED(_id) ((_id) && (((ID *)_id)->tag & LIB_TAG_DOIT))
@@ -144,6 +146,8 @@ protected:
 	std::unique_ptr<RAS_SceneLayerData> m_layerData;
 	EEVEE_Data *m_eeveeData;
 	IDProperty *m_props;
+	RegionView3D *m_rv3d;
+	View3D *m_v3d;
 
 	KX_TextureRendererManager *m_rendererManager;
 	RAS_BucketManager*	m_bucketmanager;
@@ -335,6 +339,8 @@ public:
 	void SetSceneLayerData(RAS_SceneLayerData *layerData);
 	RAS_SceneLayerData *GetSceneLayerData() const;
 	EEVEE_Data *GetEeveeData();
+	RegionView3D *GetRegionView3D();
+	View3D *GetView3D();
 	RAS_BucketManager* GetBucketManager() const;
 	KX_TextureRendererManager *GetTextureRendererManager() const;
 	RAS_BoundingBoxManager *GetBoundingBoxManager() const;
