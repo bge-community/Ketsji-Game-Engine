@@ -58,7 +58,7 @@ m_scene(scene)
 	m_effects = m_stl->effects;
 
 	InitBloom();
-	InitBloomShaders();
+	InitShaders();
 	InitDof();
 }
 
@@ -66,10 +66,9 @@ RAS_EeveeEffectsManager::~RAS_EeveeEffectsManager()
 {
 }
 
-void RAS_EeveeEffectsManager::InitBloomShaders()
+void RAS_EeveeEffectsManager::InitShaders()
 {
-	EEVEE_create_bloom_shgroups(m_effects, &m_bloomShGroup[BLOOM_FIRST], &m_bloomShGroup[BLOOM_DOWNSAMPLE],
-		&m_bloomShGroup[BLOOM_UPSAMPLE], &m_bloomShGroup[BLOOM_BLIT], &m_bloomShGroup[BLOOM_RESOLVE]);
+	EEVEE_create_game_shgroups(m_effects, m_txl, m_scene->GetDefaultTextureList(), &m_bloomResolve, &m_dofResolve);
 }
 
 void RAS_EeveeEffectsManager::InitBloom()
@@ -133,7 +132,7 @@ void RAS_EeveeEffectsManager::InitDof()
 		m_effects->dof_near_far[0] = -blenderCam->clipsta;
 		m_effects->dof_near_far[1] = -blenderCam->clipend;
 
-		int buffer_size[2] = { (int)m_canvas->GetWidth() / 2, (int)m_canvas->GetHeight() / 2 };
+		int buffer_size[2] = { (int)((m_canvas->GetWidth() + 1) / 2), (int)((m_canvas->GetHeight() + 1) / 2) };
 
 		struct GPUTexture **dof_down_near = &m_txl->dof_down_near;
 		bool fb_reset = false;
@@ -181,7 +180,7 @@ void RAS_EeveeEffectsManager::InitDof()
 
 		m_effects->dof_params[0] = aperture * fabsf(focal_len_scaled / (focus_dist - focal_len_scaled));
 		m_effects->dof_params[1] = -focus_dist;
-		m_effects->dof_params[2] = m_canvas->GetWidth() / (rv3d->viewcamtexcofac[0] * sensor_scaled);
+		m_effects->dof_params[2] = (m_canvas->GetWidth() + 1) / (rv3d->viewcamtexcofac[0] * sensor_scaled);
 		m_effects->dof_bokeh[0] = blades;
 		m_effects->dof_bokeh[1] = rotation;
 		m_effects->dof_bokeh[2] = ratio;
@@ -189,10 +188,8 @@ void RAS_EeveeEffectsManager::InitDof()
 	}
 }
 
-RAS_OffScreen *RAS_EeveeEffectsManager::RenderEeveeEffects(RAS_Rasterizer *rasty, RAS_OffScreen *inputofs)
+RAS_OffScreen *RAS_EeveeEffectsManager::RenderBloom(RAS_OffScreen *inputofs, RAS_Rasterizer *rasty)
 {
-	rasty->Disable(RAS_Rasterizer::RAS_DEPTH_TEST);
-
 	/* Bloom */
 	if ((m_effects->enabled_effects & EFFECT_BLOOM) != 0) {
 		struct GPUTexture *last;
@@ -243,7 +240,7 @@ RAS_OffScreen *RAS_EeveeEffectsManager::RenderEeveeEffects(RAS_Rasterizer *rasty
 
 		rasty->SetViewport(0, 0, m_canvas->GetWidth() + 1, m_canvas->GetHeight() + 1);
 
-		DRW_bind_shader_shgroup(m_bloomShGroup[BLOOM_RESOLVE]);
+		DRW_bind_shader_shgroup(m_bloomResolve);
 		inputofs->Bind();
 		rasty->DrawOverlayPlane();
 
@@ -251,6 +248,58 @@ RAS_OffScreen *RAS_EeveeEffectsManager::RenderEeveeEffects(RAS_Rasterizer *rasty
 
 		return inputofs;
 	}
+	return inputofs;
+}
+
+RAS_OffScreen *RAS_EeveeEffectsManager::RenderDof(RAS_OffScreen *inputofs, RAS_Rasterizer *rasty)
+{
+	/* Depth Of Field */
+	if ((m_effects->enabled_effects & EFFECT_DOF) != 0) {
+		float clear_col[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+		/* Downsample */
+		DRW_framebuffer_bind(m_fbl->dof_down_fb);
+		DRW_draw_pass(m_psl->dof_down);
+
+		/* Scatter Far */
+		m_effects->unf_source_buffer = m_txl->dof_down_far;
+		copy_v2_fl2(m_effects->dof_layer_select, 0.0f, 1.0f);
+		DRW_framebuffer_bind(m_fbl->dof_scatter_far_fb);
+		DRW_framebuffer_clear(true, false, false, clear_col, 0.0f);
+		DRW_draw_pass(m_psl->dof_scatter);
+
+		/* Scatter Near */
+		if ((m_effects->enabled_effects & EFFECT_BLOOM) != 0) {
+			/* Reuse bloom half res buffer */
+			m_effects->unf_source_buffer = m_txl->bloom_downsample[0];
+		}
+		else {
+			m_effects->unf_source_buffer = m_txl->dof_down_near;
+		}
+		copy_v2_fl2(m_effects->dof_layer_select, 1.0f, 0.0f);
+		DRW_framebuffer_bind(m_fbl->dof_scatter_near_fb);
+		DRW_framebuffer_clear(true, false, false, clear_col, 0.0f);
+		DRW_draw_pass(m_psl->dof_scatter);
+
+		rasty->SetViewport(0, 0, m_canvas->GetWidth() + 1, m_canvas->GetHeight() + 1);
+
+		/* Resolve */
+		DRW_bind_shader_shgroup(m_dofResolve);
+		inputofs->Bind();
+		rasty->DrawOverlayPlane();
+		
+		return inputofs;
+	}
+	return inputofs;
+}
+
+RAS_OffScreen *RAS_EeveeEffectsManager::RenderEeveeEffects(RAS_Rasterizer *rasty, RAS_OffScreen *inputofs)
+{
+	inputofs = RenderDof(inputofs, rasty);
+
+	rasty->Disable(RAS_Rasterizer::RAS_DEPTH_TEST);
+
+	inputofs = RenderBloom(inputofs, rasty);
 
 	rasty->Enable(RAS_Rasterizer::RAS_DEPTH_TEST);
 	

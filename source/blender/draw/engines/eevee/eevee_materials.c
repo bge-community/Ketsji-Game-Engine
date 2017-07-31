@@ -286,6 +286,7 @@ static void add_standard_uniforms(DRWShadingGroup *shgrp, EEVEE_SceneLayerData *
 	scene->eevee_data = vedata;
 	scene->eevee_rv3d = ctx->rv3d;
 	scene->eevee_v3d = ctx->v3d;
+	scene->eevee_dtxl = DRW_viewport_texture_list_get();
 }
 
 void EEVEE_shgroup_add_standard_uniforms_game(DRWShadingGroup *shgrp, const EEVEE_SceneLayerData *sldata, EEVEE_Data *vedata)

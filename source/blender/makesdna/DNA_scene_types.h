@@ -1734,6 +1734,7 @@ typedef struct Scene {
 	IDProperty *eevee_properties;
 	struct RegionView3D *eevee_rv3d;
 	struct View3D *eevee_v3d;
+	struct DefaultTextureList *eevee_dtxl;
 
 	int pad5[2];
 } Scene;

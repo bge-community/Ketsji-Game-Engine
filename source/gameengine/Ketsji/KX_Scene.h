@@ -100,6 +100,7 @@ struct EEVEE_Data;
 struct IDProperty;
 struct RegionView3D;
 struct View3D;
+struct DefaultTextureList;
 
 /* for ID freeing */
 #define IS_TAGGED(_id) ((_id) && (((ID *)_id)->tag & LIB_TAG_DOIT))
@@ -148,6 +149,7 @@ protected:
 	IDProperty *m_props;
 	RegionView3D *m_rv3d;
 	View3D *m_v3d;
+	DefaultTextureList *m_dtxl;
 
 	KX_TextureRendererManager *m_rendererManager;
 	RAS_BucketManager*	m_bucketmanager;
@@ -341,6 +343,9 @@ public:
 	EEVEE_Data *GetEeveeData();
 	RegionView3D *GetRegionView3D();
 	View3D *GetView3D();
+	DefaultTextureList *GetDefaultTextureList();
+
+
 	RAS_BucketManager* GetBucketManager() const;
 	KX_TextureRendererManager *GetTextureRendererManager() const;
 	RAS_BoundingBoxManager *GetBoundingBoxManager() const;

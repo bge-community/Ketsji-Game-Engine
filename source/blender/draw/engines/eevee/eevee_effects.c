@@ -507,19 +507,21 @@ DRWShadingGroup *EEVEE_create_bloom_shgroup(EEVEE_EffectsInfo *effects, struct G
 	return grp;
 }
 
-void EEVEE_create_bloom_shgroups(EEVEE_EffectsInfo *effects, DRWShadingGroup **first, DRWShadingGroup **downsample,
-								 DRWShadingGroup **upsample, DRWShadingGroup **blit, DRWShadingGroup **resolve)
+void EEVEE_create_game_shgroups(EEVEE_EffectsInfo *effects, EEVEE_TextureList *txl, DefaultTextureList *dtxl,
+	DRWShadingGroup **bloomResolve, DRWShadingGroup **dofResolve)
 {
 	const bool use_highres = true;
-	const bool use_antiflicker = true;
 
-	*first = EEVEE_create_bloom_shgroup(effects, e_data.bloom_downsample_sh[use_antiflicker], false);
-	*downsample = EEVEE_create_bloom_shgroup(effects, e_data.bloom_downsample_sh[0], false);
-	*upsample = EEVEE_create_bloom_shgroup(effects, e_data.bloom_upsample_sh[use_highres], true);
-	*blit = EEVEE_create_bloom_shgroup(effects, e_data.bloom_blit_sh[use_antiflicker], false);
-	DRW_shgroup_uniform_vec4(*blit, "curveThreshold", effects->bloom_curve_threshold, 1);
-	*resolve = EEVEE_create_bloom_shgroup(effects, e_data.bloom_resolve_sh[use_highres], true);
-	DRW_shgroup_uniform_float(*resolve, "bloomIntensity", &effects->bloom_intensity, 1);
+	*bloomResolve = EEVEE_create_bloom_shgroup(effects, e_data.bloom_resolve_sh[use_highres], true);
+	DRW_shgroup_uniform_float(*bloomResolve, "bloomIntensity", &effects->bloom_intensity, 1);
+
+	*dofResolve = DRW_shgroup_create(e_data.dof_resolve_sh, NULL);
+	DRW_shgroup_uniform_buffer(*dofResolve, "colorBuffer", &effects->source_buffer);
+	DRW_shgroup_uniform_buffer(*dofResolve, "nearBuffer", &txl->dof_near_blur);
+	DRW_shgroup_uniform_buffer(*dofResolve, "farBuffer", &txl->dof_far_blur);
+	DRW_shgroup_uniform_buffer(*dofResolve, "depthBuffer", &dtxl->depth);
+	DRW_shgroup_uniform_vec2(*dofResolve, "nearFar", effects->dof_near_far, 1);
+	DRW_shgroup_uniform_vec3(*dofResolve, "dofParams", effects->dof_params, 1);
 }
 
 void EEVEE_effects_cache_init(EEVEE_SceneLayerData *sldata, EEVEE_Data *vedata)

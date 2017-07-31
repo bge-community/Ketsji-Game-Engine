@@ -221,6 +221,7 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_props = m_blenderScene->eevee_properties;
 	m_rv3d = m_blenderScene->eevee_rv3d;
 	m_v3d = m_blenderScene->eevee_v3d;
+	m_dtxl = m_blenderScene->eevee_dtxl;
 
 	m_effectsManager = new RAS_EeveeEffectsManager(m_eeveeData, canvas, m_props, this);
 
@@ -354,6 +355,11 @@ RegionView3D *KX_Scene::GetRegionView3D()
 View3D *KX_Scene::GetView3D()
 {
 	return m_v3d;
+}
+
+DefaultTextureList *KX_Scene::GetDefaultTextureList()
+{
+	return m_dtxl;
 }
 
 RAS_BucketManager* KX_Scene::GetBucketManager() const
