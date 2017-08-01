@@ -37,6 +37,7 @@
 #endif
 
 #include <deque>
+#include <array>
 
 /**
  * Stores and manages time measurements.
@@ -45,7 +46,7 @@ class KX_TimeLogger
 {
 public:
 	enum Measurement {
-		MAX_MEASUREMENTS = 25
+		MAX_MEASUREMENTS = 100
 	};
 
 	/// Categories for profiling display.
@@ -93,10 +94,10 @@ public:
 	void NextMeasurement(double now);
 
 	/**
-	 * Returns average of all but the current measurement.
-	 * \return The average of all but the current measurement.
+	 * Returns averages of all but the current measurement for
+	 * current frame, 25 last frames and 100 last frames.
 	 */
-	double GetAverage() const;
+	std::array<double, 3> GetAverages() const;
 
 protected:
 	/// Storage for the measurements.

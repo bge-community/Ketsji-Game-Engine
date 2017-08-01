@@ -37,7 +37,6 @@
 #endif
 
 #include "KX_TimeLogger.h"
-#include <array>
 #include <map>
 
 class RAS_DebugDraw;
@@ -113,8 +112,8 @@ protected:
 
 	KX_TimeLogger::Category m_lastCategory;
 
-	std::array<double, KX_TimeLogger::NUM_CATEGORY> m_lastAverages;
-	double m_lastTotalAverage;
+	std::array<std::array<double, 3>, KX_TimeLogger::NUM_CATEGORY> m_lastAverages;
+	std::array<double, 3> m_lastTotalAverage;
 };
 
 #endif  /* __KX_TIMECATEGORYLOGGER_H__ */

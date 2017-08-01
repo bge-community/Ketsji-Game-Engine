@@ -48,12 +48,8 @@ const std::string profileLabels[KX_TimeLogger::NUM_CATEGORY] = {
 };
 
 KX_TimeCategoryLogger::KX_TimeCategoryLogger()
-	:m_lastCategory(KX_TimeLogger::NONE),
-	m_lastTotalAverage(0.0)
+	:m_lastCategory(KX_TimeLogger::NONE)
 {
-	for (double& avg : m_lastAverages) {
-		avg = 0.0;
-	}
 }
 
 KX_TimeCategoryLogger::~KX_TimeCategoryLogger()
@@ -82,34 +78,26 @@ void KX_TimeCategoryLogger::EndLog(double now)
 
 void KX_TimeCategoryLogger::NextMeasurement(double now)
 {
-	m_lastTotalAverage = 0.0;
+	m_lastTotalAverage = {0.0, 0.0, 0.0};
 	for (unsigned short tc = 0; tc < KX_TimeLogger::NUM_CATEGORY; ++tc) {
 		KX_TimeLogger& logger = m_loggers[tc];
 		logger.NextMeasurement(now);
 
-		const double time = logger.GetAverage();
-		m_lastAverages[tc] = time;
-		m_lastTotalAverage += time;
+		const std::array<double, 3> averages = logger.GetAverages();
+		m_lastAverages[tc] = averages;
+		for (unsigned short i = 0; i < 3; ++i) {
+			m_lastTotalAverage[i] += averages[i];
+		}
 	}
-}
-
-double KX_TimeCategoryLogger::GetAverage(KX_TimeLogger::Category tc) const
-{
-	return m_lastAverages[tc];
-}
-
-double KX_TimeCategoryLogger::GetAverage() const
-{
-	return m_lastTotalAverage;
 }
 
 double KX_TimeCategoryLogger::GetAverageFrameRate() const
 {
-	if (m_lastTotalAverage < 1e-6) {
+	if (m_lastTotalAverage[0] < 1e-6) {
 		// Equivalent to 1.0 / 1e-6.
 		return 1e6f;
 	}
-	return 1.0 / m_lastTotalAverage;
+	return 1.0 / m_lastTotalAverage[0];
 }
 
 std::map<std::string, double> KX_TimeCategoryLogger::GetProfileDict()
@@ -117,7 +105,7 @@ std::map<std::string, double> KX_TimeCategoryLogger::GetProfileDict()
 	std::map<std::string, double> dict;
 
 	for (unsigned short tc = 0; tc < KX_TimeLogger::NUM_CATEGORY; ++tc) {
-		dict[profileLabels[tc]] = m_lastAverages[tc];
+		dict[profileLabels[tc]] = m_lastAverages[tc][0];
 	}
 
 	return dict;
@@ -125,19 +113,36 @@ std::map<std::string, double> KX_TimeCategoryLogger::GetProfileDict()
 
 static const MT_Vector4 white(1.0f, 1.0f, 1.0f, 1.0f);
 
-
 static std::string getTimeString(double time)
 {
-	static const std::string units[] = {"s", "ms", "us", "ns"};
-	static const float values[] = {1.0f, 1.0e-3f, 1.0e-6f, 1.0e-9f};
+	static const std::string units[] = {"s", "ms", "us"};
+	static const float values[] = {1.0f, 1.0e-3f, 1.0e-6f};
 
-	for (unsigned short i = 0; i < 4; ++i) {
+	for (unsigned short i = 0; i < 3; ++i) {
 		if (time > values[i]) {
-			return (boost::format("%06.2f") % (time / values[i])).str() + units[i];
+			return (boost::format("%6.2f") % (time / values[i])).str() + units[i];
 		}
 	}
 
-	return "000.00ns";
+	return "  0.00us";
+}
+
+static const MT_Vector4& getTimeColor(double ratio)
+{
+	static const MT_Vector4 colors[] = {
+		MT_Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+		MT_Vector4(1.0f, 1.0f, 0.0f, 1.0f),
+		MT_Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+	};
+	static const float values[] = {0.15f, 0.50f, 1.0f};
+
+	for (unsigned short i = 0; i < 3; ++i) {
+		if (ratio < values[i]) {
+			return colors[i];
+		}
+	}
+
+	return colors[2];
 }
 
 void KX_TimeCategoryLogger::RenderFrameRate(RAS_DebugDraw& debugDraw, int xindent, int ysize,
@@ -145,7 +150,12 @@ void KX_TimeCategoryLogger::RenderFrameRate(RAS_DebugDraw& debugDraw, int xinden
 {
 	debugDraw.RenderText2D("Frametime :", MT_Vector2(xcoord + xindent, ycoord), white);
 
-	const std::string debugtxt = (boost::format("%5.2fms (%.1ffps)") %  (m_lastTotalAverage * 1000.0f) % GetAverageFrameRate()).str();
+	std::string debugtxt;
+	for (unsigned short i = 0; i < 3; ++i) {
+		debugtxt += getTimeString(m_lastTotalAverage[i]) + " | ";
+	}
+	debugtxt += (boost::format("(%.1ffps)") % GetAverageFrameRate()).str();
+
 	debugDraw.RenderText2D(debugtxt, MT_Vector2(xcoord + xindent + profileIndent, ycoord), white);
 	// Increase the indent by default increase
 	ycoord += ysize;
@@ -154,21 +164,29 @@ void KX_TimeCategoryLogger::RenderFrameRate(RAS_DebugDraw& debugDraw, int xinden
 void KX_TimeCategoryLogger::RenderCategories(RAS_DebugDraw& debugDraw, int xindent, int ysize,
 											 int& xcoord, int& ycoord, int profileIndent)
 {
-	double tottime = m_lastTotalAverage;
-	if (tottime < 1e-6) {
-		tottime = 1e-6;
-	}
-
+	static unsigned short boxIndent = 227;
 	for (unsigned short tc = 0; tc < KX_TimeLogger::NUM_CATEGORY; ++tc) {
 		debugDraw.RenderText2D(profileLabels[tc] + ":", MT_Vector2(xcoord + xindent, ycoord), white);
 
-		const double time = m_lastAverages[tc];
+		double tottime = m_lastTotalAverage[2];
+		if (tottime < 1e-6) {
+			tottime = 1e-6;
+		}
+		const float ratio = (m_lastAverages[tc][2] / tottime);
+		const MT_Vector4& color = getTimeColor(ratio);
 
-		const std::string debugtxt = getTimeString(time) + " | " + std::to_string((int)(time/tottime * 100.f)) + "%";
-		debugDraw.RenderText2D(debugtxt, MT_Vector2(xcoord + xindent + profileIndent, ycoord), white);
+		std::string debugtxt;
+		for (unsigned short i = 0; i < 3; ++i) {
+			const double time = m_lastAverages[tc][i];
+			debugtxt += getTimeString(time) + " | ";
+		}
+		debugtxt += (boost::format("%2.0f") % (ratio * 100.0)).str() + "%";
 
-		const MT_Vector2 boxSize(50 * (time / tottime), 10);
-		debugDraw.RenderBox2D(MT_Vector2(xcoord + (int)(2.2 * profileIndent), ycoord), boxSize, white);
+		debugDraw.RenderText2D(debugtxt, MT_Vector2(xcoord + xindent + profileIndent, ycoord), color);
+
+		const MT_Vector2 boxSize(50 * ratio, 10);
+		debugDraw.RenderBox2D(MT_Vector2(xcoord + profileIndent + boxIndent, ycoord), boxSize, color);
+
 		ycoord += ysize;
 	}
 }

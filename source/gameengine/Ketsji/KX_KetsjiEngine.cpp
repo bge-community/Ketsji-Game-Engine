@@ -239,7 +239,7 @@ void KX_KetsjiEngine::EndFrame()
 	m_logger.StartLog(KX_TimeLogger::RASTERIZER, m_kxsystem->GetTimeInSeconds());
 	m_rasterizer->EndFrame();
 
-	m_logger.StartLog(tc_logic, m_kxsystem->GetTimeInSeconds());
+	m_logger.StartLog(KX_TimeLogger::LOGIC, m_kxsystem->GetTimeInSeconds());
 	m_canvas->FlushScreenshots();
 
 	// swap backbuffer (drawing into this buffer) <-> front/visible buffer
@@ -1112,7 +1112,8 @@ void KX_KetsjiEngine::RenderDebugProperties()
 	if (m_flags & (SHOW_FRAMERATE | SHOW_PROFILE)) {
 		// Title for profiling("Profile")
 		// Adds the constant x indent (0 for now) to the title x margin
-		debugDraw.RenderText2D("Profile", MT_Vector2(xcoord + const_xindent + title_xmargin, ycoord), white);
+		debugDraw.RenderText2D("Profile          1          25         100",
+				MT_Vector2(xcoord + const_xindent + title_xmargin, ycoord), white);
 
 		// Increase the indent by default increase
 		ycoord += const_ysize;

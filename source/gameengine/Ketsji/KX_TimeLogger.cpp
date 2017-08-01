@@ -29,8 +29,11 @@
  *  \ingroup ketsji
  */
 
-
 #include "KX_TimeLogger.h"
+
+#include <algorithm>
+
+#include "CM_Message.h"
 
 KX_TimeLogger::KX_TimeLogger()
 	:m_logStart(0.0),
@@ -78,17 +81,40 @@ void KX_TimeLogger::NextMeasurement(double now)
 	}
 }
 
-double KX_TimeLogger::GetAverage() const
+std::array<double, 3> KX_TimeLogger::GetAverages() const
 {
-	double avg = 0.0;
+	std::array<double, 3> avg = {0.0, 0.0, 0.0};
+	const unsigned short numMeasurements = m_measurements.size();
+	const unsigned short samples[3] = {2, std::min(numMeasurements, (unsigned short)26),
+		std::min(numMeasurements, (unsigned short)101)};
+	static const unsigned short first[3] = {1, 2, 26};
 
-	const unsigned int numMeasurements = m_measurements.size();
-	if (numMeasurements > 1) {
+	for (unsigned short i = 0; i < 3; ++i) {
+		for (unsigned short j = first[i], size = samples[i]; j < size; ++j) {
+			const double time = m_measurements[j];
+			for (unsigned short k = i; k < 3; ++k) {
+				avg[k] += time;
+			}
+		}
+		avg[i] /= samples[i] - 1;
+	}
+
+	/*for (unsigned short i = 25, size = samples[2]; i < size; ++i) {
+		avg[2] += m_measurements[i];
+	}
+	for (unsigned short i = 1, size = samples[1]; i < size; ++i) {
+		const double time = m_measurements[i];
+		avg[1] += time;
+		avg[2] += time;
+	}*/
+	
+
+	/*if (numMeasurements > 1) {
 		for (unsigned int i = 1; i < numMeasurements; i++) {
 			avg += m_measurements[i];
 		}
 		avg /= (double)numMeasurements - 1.0;
-	}
+	}*/
 
 	return avg;
 }
