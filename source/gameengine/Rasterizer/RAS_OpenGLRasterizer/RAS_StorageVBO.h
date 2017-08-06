@@ -44,6 +44,8 @@ public:
 	virtual void UpdateVertexData();
 	virtual unsigned int *GetIndexMap();
 	virtual void FlushIndexMap();
+	virtual void SetCachedBuffer(unsigned int *buffer);
+	virtual unsigned int *GetCachedBuffer();
 
 	void Bind(RAS_Rasterizer::StorageAttribs *storageAttribs, RAS_Rasterizer::DrawType drawingmode);
 	void Unbind(RAS_Rasterizer::StorageAttribs *storageAttribs, RAS_Rasterizer::DrawType drawingmode);
@@ -76,6 +78,7 @@ private:
 	void *m_color_offset;
 	void *m_tangent_offset;
 	void *m_uv_offset;
+	unsigned int *m_cachedBuffer;
 
 	/// Allocate the VBO and IBO using the display array size.
 	void AllocData();

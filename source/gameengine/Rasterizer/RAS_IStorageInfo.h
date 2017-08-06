@@ -46,7 +46,9 @@ public:
 	virtual void UpdateVertexData() = 0;
 	virtual unsigned int *GetIndexMap() = 0;
 	virtual void FlushIndexMap() = 0;
-	
+
+	virtual unsigned int *GetCachedBuffer() = 0;
+	virtual void SetCachedBuffer(unsigned int *buffer) = 0;	
 };
 
 #endif  // __RAS_ISTORAGE_INFO_H__

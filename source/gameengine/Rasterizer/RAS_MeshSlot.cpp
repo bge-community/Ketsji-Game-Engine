@@ -88,8 +88,11 @@ void RAS_MeshSlot::RunNode(const RAS_MeshSlotNodeTuple& tuple)
 
 		RAS_IStorageInfo *storage = displayArrayData->m_storageInfo;
 		if (materialData->m_zsort && storage) {
+			if (!storage->GetCachedBuffer()) {
+				storage->SetCachedBuffer(storage->GetIndexMap());
+			}
 			m_mesh->SortPolygons(displayArrayData->m_array, managerData->m_trans * MT_Transform(m_meshUser->GetMatrix()),
-								 storage->GetIndexMap());
+					storage->GetCachedBuffer());
 			storage->FlushIndexMap();
 		}
 	}

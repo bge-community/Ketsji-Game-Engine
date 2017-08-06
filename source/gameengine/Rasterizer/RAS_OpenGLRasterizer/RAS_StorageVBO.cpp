@@ -34,7 +34,8 @@
 
 VBO::VBO(RAS_IDisplayArray *array, bool instancing)
 	:m_data(array),
-	m_useVao(!instancing && GLEW_ARB_vertex_array_object)
+	m_useVao(!instancing && GLEW_ARB_vertex_array_object),
+	m_cachedBuffer(nullptr)
 {
 	m_size = m_data->GetVertexCount();
 	m_indices = m_data->GetIndexCount();
@@ -80,7 +81,7 @@ void VBO::UpdateVertexData()
 
 unsigned int *VBO::GetIndexMap()
 {
-	void *buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, m_indices * sizeof(GLuint), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+	void *buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, m_indices * sizeof(GLuint), GL_MAP_READ_BIT);
 
 	return (unsigned int *)buffer;
 }
@@ -88,6 +89,16 @@ unsigned int *VBO::GetIndexMap()
 void VBO::FlushIndexMap()
 {
 	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+}
+
+void VBO::SetCachedBuffer(unsigned int *buffer)
+{
+	m_cachedBuffer = buffer;
+}
+
+unsigned int *VBO::GetCachedBuffer()
+{
+	return m_cachedBuffer;
 }
 
 void VBO::UpdateData()
