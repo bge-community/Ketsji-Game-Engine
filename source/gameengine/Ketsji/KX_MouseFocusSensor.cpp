@@ -296,8 +296,8 @@ bool KX_MouseFocusSensor::ParentObjectHasFocusCamera(KX_Camera *cam)
 		return false;
 	}
 
-	float height = float(viewport.GetTop() - viewport.GetBottom() + 1);
-	float width  = float(viewport.GetRight() - viewport.GetLeft() + 1);
+	float height = float(viewport.GetHeight());
+	float width  = float(viewport.GetWidth());
 	
 	float x_lb = float(viewport.GetLeft());
 	float y_lb = float(viewport.GetBottom());

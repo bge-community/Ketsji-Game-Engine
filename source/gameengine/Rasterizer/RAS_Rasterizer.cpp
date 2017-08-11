@@ -81,8 +81,8 @@ RAS_Rasterizer::OffScreens::~OffScreens()
 
 inline void RAS_Rasterizer::OffScreens::Update(RAS_ICanvas *canvas)
 {
-	const unsigned int width = canvas->GetWidth() + 1;
-	const unsigned int height = canvas->GetHeight() + 1;
+	const unsigned int width = canvas->GetWidth();
+	const unsigned int height = canvas->GetHeight();
 
 	if (width == m_width && height == m_height) {
 		// No resize detected.

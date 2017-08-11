@@ -172,35 +172,28 @@ RAS_Rect &KX_BlenderCanvas::GetWindowArea()
 	return m_area_rect;
 }
 
-void KX_BlenderCanvas::SetViewPort(int x1, int y1, int x2, int y2)
+void KX_BlenderCanvas::SetViewPort(int x, int y, int width, int height)
 {
-	/* x1 and y1 are the min pixel coordinate (e.g. 0)
-	 * x2 and y2 are the max pixel coordinate
-	 * the width,height is calculated including both pixels
-	 * therefore: max - min + 1
-	 */
-	int vp_width = (x2 - x1) + 1;
-	int vp_height = (y2 - y1) + 1;
 	int minx = m_area_rect.GetLeft();
 	int miny = m_area_rect.GetBottom();
 
-	m_area_rect.SetLeft(minx + x1);
-	m_area_rect.SetBottom(miny + y1);
-	m_area_rect.SetRight(minx + x2);
-	m_area_rect.SetTop(miny + y2);
+	m_area_rect.SetLeft(minx + x);
+	m_area_rect.SetBottom(miny + y);
+	m_area_rect.SetRight(minx + x + width - 1);
+	m_area_rect.SetTop(miny + y + height - 1);
 
-	m_viewport[0] = minx + x1;
-	m_viewport[1] = miny + y1;
-	m_viewport[2] = vp_width;
-	m_viewport[3] = vp_height;
+	m_viewport[0] = minx + x;
+	m_viewport[1] = miny + y;
+	m_viewport[2] = width;
+	m_viewport[3] = height;
 }
 
-void KX_BlenderCanvas::UpdateViewPort(int x1, int y1, int x2, int y2)
+void KX_BlenderCanvas::UpdateViewPort(int x, int y, int width, int height)
 {
-	m_viewport[0] = x1;
-	m_viewport[1] = y1;
-	m_viewport[2] = x2;
-	m_viewport[3] = y2;
+	m_viewport[0] = x;
+	m_viewport[1] = y;
+	m_viewport[2] = width;
+	m_viewport[3] = height;
 }
 
 const int *KX_BlenderCanvas::GetViewPort()

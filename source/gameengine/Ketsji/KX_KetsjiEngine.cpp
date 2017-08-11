@@ -650,8 +650,8 @@ void KX_KetsjiEngine::Render()
 	const int height = m_canvas->GetHeight();
 	// clear the entire game screen with the border color
 	// only once per frame
-	m_rasterizer->SetViewport(0, 0, width + 1, height + 1);
-	m_rasterizer->SetScissor(0, 0, width + 1, height + 1);
+	m_rasterizer->SetViewport(0, 0, width, height);
+	m_rasterizer->SetScissor(0, 0, width, height);
 
 	KX_Scene *firstscene = m_scenes->GetFront();
 	const RAS_FrameSettings &framesettings = firstscene->GetFramingType();
@@ -997,8 +997,8 @@ void KX_KetsjiEngine::RenderCamera(KX_Scene *scene, const CameraRenderData& came
 	const int bottom = viewport.GetBottom();
 	const int width = viewport.GetWidth();
 	const int height = viewport.GetHeight();
-	m_rasterizer->SetViewport(left, bottom, width + 1, height + 1);
-	m_rasterizer->SetScissor(left, bottom, width + 1, height + 1);
+	m_rasterizer->SetViewport(left, bottom, width, height);
+	m_rasterizer->SetScissor(left, bottom, width, height);
 
 	/* Clear the depth after setting the scene viewport/scissor
 	 * if it's not the first render pass. */
@@ -1067,8 +1067,8 @@ RAS_OffScreen *KX_KetsjiEngine::PostRenderScene(KX_Scene *scene, RAS_OffScreen *
 	// We need to first make sure our viewport is correct (enabling multiple viewports can mess this up), only for filters.
 	const int width = m_canvas->GetWidth();
 	const int height = m_canvas->GetHeight();
-	m_rasterizer->SetViewport(0, 0, width + 1, height + 1);
-	m_rasterizer->SetScissor(0, 0, width + 1, height + 1);
+	m_rasterizer->SetViewport(0, 0, width, height);
+	m_rasterizer->SetScissor(0, 0, width, height);
 
 	RAS_OffScreen *offScreen = scene->Render2DFilters(m_rasterizer, m_canvas, inputofs, targetofs);
 

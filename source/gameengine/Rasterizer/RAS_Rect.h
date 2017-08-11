@@ -58,11 +58,11 @@ public:
 
 	int GetWidth() const
 	{
-		return m_x2 - m_x1;
+		return m_x2 - m_x1 + 1;
 	}
 	int GetHeight() const
 	{
-		return m_y2 - m_y1;
+		return m_y2 - m_y1 + 1;
 	}
 	int GetLeft() const
 	{
@@ -101,7 +101,7 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const RAS_Rect& rect)
 {
-	os << "(" << rect.GetLeft() << ", " << rect.GetBottom() << ", " << rect.GetWidth() << ", " << rect.GetTop() << ")";
+	os << "(" << rect.GetLeft() << ", " << rect.GetBottom() << ", " << rect.GetRight() << ", " << rect.GetTop() << ")";
 	return os;
 }
 
