@@ -825,8 +825,8 @@ void KX_KetsjiEngine::GetSceneViewport(KX_Scene *scene, KX_Camera *cam, const RA
 	else {
 		viewport.SetLeft(0);
 		viewport.SetBottom(0);
-		viewport.SetRight(int(m_canvas->GetWidth()));
-		viewport.SetTop(int(m_canvas->GetHeight()));
+		viewport.SetRight(m_canvas->GetWidth() - 1);
+		viewport.SetTop(m_canvas->GetHeight() - 1);
 
 		area = displayArea;
 	}

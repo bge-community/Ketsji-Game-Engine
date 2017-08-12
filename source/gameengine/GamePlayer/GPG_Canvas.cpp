@@ -264,10 +264,10 @@ void GPG_Canvas::ConvertMousePosition(int x, int y, int &r_x, int &r_y, bool UNU
 
 float GPG_Canvas::GetMouseNormalizedX(int x)
 {
-	return float(x) / this->GetWidth();
+	return float(x) / (this->GetWidth() - 1);
 }
 
 float GPG_Canvas::GetMouseNormalizedY(int y)
 {
-	return float(y) / this->GetHeight();
+	return float(y) / (this->GetHeight() - 1);
 }

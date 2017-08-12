@@ -38,6 +38,8 @@
 #include <config.h>
 #endif
 
+#include "CM_Message.h"
+
 /* ------------------------------------------------------------------------- */
 /* Native functions                                                          */
 /* ------------------------------------------------------------------------- */
@@ -135,12 +137,14 @@ bool KX_MouseActuator::Update()
 				movement[1] = position[1];
 
 				//preventing undesired drifting when resolution is odd
-				if ((m_canvas->GetWidth() % 2) != 0) {
-					center_x = ((m_canvas->GetWidth() - 1.0f) / 2.0f) / (m_canvas->GetWidth());
+				if ((m_canvas->GetWidth() % 2) == 0) {
+					center_x = float(m_canvas->GetWidth() / 2 - 1) / (m_canvas->GetWidth() - 1);
 				}
-				if ((m_canvas->GetHeight() % 2) != 0) {
-					center_y = ((m_canvas->GetHeight() - 1.0f) / 2.0f) / (m_canvas->GetHeight());
+				if ((m_canvas->GetHeight() % 2) == 0) {
+					center_y = float(m_canvas->GetHeight() / 2 - 1) / (m_canvas->GetHeight() - 1);
 				}
+				
+				CM_FunctionDebug("center : " << center_x << ", " << center_y);
 
 				//preventing initial skipping.
 				if ((m_oldposition[0] <= -0.9f) && (m_oldposition[1] <= -0.9f)) {
@@ -286,6 +290,8 @@ bool KX_MouseActuator::Update()
 
 				m_oldposition[0] = position[0];
 				m_oldposition[1] = position[1];
+				CM_FunctionDebug(position[0] << ", " << position[1]);
+				CM_FunctionDebug("set: " << setposition[0] << ", " << setposition[1]);
 
 			}
 			break;
@@ -333,8 +339,8 @@ void KX_MouseActuator::setMousePosition(float fx, float fy)
 {
 	int x, y;
 
-	x = (int)(fx * m_canvas->GetWidth());
-	y = (int)(fy * m_canvas->GetHeight());
+	x = (int)(fx * (m_canvas->GetWidth() - 1));
+	y = (int)(fy * (m_canvas->GetHeight() - 1));
 
 	m_canvas->SetMousePosition(x, y);
 }

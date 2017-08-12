@@ -320,12 +320,12 @@ bool KX_MouseFocusSensor::ParentObjectHasFocusCamera(KX_Camera *cam)
 	 *	behind of the near and far clip planes.
 	 */ 
 	frompoint.setValue(	(2 * (m_x-x_lb) / width) - 1.0f,
-						1.0f - (2 * (m_y_inv - y_lb) / height),
+						1.0f - (2 * (m_y_inv - y_lb) / (height - 1)),
 						-1.0f,
 						1.0f );
 	
 	topoint.setValue(	(2 * (m_x-x_lb) / width) - 1.0f,
-						1.0f - (2 * (m_y_inv-y_lb) / height),
+						1.0f - (2 * (m_y_inv-y_lb) / (height - 1)),
 						1.0f,
 						1.0f );
 	

@@ -226,8 +226,8 @@ int SCA_PythonMouse::pyattr_set_position(PyObjectPlus *self_v, const KX_PYATTRIB
 	if (!PyArg_ParseTuple(value, "ff:position", &pyx, &pyy))
 		return PY_SET_ATTR_FAIL;
 
-	x = (int)(pyx*self->m_canvas->GetWidth());
-	y = (int)(pyy*self->m_canvas->GetHeight());
+	x = (int)(pyx*(self->m_canvas->GetWidth() - 1));
+	y = (int)(pyy*(self->m_canvas->GetHeight() - 1));
 
 	self->m_canvas->SetMousePosition(x, y);
 
