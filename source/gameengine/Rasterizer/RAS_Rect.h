@@ -64,6 +64,16 @@ public:
 	{
 		return m_y2 - m_y1 + 1;
 	}
+
+	int GetMaxX() const
+	{
+		return m_x2 - m_x1;
+	}
+	int GetMaxY() const
+	{
+		return m_y2 - m_y1;
+	}
+
 	int GetLeft() const
 	{
 		return m_x1;

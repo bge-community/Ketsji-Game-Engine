@@ -542,8 +542,8 @@ RAS_Rect RAS_Rasterizer::GetRenderArea(RAS_ICanvas *canvas, StereoMode stereoMod
 					area.SetLeft(0);
 					area.SetBottom(canvas->GetHeight() - (canvas->GetHeight() - m_noOfScanlines - 1) / 2);
 
-					area.SetRight(canvas->GetWidth() - 1);
-					area.SetTop(canvas->GetHeight() - 1);
+					area.SetRight(canvas->GetMaxX());
+					area.SetTop(canvas->GetMaxY());
 					break;
 				}
 				case RAS_STEREO_RIGHTEYE:
@@ -551,8 +551,8 @@ RAS_Rect RAS_Rasterizer::GetRenderArea(RAS_ICanvas *canvas, StereoMode stereoMod
 					// lower half of window
 					area.SetLeft(0);
 					area.SetBottom(0);
-					area.SetRight(canvas->GetWidth() - 1);
-					area.SetTop((canvas->GetHeight() - m_noOfScanlines - 1) / 2);
+					area.SetRight(canvas->GetMaxX());
+					area.SetTop((canvas->GetMaxY() - m_noOfScanlines) / 2);
 					break;
 				}
 			}

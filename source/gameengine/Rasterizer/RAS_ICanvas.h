@@ -88,6 +88,8 @@ public:
 
 	virtual int GetWidth() const = 0;
 	virtual int GetHeight() const = 0;
+	virtual int GetMaxX() const = 0;
+	virtual int GetMaxY() const = 0;
 
 	/** Convert mouse coordinates from screen or client window to render area coordinates.
 	 * \param x The input X coordinate.

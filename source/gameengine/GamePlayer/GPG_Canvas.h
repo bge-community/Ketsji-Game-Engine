@@ -69,6 +69,8 @@ public:
 
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
+	virtual int GetMaxX() const;
+	virtual int GetMaxY() const;
 	virtual RAS_Rect &GetWindowArea();
 	virtual void BeginFrame();
 

@@ -73,6 +73,16 @@ int GPG_Canvas::GetHeight() const
 	return m_height;
 }
 
+int GPG_Canvas::GetMaxX() const
+{
+	return (m_width - 1);
+}
+
+int GPG_Canvas::GetMaxY() const
+{
+	return (m_height - 1);
+}
+
 RAS_Rect &GPG_Canvas::GetWindowArea()
 {
 	return m_area;
@@ -264,10 +274,10 @@ void GPG_Canvas::ConvertMousePosition(int x, int y, int &r_x, int &r_y, bool UNU
 
 float GPG_Canvas::GetMouseNormalizedX(int x)
 {
-	return float(x) / (this->GetWidth() - 1);
+	return float(x) / GetMaxX();
 }
 
 float GPG_Canvas::GetMouseNormalizedY(int y)
 {
-	return float(y) / (this->GetHeight() - 1);
+	return float(y) / GetMaxY();
 }

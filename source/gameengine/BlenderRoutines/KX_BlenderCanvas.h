@@ -84,6 +84,8 @@ public:
 
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
+	virtual int GetMaxX() const;
+	virtual int GetMaxY() const;
 
 	virtual void ConvertMousePosition(int x, int y, int &r_x, int &r_y, bool screen);
 

@@ -53,8 +53,6 @@ extern "C" {
 #  include "wm_window.h"
 }
 
-#include "CM_Message.h"
-
 KX_BlenderCanvas::KX_BlenderCanvas(RAS_Rasterizer *rasty, wmWindowManager *wm, wmWindow *win, RAS_Rect &rect, struct ARegion *ar)
 	:RAS_ICanvas(rasty),
 	m_wm(wm),
@@ -146,6 +144,16 @@ int KX_BlenderCanvas::GetHeight() const
 	return m_area_rect.GetHeight();
 }
 
+int KX_BlenderCanvas::GetMaxX() const
+{
+	return m_area_rect.GetMaxX();
+}
+
+int KX_BlenderCanvas::GetMaxY() const
+{
+	return m_area_rect.GetMaxY();
+}
+
 void KX_BlenderCanvas::ConvertMousePosition(int x, int y, int &r_x, int &r_y, bool screen)
 {
 	if (screen) {
@@ -157,17 +165,16 @@ void KX_BlenderCanvas::ConvertMousePosition(int x, int y, int &r_x, int &r_y, bo
 
 	r_x = x - m_area_rect.GetLeft() - 1;
 	r_y = -y + m_area_rect.GetTop() - 1;
-	CM_FunctionDebug(r_x << ", " << r_y);
 }
 
 float KX_BlenderCanvas::GetMouseNormalizedX(int x)
 {
-	return float(x) / (this->GetWidth() - 1) ;
+	return float(x) / GetMaxX();
 }
 
 float KX_BlenderCanvas::GetMouseNormalizedY(int y)
 {
-	return float(y) / (this->GetHeight() - 1);
+	return float(y) / GetMaxY();
 }
 
 RAS_Rect &KX_BlenderCanvas::GetWindowArea()
@@ -235,9 +242,9 @@ void KX_BlenderCanvas::SetMousePosition(int x, int y)
 {
 	int winX = m_area_rect.GetLeft();
 	int winY = m_area_rect.GetBottom();
-	int winH = m_area_rect.GetHeight();
+	int winMaxY = m_area_rect.GetMaxY();
 
-	WM_cursor_warp(m_win, winX + x, winY + (winH - 1 - y));
+	WM_cursor_warp(m_win, winX + x + 1, winY + (winH - y - 1));
 }
 
 void KX_BlenderCanvas::MakeScreenShot(const std::string& filename)
