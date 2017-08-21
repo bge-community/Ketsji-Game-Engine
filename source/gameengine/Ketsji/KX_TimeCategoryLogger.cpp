@@ -56,32 +56,32 @@ KX_TimeCategoryLogger::~KX_TimeCategoryLogger()
 {
 }
 
-void KX_TimeCategoryLogger::StartLog(KX_TimeLogger::Category tc, double now)
+void KX_TimeCategoryLogger::StartLog(KX_TimeLogger::Category tc)
 {
 	if (m_lastCategory != KX_TimeLogger::NONE) {
-		m_loggers[m_lastCategory].EndLog(now);
+		m_loggers[m_lastCategory].EndLog(KX_TimeLogger::Clock::now());
 	}
-	m_loggers[tc].StartLog(now);
+	m_loggers[tc].StartLog(KX_TimeLogger::Clock::now());
 	m_lastCategory = tc;
 }
 
-void KX_TimeCategoryLogger::EndLog(KX_TimeLogger::Category tc, double now)
+void KX_TimeCategoryLogger::EndLog(KX_TimeLogger::Category tc)
 {
-	m_loggers[tc].EndLog(now);
+	m_loggers[tc].EndLog(KX_TimeLogger::Clock::now());
 }
 
-void KX_TimeCategoryLogger::EndLog(double now)
+void KX_TimeCategoryLogger::EndLog()
 {
-	m_loggers[m_lastCategory].EndLog(now);
+	m_loggers[m_lastCategory].EndLog(KX_TimeLogger::Clock::now());
 	m_lastCategory = KX_TimeLogger::NONE;
 }
 
-void KX_TimeCategoryLogger::NextMeasurement(double now)
+void KX_TimeCategoryLogger::NextMeasurement()
 {
 	m_lastTotalAverage = {0.0, 0.0, 0.0};
 	for (unsigned short tc = 0; tc < KX_TimeLogger::NUM_CATEGORY; ++tc) {
 		KX_TimeLogger& logger = m_loggers[tc];
-		logger.NextMeasurement(now);
+		logger.NextMeasurement(KX_TimeLogger::Clock::now());
 
 		const std::array<double, 3> averages = logger.GetAverages();
 		m_lastAverages[tc] = averages;

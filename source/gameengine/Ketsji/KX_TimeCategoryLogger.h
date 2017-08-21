@@ -65,26 +65,26 @@ public:
 	 * \param tc					The category to log to.
 	 * \param now					The current time.
 	 */
-	void StartLog(KX_TimeLogger::Category tc, double now);
+	void StartLog(KX_TimeLogger::Category tc);
 
 	/**
 	 * End logging in current measurement for the given category.
 	 * \param tc	The category to log to.
 	 * \param now	The current time.
 	 */
-	void EndLog(KX_TimeLogger::Category tc, double now);
+	void EndLog(KX_TimeLogger::Category tc);
 
 	/**
 	 * End logging in current measurement for all categories.
 	 * \param now	The current time.
 	 */
-	void EndLog(double now);
+	void EndLog();
 
 	/**
 	 * Logs time in next measurement.
 	 * \param now	The current time.
 	 */
-	void NextMeasurement(double now);
+	void NextMeasurement();
 
 	/**
 	 * Returns average of all but the current measurement time.

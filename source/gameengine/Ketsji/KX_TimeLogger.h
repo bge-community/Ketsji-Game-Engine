@@ -38,6 +38,8 @@
 
 #include <deque>
 #include <array>
+#include <chrono>
+
 
 /**
  * Stores and manages time measurements.
@@ -45,6 +47,9 @@
 class KX_TimeLogger
 {
 public:
+	using Clock = std::chrono::high_resolution_clock;
+	using ClockTime = std::chrono::time_point<Clock>;
+
 	enum Measurement {
 		MAX_MEASUREMENTS = 100
 	};
@@ -79,19 +84,19 @@ public:
 	 * Starts logging in current measurement.
 	 * \param now	The current time.
 	 */
-	void StartLog(double now);
+	void StartLog(const ClockTime& now);
 
 	/**
 	 * End logging in current measurement.
 	 * \param now	The current time.
 	 */
-	void EndLog(double now);
+	void EndLog(const ClockTime& now);
 
 	/**
 	 * Logs time in next measurement.
 	 * \param now	The current time.
 	 */
-	void NextMeasurement(double now);
+	void NextMeasurement(const ClockTime& now);
 
 	/**
 	 * Returns averages of all but the current measurement for
@@ -104,7 +109,7 @@ protected:
 	std::deque<double> m_measurements;
 
 	/// Time at start of logging.
-	double m_logStart;
+	ClockTime m_logStart;
 
 	/// State of logging.
 	bool m_logging;

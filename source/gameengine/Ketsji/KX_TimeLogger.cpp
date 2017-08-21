@@ -36,8 +36,7 @@
 #include "CM_Message.h"
 
 KX_TimeLogger::KX_TimeLogger()
-	:m_logStart(0.0),
-	m_logging(false)
+	:m_logging(false)
 {
 }
 
@@ -45,7 +44,7 @@ KX_TimeLogger::~KX_TimeLogger()
 {
 }
 
-void KX_TimeLogger::StartLog(double now)
+void KX_TimeLogger::StartLog(const ClockTime& now)
 {
 	if (!m_logging) {
 		m_logging = true;
@@ -53,18 +52,18 @@ void KX_TimeLogger::StartLog(double now)
 	}
 }
 
-void KX_TimeLogger::EndLog(double now)
+void KX_TimeLogger::EndLog(const ClockTime& now)
 {
 	if (m_logging) {
 		m_logging = false;
-		double time = now - m_logStart;
+		std::chrono::duration<double> diff = now - m_logStart;
 		if (m_measurements.size() > 0) {
-			m_measurements[0] += time;
+			m_measurements[0] += diff.count();
 		}
 	}
 }
 
-void KX_TimeLogger::NextMeasurement(double now)
+void KX_TimeLogger::NextMeasurement(const ClockTime& now)
 {
 	// End logging to current measurement
 	EndLog(now);
@@ -96,25 +95,8 @@ std::array<double, 3> KX_TimeLogger::GetAverages() const
 				avg[k] += time;
 			}
 		}
-		avg[i] /= samples[i] - 1;
+		avg[i] /= (samples[i] - 1);
 	}
-
-	/*for (unsigned short i = 25, size = samples[2]; i < size; ++i) {
-		avg[2] += m_measurements[i];
-	}
-	for (unsigned short i = 1, size = samples[1]; i < size; ++i) {
-		const double time = m_measurements[i];
-		avg[1] += time;
-		avg[2] += time;
-	}*/
-	
-
-	/*if (numMeasurements > 1) {
-		for (unsigned int i = 1; i < numMeasurements; i++) {
-			avg += m_measurements[i];
-		}
-		avg /= (double)numMeasurements - 1.0;
-	}*/
 
 	return avg;
 }
