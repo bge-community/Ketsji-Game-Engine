@@ -30,7 +30,6 @@
 #include "BLI_math_vector.h"
 #include "KX_NavMeshObject.h"
 #include "RAS_MeshObject.h"
-#include "RAS_Polygon.h"
 #include "RAS_IVertex.h"
 
 #include "DNA_mesh_types.h"
@@ -115,6 +114,7 @@ bool KX_NavMeshObject::BuildVertIndArrays(float *&vertices, int& nverts,
 									   float *&dvertices, int &ndvertsuniq, unsigned short *&dtris, 
 									   int& ndtris, int &vertsPerPoly)
 {
+#if 0 // TODO
     DerivedMesh* dm = mesh_create_derived_no_virtual(GetScene()->GetBlenderScene(), GetBlenderObject(),
 													nullptr, CD_MASK_MESH);
 	CustomData *pdata = dm->getPolyDataLayout(dm);
@@ -280,7 +280,7 @@ bool KX_NavMeshObject::BuildVertIndArrays(float *&vertices, int& nverts,
 		ndtris = npolys;
 	}
 	dm->release(dm);
-	
+#endif
 	return true;
 }
 

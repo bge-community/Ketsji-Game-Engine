@@ -47,7 +47,7 @@ class CcdPhysicsEnvironment;
 class CcdPhysicsController;
 class btMotionState;
 class RAS_MeshObject;
-struct DerivedMesh;
+class RAS_Deformer;
 class btCollisionShape;
 
 #define CCD_BSB_SHAPE_MATCHING  2
@@ -71,7 +71,7 @@ public:
 		float uv[2];
 	};
 
-	static CcdShapeConstructionInfo *FindMesh(class RAS_MeshObject *mesh, struct DerivedMesh *dm, bool polytope);
+	static CcdShapeConstructionInfo *FindMesh(RAS_MeshObject *mesh, RAS_Deformer *deformer, PHY_ShapeType shapeType);
 
 	CcdShapeConstructionInfo() 
 		:m_shapeType(PHY_SHAPE_NONE),
@@ -138,7 +138,6 @@ public:
 		return true;
 	}
 
-	bool SetMesh(class RAS_MeshObject *mesh, struct DerivedMesh *dm, bool polytope);
 	RAS_MeshObject *GetMesh(void)
 	{
 		return m_meshObject;
@@ -186,7 +185,10 @@ public:
 		m_weldingThreshold1  = threshold * threshold;
 	}
 protected:
-	static std::map<RAS_MeshObject *, CcdShapeConstructionInfo *> m_meshShapeMap;
+	using MeshShapeKey = std::tuple<RAS_MeshObject *, RAS_Deformer *, PHY_ShapeType>;
+	using MeshShapeMap = std::map<MeshShapeKey, CcdShapeConstructionInfo *>;
+
+	static MeshShapeMap m_meshShapeMap;
 	/// Keep a pointer to the original mesh
 	RAS_MeshObject *m_meshObject;
 	/// The list of vertexes and indexes for the triangle mesh, shared between Bullet shape.
