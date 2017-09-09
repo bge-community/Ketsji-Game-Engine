@@ -273,7 +273,7 @@ void LA_Launcher::InitEngine()
 #ifdef WITH_PYTHON
 	KX_SetMainPath(std::string(m_maggie->name));
 	// Some python things.
-	setupGamePython(m_ketsjiEngine, m_maggie, m_globalDict, &m_gameLogic, m_argc, m_argv);
+	initGamePython(m_maggie, m_globalDict, &m_gameLogic);
 #endif  // WITH_PYTHON
 
 	// Create a scene converter, create and convert the stratingscene.
@@ -386,7 +386,7 @@ void LA_Launcher::ExitEngine()
 	}
 
 	// Call this after we're sure nothing needs Python anymore (e.g., destructors).
-	ExitPython();
+	exitGamePython();
 
 #ifdef WITH_AUDASPACE
 	// Stop all remaining playing sounds.
