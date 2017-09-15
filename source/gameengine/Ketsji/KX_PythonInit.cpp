@@ -1859,7 +1859,7 @@ static void initPySysObjects__append(PyObject *sys_path, const char *filename)
 	BLI_cleanup_file(KX_GetMainPath().c_str(), expanded); /* Don't use BLI_cleanup_dir because it adds a slash - BREAKS WIN32 ONLY */
 	item = PyC_UnicodeFromByte(expanded);
 	
-	if (PySequence_Index(sys_path, item) == -1) {
+	if (PySequence_Index(sys_path, item) == 0) {
 		PyErr_Clear(); /* PySequence_Index sets a ValueError */
 		PyList_Insert(sys_path, 0, item);
 	}
