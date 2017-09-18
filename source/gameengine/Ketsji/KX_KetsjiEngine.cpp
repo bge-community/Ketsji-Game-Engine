@@ -85,7 +85,11 @@
 #endif
 
 extern "C" {
-#  include "DRW_render.h"
+#  include "DRW_engine.h"
+#  include "depsgraph/DEG_depsgraph.h"
+#  include "BLI_math.h"
+#  include "windowmanager/WM_api.h"
+#  include "windowmanager/WM_types.h"
 }
 
 KX_KetsjiEngine::CameraRenderData::CameraRenderData(KX_Camera *rendercam, KX_Camera *cullingcam, const RAS_Rect& area, const RAS_Rect& viewport,
@@ -246,9 +250,9 @@ void KX_KetsjiEngine::StartEngine()
 
 void KX_KetsjiEngine::BeginFrame()
 {
-	m_rasterizer->BeginFrame(m_frameTime);
+	//m_rasterizer->BeginFrame(m_frameTime);
 
-	m_canvas->BeginDraw();
+	//m_canvas->BeginDraw();
 }
 
 void KX_KetsjiEngine::EndFrame()
@@ -340,11 +344,11 @@ bool KX_KetsjiEngine::NextFrame()
 	}
 
 	double deltatime = m_clockTime - m_frameTime;
-	if (deltatime < 0.0) {
-		// We got here too quickly, which means there is nothing to do, just return and don't render.
-		// Not sure if this is the best fix, but it seems to stop the jumping framerate issue (#33088)
-		return false;
-	}
+	//if (deltatime < 0.0) {
+	//	// We got here too quickly, which means there is nothing to do, just return and don't render.
+	//	// Not sure if this is the best fix, but it seems to stop the jumping framerate issue (#33088)
+	//	return false;
+	//}
 
 	// In case of non-fixed framerate, we always proceed one frame.
 	int frames = 1;
@@ -464,7 +468,19 @@ bool KX_KetsjiEngine::NextFrame()
 	// Start logging time spent outside main loop
 	m_logger.StartLog(tc_outside, m_kxsystem->GetTimeInSeconds());
 
-	return doRender && m_doRender;
+	KX_Scene *firstScene = m_scenes->GetFront();
+	for (KX_GameObject *gameobj : firstScene->GetObjectList()) {
+		Object *ob = gameobj->GetBlenderObject();
+		if (ob && (ob->type == OB_MESH || ob->type == OB_CAMERA || ob->type == OB_LAMP)) {
+			float obmat[4][4];
+			gameobj->NodeGetWorldTransform().getValue(&obmat[0][0]);
+			copy_m4_m4(ob->obmat, obmat);
+			DEG_id_tag_update(&ob->id, OB_RECALC_ALL);
+			WM_main_add_notifier(NC_OBJECT | ND_TRANSFORM, &ob->id);
+		}
+	}
+
+	return true;
 }
 
 void KX_KetsjiEngine::UpdateSuspendedScenes(double framestep)
@@ -612,112 +628,16 @@ bool KX_KetsjiEngine::GetFrameRenderData(std::vector<FrameRenderData>& frameData
 
 void KX_KetsjiEngine::Render()
 {
+	bContext *C = m_rasterizer->GetContext();
+	if (!C) return;
+
 	m_logger.StartLog(tc_rasterizer, m_kxsystem->GetTimeInSeconds());
 
-	BeginFrame();
+	//BeginFrame();
+	//DRW_draw_view(C);
+	
 
-	for (KX_Scene *scene : m_scenes) {
-		// shadow buffers
-		RenderShadowBuffers(scene);
-		// Render only independent texture renderers here.
-// 		scene->RenderTextureRenderers(KX_TextureRendererManager::VIEWPORT_INDEPENDENT, m_rasterizer, nullptr, nullptr, RAS_Rect(), RAS_Rect());
-	}
-
-	std::vector<FrameRenderData> frameDataList;
-	const bool renderpereye = GetFrameRenderData(frameDataList);
-
-	// Update all off screen to the current canvas size.
-	m_rasterizer->UpdateOffScreens(m_canvas);
-
-	const int width = m_canvas->GetWidth();
-	const int height = m_canvas->GetHeight();
-
-	// clear the entire game screen with the border color
-	// only once per frame
-	m_rasterizer->SetViewport(0, 0, width + 1, height + 1);
-	m_rasterizer->SetScissor(0, 0, width + 1, height + 1);
-
-	KX_Scene *firstscene = m_scenes->GetFront();
-	const RAS_FrameSettings &framesettings = firstscene->GetFramingType();
-	// Use the framing bar color set in the Blender scenes
-	m_rasterizer->SetClearColor(framesettings.BarRed(), framesettings.BarGreen(), framesettings.BarBlue(), 1.0f);
-
-	// Used to detect when a camera is the first rendered an then doesn't request a depth clear.
-	unsigned short pass = 0;
-
-	for (FrameRenderData& frameData : frameDataList) {
-		// Current bound off screen.
-		RAS_OffScreen *offScreen = m_rasterizer->GetOffScreen(frameData.m_ofsType);
-		offScreen->Bind();
-
-		// Clear off screen only before the first scene render.
-		m_rasterizer->Clear(RAS_Rasterizer::RAS_COLOR_BUFFER_BIT | RAS_Rasterizer::RAS_DEPTH_BUFFER_BIT);
-
-		// for each scene, call the proceed functions
-		for (unsigned short i = 0, size = frameData.m_sceneDataList.size(); i < size; ++i) {
-			const SceneRenderData& sceneFrameData = frameData.m_sceneDataList[i];
-			KX_Scene *scene = sceneFrameData.m_scene;
-
-			const bool isfirstscene = (i == 0);
-			const bool islastscene = (i == (size - 1));
-
-			// pass the scene's worldsettings to the rasterizer
-			scene->GetWorldInfo()->UpdateWorldSettings(m_rasterizer);
-
-			m_rasterizer->SetAuxilaryClientInfo(scene);
-
-			// Draw the scene once for each camera with an enabled viewport or an active camera.
-			for (const CameraRenderData& cameraFrameData : sceneFrameData.m_cameraDataList) {
-				// do the rendering
-				RenderCamera(scene, cameraFrameData, offScreen, pass++, isfirstscene);
-			}
-
-			// Choose final render off screen target.
-			RAS_Rasterizer::OffScreenType target;
-			if (offScreen->GetSamples() > 0) {
-				/* If the last scene is rendered it's useless to specify a multisamples off screen, we use then
-				 * a non-multisamples off screen and avoid an extra off screen blit. */
-				if (islastscene) {
-					target = RAS_Rasterizer::NextRenderOffScreen(frameData.m_ofsType);
-				}
-				/* If the current off screen is using multisamples we are sure that it will be copied to a
-				 * non-multisamples off screen before render the filters.
-				 * In this case the targeted off screen is the same as the current off screen. */
-				else {
-					target = frameData.m_ofsType;
-				}
-			}
-			/* In case of non-multisamples a ping pong per scene render is made between a potentially multisamples
-			 * off screen and a non-multisamples off screen as the both doesn't use multisamples. */
-			else {
-				target = RAS_Rasterizer::NextRenderOffScreen(frameData.m_ofsType);
-			}
-
-			// Render EEVEE effects before tonemapping and custom filters
-			scene->SetIsLastScene(scene == m_scenes->GetBack());
-			offScreen = PostRenderEevee(scene, offScreen);
-			target = RAS_Rasterizer::NextRenderOffScreen(offScreen->GetType());
-			// Render filters and get output off screen.
-			offScreen = PostRenderScene(scene, offScreen, m_rasterizer->GetOffScreen(target));
-			frameData.m_ofsType = offScreen->GetType();
-		}
-	}
-
-	// Compositing per eye off screens to screen.
-	if (renderpereye) {
-		RAS_OffScreen *leftofs = m_rasterizer->GetOffScreen(frameDataList[0].m_ofsType);
-		RAS_OffScreen *rightofs = m_rasterizer->GetOffScreen(frameDataList[1].m_ofsType);
-		m_rasterizer->DrawStereoOffScreen(m_canvas, leftofs, rightofs);
-	}
-	// Else simply draw the off screen to screen.
-	else {
-		m_rasterizer->DrawOffScreen(m_canvas, m_rasterizer->GetOffScreen(frameDataList[0].m_ofsType));
-	}
-
-// 	m_rasterizer->BindViewport(m_canvas);
-// 	m_rasterizer->UnbindViewport(m_canvas);
-
-	EndFrame();
+	//EndFrame();
 }
 
 void KX_KetsjiEngine::RequestExit(KX_ExitRequest exitrequestmode)

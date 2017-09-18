@@ -60,6 +60,7 @@ struct GPUShader;
 struct GPUViewport;
 struct DRWShadingGroup;
 struct EEVEE_SceneLayerData;
+struct bContext;
 
 /**
  * 3D rendering device context interface. 
@@ -320,9 +321,19 @@ private:
 	/*void EnableLights();
 	void DisableLights();*/
 
+
+
+	bContext *m_context;
+
 public:
 	RAS_Rasterizer();
 	virtual ~RAS_Rasterizer();
+
+
+
+
+	bContext *GetContext();
+	void SetContext(bContext *C);
 
 	/**
 	 * Enable capability

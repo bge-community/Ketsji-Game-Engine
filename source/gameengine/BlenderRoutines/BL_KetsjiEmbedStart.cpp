@@ -110,54 +110,54 @@ extern "C" void StartKetsjiShell(struct bContext *C, struct ARegion *ar, rcti *c
 
 	do
 	{
-		// if we got an exitcode 3 (KX_ExitRequest::START_OTHER_GAME) load a different file
-		if (exitrequested == KX_ExitRequest::START_OTHER_GAME || exitrequested == KX_ExitRequest::RESTART_GAME) {
-			exitrequested = KX_ExitRequest::NO_REQUEST;
-			if (bfd) {
-				BLO_blendfiledata_free(bfd);
-			}
-			
-			char basedpath[FILE_MAX];
-			// base the actuator filename with respect
-			// to the original file working directory
+		//// if we got an exitcode 3 (KX_ExitRequest::START_OTHER_GAME) load a different file
+		//if (exitrequested == KX_ExitRequest::START_OTHER_GAME || exitrequested == KX_ExitRequest::RESTART_GAME) {
+		//	exitrequested = KX_ExitRequest::NO_REQUEST;
+		//	if (bfd) {
+		//		BLO_blendfiledata_free(bfd);
+		//	}
+		//	
+		//	char basedpath[FILE_MAX];
+		//	// base the actuator filename with respect
+		//	// to the original file working directory
 
-			if (!exitstring.empty()) {
-				BLI_strncpy(basedpath, exitstring.c_str(), sizeof(basedpath));
-			}
+		//	if (!exitstring.empty()) {
+		//		BLI_strncpy(basedpath, exitstring.c_str(), sizeof(basedpath));
+		//	}
 
-			// load relative to the last loaded file, this used to be relative
-			// to the first file but that makes no sense, relative paths in
-			// blend files should be relative to that file, not some other file
-			// that happened to be loaded first
-			BLI_path_abs(basedpath, pathname);
-			bfd = load_game_data(basedpath);
-			
-			// if it wasn't loaded, try it forced relative
-			if (!bfd) {
-				// just add "//" in front of it
-				char temppath[FILE_MAX] = "//";
-				BLI_strncpy(temppath + 2, basedpath, FILE_MAX - 2);
-				
-				BLI_path_abs(temppath, pathname);
-				bfd = load_game_data(temppath);
-			}
-			
-			// if we got a loaded blendfile, proceed
-			if (bfd) {
-				blenderdata = bfd->main;
-				startscenename = bfd->curscene->id.name + 2;
+		//	// load relative to the last loaded file, this used to be relative
+		//	// to the first file but that makes no sense, relative paths in
+		//	// blend files should be relative to that file, not some other file
+		//	// that happened to be loaded first
+		//	BLI_path_abs(basedpath, pathname);
+		//	bfd = load_game_data(basedpath);
+		//	
+		//	// if it wasn't loaded, try it forced relative
+		//	if (!bfd) {
+		//		// just add "//" in front of it
+		//		char temppath[FILE_MAX] = "//";
+		//		BLI_strncpy(temppath + 2, basedpath, FILE_MAX - 2);
+		//		
+		//		BLI_path_abs(temppath, pathname);
+		//		bfd = load_game_data(temppath);
+		//	}
+		//	
+		//	// if we got a loaded blendfile, proceed
+		//	if (bfd) {
+		//		blenderdata = bfd->main;
+		//		startscenename = bfd->curscene->id.name + 2;
 
-				if (blenderdata) {
-					BLI_strncpy(pathname, blenderdata->name, sizeof(pathname));
-				}
-			}
-			// else forget it, we can't find it
-			else {
-				exitrequested = KX_ExitRequest::QUIT_GAME;
-			}
-		}
+		//		if (blenderdata) {
+		//			BLI_strncpy(pathname, blenderdata->name, sizeof(pathname));
+		//		}
+		//	}
+		//	// else forget it, we can't find it
+		//	else {
+		//		exitrequested = KX_ExitRequest::QUIT_GAME;
+		//	}
+		//}
 
-		Scene *scene = bfd ? bfd->curscene : (Scene *)BLI_findstring(&blenderdata->scene, startscenename, offsetof(ID, name) + 2);
+		Scene *scene = startscene;// bfd ? bfd->curscene : (Scene *)BLI_findstring(&blenderdata->scene, startscenename, offsetof(ID, name) + 2);
 
 		RAS_Rasterizer::StereoMode stereoMode = RAS_Rasterizer::RAS_STEREO_NOSTEREO;
 		if (scene) {

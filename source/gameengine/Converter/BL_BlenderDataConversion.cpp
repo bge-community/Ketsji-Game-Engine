@@ -721,12 +721,12 @@ RAS_MeshObject* BL_ConvertMesh(Mesh* mesh, Object* blenderobj, KX_Scene* scene, 
 
 	// pre calculate texture generation
 	// However, we want to delay this if we're libloading so we can make sure we have the right scene.
-	if (!libloading) {
+	/*if (!libloading) {
 		for (unsigned short i = 0, num = meshobj->NumMaterials(); i < num; ++i) {
 			RAS_MeshMaterial *mmat = meshobj->GetMeshMaterial(i);
 			mmat->GetBucket()->GetPolyMaterial()->OnConstruction();
 		}
-	}
+	}*/
 
 	dm->release(dm);
 

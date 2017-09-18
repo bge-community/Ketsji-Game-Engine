@@ -218,7 +218,8 @@ RAS_Rasterizer::RAS_Rasterizer()
 	m_drawingmode(RAS_TEXTURED),
 	m_shadowMode(RAS_SHADOW_NONE),
 	m_invertFrontFace(false),
-	m_last_frontface(true)
+	m_last_frontface(true),
+	m_context(nullptr)
 {
 	m_impl.reset(new RAS_OpenGLRasterizer(this));
 
@@ -227,6 +228,16 @@ RAS_Rasterizer::RAS_Rasterizer()
 
 RAS_Rasterizer::~RAS_Rasterizer()
 {
+}
+
+void RAS_Rasterizer::SetContext(bContext *C)
+{
+	m_context = C;
+}
+
+bContext *RAS_Rasterizer::GetContext()
+{
+	return m_context;
 }
 
 void RAS_Rasterizer::InitScreenShaders()

@@ -111,27 +111,27 @@ void LA_BlenderLauncher::InitCamera()
 	// Some blender stuff.
 	float camzoom = 1.0f;
 
-	if (rv3d->persp == RV3D_CAMOB) {
-		if (m_startScene->gm.framing.type == SCE_GAMEFRAMING_BARS) { /* Letterbox */
-			m_drawLetterBox = true;
-		}
-		else {
-			camzoom = 1.0f / BKE_screen_view3d_zoom_to_fac(rv3d->camzoom);
-		}
-	}
+	//if (rv3d->persp == RV3D_CAMOB) {
+	//	if (m_startScene->gm.framing.type == SCE_GAMEFRAMING_BARS) { /* Letterbox */
+	//		m_drawLetterBox = true;
+	//	}
+	//	else {
+	//		camzoom = 1.0f / BKE_screen_view3d_zoom_to_fac(rv3d->camzoom);
+	//	}
+	//}
 
-	m_ketsjiEngine->SetCameraZoom(camzoom);
-	m_ketsjiEngine->SetCameraOverrideZoom(2.0f);
+	//m_ketsjiEngine->SetCameraZoom(camzoom);
+	//m_ketsjiEngine->SetCameraOverrideZoom(2.0f);
 
-	if (rv3d->persp != RV3D_CAMOB) {
-		RAS_CameraData camdata = RAS_CameraData();
-		camdata.m_lens = m_view3d->lens;
-		camdata.m_clipstart = m_view3d->near;
-		camdata.m_clipend = m_view3d->far;
-		camdata.m_perspective = (rv3d->persp != RV3D_ORTHO);
+	//if (rv3d->persp != RV3D_CAMOB) {
+	//	RAS_CameraData camdata = RAS_CameraData();
+	//	camdata.m_lens = m_view3d->lens;
+	//	camdata.m_clipstart = m_view3d->near;
+	//	camdata.m_clipend = m_view3d->far;
+	//	camdata.m_perspective = (rv3d->persp != RV3D_ORTHO);
 
-		m_ketsjiEngine->EnableCameraOverride(m_startSceneName, MT_Matrix4x4(&rv3d->winmat[0][0]), MT_Matrix4x4(&rv3d->viewmat[0][0]), camdata);
-	}
+	//	m_ketsjiEngine->EnableCameraOverride(m_startSceneName, MT_Matrix4x4(&rv3d->winmat[0][0]), MT_Matrix4x4(&rv3d->viewmat[0][0]), camdata);
+	//}
 }
 
 
@@ -180,29 +180,30 @@ void LA_BlenderLauncher::ExitEngine()
 	}
 
 	// Free all window manager events unused.
-	wm_event_free_all(m_window);
+	//wm_event_free_all(m_window); ////////////////////////////// Do something here?
 }
 
 void LA_BlenderLauncher::RenderEngine()
 {
-	if (m_drawLetterBox) {
-		// Clear screen to border color
-		// We do this here since we set the canvas to be within the frames. This means the engine
-		// itself is unaware of the extra space, so we clear the whole region for it.
-		m_rasterizer->SetClearColor(m_startScene->gm.framing.col[0], m_startScene->gm.framing.col[1], m_startScene->gm.framing.col[2]);
-// 		m_rasterizer->SetViewport(m_ar->winrct.xmin, m_ar->winrct.ymin,
-// 		           BLI_rcti_size_x(&m_ar->winrct) + 1, BLI_rcti_size_y(&m_ar->winrct) + 1);
-		m_rasterizer->SetScissor(m_ar->winrct.xmin, m_ar->winrct.ymin,
-		           BLI_rcti_size_x(&m_ar->winrct) + 1, BLI_rcti_size_y(&m_ar->winrct) + 1);
-		m_rasterizer->Clear(RAS_Rasterizer::RAS_COLOR_BUFFER_BIT);
-	}
+//	if (m_drawLetterBox) {
+//		// Clear screen to border color
+//		// We do this here since we set the canvas to be within the frames. This means the engine
+//		// itself is unaware of the extra space, so we clear the whole region for it.
+//		m_rasterizer->SetClearColor(m_startScene->gm.framing.col[0], m_startScene->gm.framing.col[1], m_startScene->gm.framing.col[2]);
+//// 		m_rasterizer->SetViewport(m_ar->winrct.xmin, m_ar->winrct.ymin,
+//// 		           BLI_rcti_size_x(&m_ar->winrct) + 1, BLI_rcti_size_y(&m_ar->winrct) + 1);
+//		m_rasterizer->SetScissor(m_ar->winrct.xmin, m_ar->winrct.ymin,
+//		           BLI_rcti_size_x(&m_ar->winrct) + 1, BLI_rcti_size_y(&m_ar->winrct) + 1);
+//		m_rasterizer->Clear(RAS_Rasterizer::RAS_COLOR_BUFFER_BIT);
+//	}
+	m_rasterizer->SetContext(m_context);
 	LA_Launcher::RenderEngine();
 }
 
 bool LA_BlenderLauncher::EngineNextFrame()
 {
 	// Free all window manager events unused.
-	wm_event_free_all(m_window);
+	//wm_event_free_all(m_window); ////////////////////////////// Do something here?
 
 	return LA_Launcher::EngineNextFrame();
 }

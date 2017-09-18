@@ -487,10 +487,10 @@ bool LA_Launcher::EngineNextFrame()
 		// First check if we want to exit.
 		m_exitRequested = m_ketsjiEngine->GetExitCode();
 
-#ifdef WITH_PYTHON
-		// Check if we can create a python console debugging.
-		HandlePythonConsole();
-#endif
+//#ifdef WITH_PYTHON
+//		// Check if we can create a python console debugging.
+//		HandlePythonConsole();
+//#endif
 
 		// Kick the engine.
 		bool renderFrame = m_ketsjiEngine->NextFrame();

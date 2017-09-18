@@ -259,7 +259,7 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 
 	/*************************************************EEVEE INTEGRATION***********************************************************/
 
-	SceneLayer *sl = BKE_scene_layer_from_scene_get(m_blenderScene);
+	/*SceneLayer *sl = BKE_scene_layer_from_scene_get(m_blenderScene);
 	InitProperties(sl, m_blenderScene);
 	m_props = BKE_scene_layer_engine_evaluated_get(sl, COLLECTION_MODE_NONE, RE_engine_id_BLENDER_EEVEE);
 
@@ -277,7 +277,7 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	
 	m_eeveeData = EEVEE_engine_data_get();
 
-	m_effectsManager = new RAS_EeveeEffectsManager(m_eeveeData, canvas, m_props, this);
+	m_effectsManager = new RAS_EeveeEffectsManager(m_eeveeData, canvas, m_props, this);*/
 
 	/******************************************************************************************************************************/
 

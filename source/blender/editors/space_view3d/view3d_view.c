@@ -1415,49 +1415,49 @@ static int game_engine_exec(bContext *C, wmOperator *op)
 
 	(void)op; /* unused */
 	
-	/* bad context switch .. */
-	if (!ED_view3d_context_activate(C))
-		return OPERATOR_CANCELLED;
+	///* bad context switch .. */
+	//if (!ED_view3d_context_activate(C))
+	//	return OPERATOR_CANCELLED;
 
-	for (Scene *scene = bmain->scene.first; scene; scene = scene->id.next) {
-		DEG_scene_relations_rebuild(bmain, scene);
-	}
+	//for (Scene *scene = bmain->scene.first; scene; scene = scene->id.next) {
+	//	DEG_scene_relations_rebuild(bmain, scene);
+	//}
 	
 	/* redraw to hide any menus/popups, we don't go back to
 	 * the window manager until after this operator exits */
-	WM_redraw_windows(C);
+	//WM_redraw_windows(C);
 
-	BLI_callback_exec(bmain, &startscene->id, BLI_CB_EVT_GAME_PRE);
+	//BLI_callback_exec(bmain, &startscene->id, BLI_CB_EVT_GAME_PRE);
 
 	rv3d = CTX_wm_region_view3d(C);
 	/* sa = CTX_wm_area(C); */ /* UNUSED */
 	ar = CTX_wm_region(C);
 
-	view3d_operator_needs_opengl(C);
+	//view3d_operator_needs_opengl(C);
 	
 	game_set_commmandline_options(&startscene->gm);
 
-	if ((rv3d->persp == RV3D_CAMOB) &&
-	    (startscene->gm.framing.type == SCE_GAMEFRAMING_BARS))
-	{
-		/* Letterbox */
-		rctf cam_framef;
-		ED_view3d_calc_camera_border(startscene, ar, CTX_wm_view3d(C), rv3d, &cam_framef, false);
-		cam_frame.xmin = cam_framef.xmin + ar->winrct.xmin;
-		cam_frame.xmax = cam_framef.xmax + ar->winrct.xmin;
-		cam_frame.ymin = cam_framef.ymin + ar->winrct.ymin;
-		cam_frame.ymax = cam_framef.ymax + ar->winrct.ymin;
-		BLI_rcti_isect(&ar->winrct, &cam_frame, &cam_frame);
-	}
-	else {
-		cam_frame.xmin = ar->winrct.xmin;
-		cam_frame.xmax = ar->winrct.xmax;
-		cam_frame.ymin = ar->winrct.ymin;
-		cam_frame.ymax = ar->winrct.ymax;
-	}
+	//if ((rv3d->persp == RV3D_CAMOB) &&
+	//    (startscene->gm.framing.type == SCE_GAMEFRAMING_BARS))
+	//{
+	//	/* Letterbox */
+	//	rctf cam_framef;
+	//	ED_view3d_calc_camera_border(startscene, ar, CTX_wm_view3d(C), rv3d, &cam_framef, false);
+	//	cam_frame.xmin = cam_framef.xmin + ar->winrct.xmin;
+	//	cam_frame.xmax = cam_framef.xmax + ar->winrct.xmin;
+	//	cam_frame.ymin = cam_framef.ymin + ar->winrct.ymin;
+	//	cam_frame.ymax = cam_framef.ymax + ar->winrct.ymin;
+	//	BLI_rcti_isect(&ar->winrct, &cam_frame, &cam_frame);
+	//}
+	//else {
+	//	cam_frame.xmin = ar->winrct.xmin;
+	//	cam_frame.xmax = ar->winrct.xmax;
+	//	cam_frame.ymin = ar->winrct.ymin;
+	//	cam_frame.ymax = ar->winrct.ymax;
+	//}
 
 
-	SaveState(C, prevwin);
+	//SaveState(C, prevwin);
 
 	StartKetsjiShell(C, ar, &cam_frame, 1);
 
@@ -1467,23 +1467,23 @@ static int game_engine_exec(bContext *C, wmOperator *op)
 		CTX_wm_window_set(C, NULL);
 	}
 	
-	ED_area_tag_redraw(CTX_wm_area(C));
+	//ED_area_tag_redraw(CTX_wm_area(C));
 
-	if (prevwin) {
-		/* restore context, in case it changed in the meantime, for
-		 * example by working in another window or closing it */
-		CTX_wm_region_set(C, prevar);
-		CTX_wm_window_set(C, prevwin);
-		CTX_wm_area_set(C, prevsa);
-	}
+	//if (prevwin) {
+	//	/* restore context, in case it changed in the meantime, for
+	//	 * example by working in another window or closing it */
+	//	CTX_wm_region_set(C, prevar);
+	//	CTX_wm_window_set(C, prevwin);
+	//	CTX_wm_area_set(C, prevsa);
+	//}
 
-	RestoreState(C, prevwin);
+	//RestoreState(C, prevwin);
 
 	//XXX restore_all_scene_cfra(scene_cfra_store);
-	BKE_scene_set_background(CTX_data_main(C), startscene);
+	//BKE_scene_set_background(CTX_data_main(C), startscene);
 	//XXX BKE_scene_update_for_newframe(bmain->eval_ctx, bmain, scene);
 
-	BLI_callback_exec(bmain, &startscene->id, BLI_CB_EVT_GAME_POST);
+	//BLI_callback_exec(bmain, &startscene->id, BLI_CB_EVT_GAME_POST);
 
 	return OPERATOR_FINISHED;
 #else
