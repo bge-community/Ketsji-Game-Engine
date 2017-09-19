@@ -1321,7 +1321,7 @@ static int node_read_fullsamplelayers_exec(bContext *C, wmOperator *UNUSED(op))
 	Main *bmain = CTX_data_main(C);
 	SpaceNode *snode = CTX_wm_space_node(C);
 	Scene *curscene = CTX_data_scene(C);
-	Render *re = RE_NewRender(curscene->id.name);
+	Render *re = RE_NewSceneRender(curscene);
 
 	WM_cursor_wait(1);
 	RE_MergeFullSample(re, bmain, curscene, snode->nodetree);
@@ -2086,7 +2086,7 @@ static int node_clipboard_paste_exec(bContext *C, wmOperator *op)
 	/* make sure all clipboard nodes would be valid in the target tree */
 	all_nodes_valid = true;
 	for (node = clipboard_nodes_lb->first; node; node = node->next) {
-		if (!node->typeinfo->poll_instance(node, ntree)) {
+		if (!node->typeinfo->poll_instance || !node->typeinfo->poll_instance(node, ntree)) {
 			all_nodes_valid = false;
 			BKE_reportf(op->reports, RPT_ERROR, "Cannot add node %s into node tree %s", node->name, ntree->id.name + 2);
 		}
