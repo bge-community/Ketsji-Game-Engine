@@ -575,6 +575,56 @@ void BLF_draw(int fontid, const char *str, size_t len)
 	BLF_draw_ex(fontid, str, len, NULL);
 }
 
+/**********************GAME ENGINE*********************/
+static void blf_draw_gl__start_bge(FontBLF *font)
+{
+	/*
+	* The pixmap alignment hack is handle
+	* in BLF_position (old ui_rasterpos_safe).
+	*/
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	GPU_basic_shader_bind(GPU_SHADER_TEXTURE_2D | GPU_SHADER_USE_COLOR);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+
+	glTranslate3fv(font->pos);
+
+	/* always bind the texture for the first glyph */
+	font->tex_bind_state = -1;
+}
+
+static void blf_draw_gl__end_bge()
+{
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+
+	GPU_basic_shader_bind(GPU_SHADER_USE_COLOR);
+
+	glDisable(GL_BLEND);
+}
+
+void BLF_draw_ex_bge(
+	int fontid, const char *str, size_t len,
+	struct ResultBLF *r_info)
+{
+	FontBLF *font = blf_get(fontid);
+
+	blf_draw_gl__start_bge(font);
+		
+	blf_font_draw(font, str, len, r_info);
+		
+	blf_draw_gl__end_bge();
+}
+void BLF_draw_bge(int fontid, const char *str, size_t len)
+{
+	BLF_draw_ex_bge(fontid, str, len, NULL);
+}
+/*********************ENDOF GAME ENGINE***********************/
+
 void BLF_draw_ascii_ex(
         int fontid, const char *str, size_t len,
         struct ResultBLF *r_info)
