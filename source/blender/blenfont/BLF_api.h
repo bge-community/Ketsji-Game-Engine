@@ -81,12 +81,17 @@ void BLF_draw_default_ascii(float x, float y, float z, const char *str, size_t l
 
 /* Draw the string using the current font. */
 void BLF_draw_ex(int fontid, const char *str, size_t len, struct ResultBLF *r_info) ATTR_NONNULL(2);
-void BLF_draw_ex_bge(int fontid, const char *str, size_t len, struct ResultBLF *r_info) ATTR_NONNULL(2);
 void BLF_draw(int fontid, const char *str, size_t len) ATTR_NONNULL(2);
-void BLF_draw_bge(int fontid, const char *str, size_t len) ATTR_NONNULL(2);
 void BLF_draw_ascii_ex(int fontid, const char *str, size_t len, struct ResultBLF *r_info) ATTR_NONNULL(2);
 void BLF_draw_ascii(int fontid, const char *str, size_t len) ATTR_NONNULL(2);
 int BLF_draw_mono(int fontid, const char *str, size_t len, int cwidth) ATTR_NONNULL(2);
+
+/* Game engine */
+void BLF_draw_gl_start_bge(int fontid);
+void BLF_draw_gl_end_bge();
+void BLF_draw_bge(int fontid, const char *str, size_t len) ATTR_NONNULL(2);
+void BLF_draw_ex_bge(int fontid, const char *str, size_t len, struct ResultBLF *r_info) ATTR_NONNULL(2);
+/* End of game engine */
 
 /* Get the string byte offset that fits within a given width */
 size_t BLF_width_to_strlen(int fontid, const char *str, size_t len, float width, float *r_width) ATTR_NONNULL(2);

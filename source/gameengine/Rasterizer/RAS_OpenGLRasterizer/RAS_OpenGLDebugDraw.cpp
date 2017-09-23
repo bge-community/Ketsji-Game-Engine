@@ -179,7 +179,7 @@ void RAS_OpenGLDebugDraw::Flush(RAS_Rasterizer *rasty, RAS_ICanvas *canvas, RAS_
 	glEnd();
 
 	BLF_size(blf_mono_font, 11, 72);
-
+	BLF_draw_gl_start_bge(blf_mono_font);
 	for (const RAS_DebugDraw::Text2D& text2d : debugDraw->m_texts2D) {
 		const std::string& text = text2d.m_text;
 		const float xco = text2d.m_pos.x();
@@ -189,6 +189,7 @@ void RAS_OpenGLDebugDraw::Flush(RAS_Rasterizer *rasty, RAS_ICanvas *canvas, RAS_
 		BLF_position(blf_mono_font, xco, yco, 0.0f);
 		BLF_draw_bge(blf_mono_font, text.c_str(), text.size());
 	}
+	BLF_draw_gl_end_bge();
 
 	rasty->PopMatrix();
 	rasty->SetMatrixMode(RAS_Rasterizer::RAS_MODELVIEW);
