@@ -31,6 +31,8 @@
 
 class KX_Mesh;
 
+class KX_Scene;
+
 class KX_LodLevel : public EXP_Value
 {
 	Py_Header
