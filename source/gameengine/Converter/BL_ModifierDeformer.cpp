@@ -104,6 +104,9 @@ bool BL_ModifierDeformer::HasCompatibleDeformer(Object *ob)
 {
 	if (!ob->modifiers.first)
 		return false;
+	// soft body cannot use mesh modifiers
+	if ((ob->gameflag & OB_SOFT_BODY) != 0)
+		return false;
 	ModifierData *md;
 	for (md = (ModifierData *)ob->modifiers.first; md; md = md->next) {
 		if (modifier_dependsOnTime(md))

@@ -1228,7 +1228,7 @@ PHY_IPhysicsController *CcdPhysicsEnvironment::RayTest(PHY_IRayCastFilterCallbac
 						}
 					}
 					// retrieve the original mesh polygon (in case of quad->tri conversion)
-					result.m_polygon = shapeInfo->m_polygonIndexArray[rayCallback.m_hitTriangleIndex];
+					result.m_polygon = shapeInfo->m_polygonIndexArray[rayCallback.m_hitTriangleIndex]; // TODO
 					// hit triangle in world coordinate, for face normal and UV coordinate
 					btVector3 triangle[3];
 					bool triangleOK = false;
@@ -2226,8 +2226,7 @@ PHY_IPhysicsController *CcdPhysicsEnvironment::CreateSphereController(float radi
 	return sphereController;
 }
 
-int findClosestNode(btSoftBody *sb, const btVector3& worldPoint);
-int findClosestNode(btSoftBody *sb, const btVector3& worldPoint)
+int Ccd_FindClosestNode(btSoftBody *sb, const btVector3& worldPoint)
 {
 	int node = -1;
 
@@ -2282,7 +2281,7 @@ PHY_IConstraint *CcdPhysicsEnvironment::CreateConstraint(class PHY_IPhysicsContr
 		//either cluster or node attach, let's find closest node first
 		//the soft body doesn't have a 'real' world transform, so get its initial world transform for now
 		btVector3 pivotPointSoftWorld = sb0->m_initialWorldTransform(pivotInA);
-		int node = findClosestNode(sb0, pivotPointSoftWorld);
+		int node = Ccd_FindClosestNode(sb0, pivotPointSoftWorld);
 		if (node >= 0) {
 			if (rb1) {
 				sb0->appendAnchor(node, rb1, disableCollisionBetweenLinkedBodies);
@@ -2296,7 +2295,7 @@ PHY_IConstraint *CcdPhysicsEnvironment::CreateConstraint(class PHY_IPhysicsContr
 
 	if (sb1) {
 		btVector3 pivotPointAWorld = colObj0->getWorldTransform()(pivotInA);
-		int node = findClosestNode(sb1, pivotPointAWorld);
+		int node = Ccd_FindClosestNode(sb1, pivotPointAWorld);
 		if (node >= 0) {
 			if (rb0) {
 				sb1->appendAnchor(node, rb0, disableCollisionBetweenLinkedBodies);
@@ -2925,7 +2924,8 @@ void CcdPhysicsEnvironment::ConvertObject(BL_BlenderSceneConverter& converter, K
 			}
 			else {
 				shapeInfo->m_shapeType = PHY_SHAPE_POLYTOPE;
-				shapeInfo->UpdateMesh(gameobj, meshobj);
+				// Update from deformer or mesh.
+				shapeInfo->UpdateMesh(gameobj, nullptr);
 			}
 
 			bm = shapeInfo->CreateBulletShape(ci.m_margin);
@@ -2952,7 +2952,8 @@ void CcdPhysicsEnvironment::ConvertObject(BL_BlenderSceneConverter& converter, K
 			}
 			else {
 				shapeInfo->m_shapeType = PHY_SHAPE_MESH;
-				shapeInfo->UpdateMesh(gameobj, meshobj);
+				// Update from deformer or mesh.
+				shapeInfo->UpdateMesh(gameobj, nullptr);
 			}
 
 			// Soft bodies can benefit from welding, don't do it on non-soft bodies

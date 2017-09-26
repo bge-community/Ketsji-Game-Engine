@@ -130,7 +130,7 @@ void BL_MeshDeformer::RecalcNormals()
 				const RAS_VertexInfo& vinfo = array->GetVertexInfo(index);
 				const unsigned int origindex = vinfo.getOrigIndex();
 
-				co[j] = m_transverts[origindex];
+				co[j] = m_transverts[origindex].data();
 				flat |= (vinfo.getFlag() & RAS_VertexInfo::FLAT);
 			}
 
@@ -147,7 +147,7 @@ void BL_MeshDeformer::RecalcNormals()
 				else {
 					const RAS_VertexInfo& vinfo = array->GetVertexInfo(index);
 					const unsigned int origindex = vinfo.getOrigIndex();
-					add_v3_v3(m_transnors[origindex], pnorm);
+					add_v3_v3(m_transnors[origindex].data(), pnorm);
 				}
 			}
 		}

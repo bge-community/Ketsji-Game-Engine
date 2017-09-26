@@ -31,7 +31,6 @@
 #include "PHY_IMotionState.h"
 #include "CcdPhysicsEnvironment.h"
 
-#include "RAS_DisplayArray.h"
 #include "RAS_MeshObject.h"
 #include "RAS_Deformer.h"
 #include "RAS_IPolygonMaterial.h"
@@ -172,7 +171,6 @@ CcdPhysicsController::CcdPhysicsController(const CcdConstructionInfo& ci)
 	:m_cci(ci)
 {
 	m_prototypeTransformInitialized = false;
-	m_softbodyMappingDone = false;
 	m_collisionDelay = 0;
 	m_newClientInfo = 0;
 	m_registerCount = 0;
@@ -280,6 +278,11 @@ btSoftBody *CcdPhysicsController::GetSoftBody()
 btKinematicCharacterController *CcdPhysicsController::GetCharacterController()
 {
 	return m_characterController;
+}
+
+const std::vector<unsigned int>& CcdPhysicsController::GetSoftBodyIndices() const
+{
+	return m_softBodyIndices;
 }
 
 #include "BulletSoftBody/btSoftBodyHelpers.h"
@@ -460,40 +463,20 @@ bool CcdPhysicsController::CreateSoftbody()
 
 	psb->setCollisionFlags(0);
 
-	///create a mapping between graphics mesh vertices and soft body vertices
-	{
-		RAS_MeshObject *rasMesh = GetShapeInfo()->GetMesh();
-
-		if (rasMesh && !m_softbodyMappingDone) {
-			RAS_MeshMaterial *mmat;
-
-			//for each material
-			for (int m = 0; m < rasMesh->GetNumMaterials(); m++) {
-				mmat = rasMesh->GetMeshMaterial(m);
-
-				RAS_IDisplayArray *array = mmat->GetDisplayArray();
-
-				for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
-					RAS_IVertex *vertex = array->GetVertex(i);
-					RAS_VertexInfo& vertexInfo = array->GetVertexInfo(i);
-					//search closest index, and store it in vertex
-					vertexInfo.setSoftBodyIndex(0);
-					btScalar maxDistSqr = 1e30;
-					btSoftBody::tNodeArray& nodes(psb->m_nodes);
-					btVector3 xyz = ToBullet(vertex->xyz());
-					for (int n = 0; n < nodes.size(); n++) {
-						btScalar distSqr = (nodes[n].m_x - xyz).length2();
-						if (distSqr < maxDistSqr) {
-							maxDistSqr = distSqr;
-
-							vertexInfo.setSoftBodyIndex(n);
-						}
-					}
-				}
-			}
+	const unsigned int numvertices = m_shapeInfo->m_vertexRemap.size();
+	m_softBodyIndices.resize(numvertices);
+	for (unsigned int i = 0; i < numvertices; ++i) {
+		const unsigned int index = m_shapeInfo->m_vertexRemap[i];
+		if (index == -1) {
+			m_softBodyIndices[i] = 0;
+			continue;
 		}
+		const float *co = &m_shapeInfo->m_vertexArray[index * 3];
+		m_softBodyIndices[i] = Ccd_FindClosestNode(psb, btVector3(co[0], co[1], co[2]));
 	}
-	m_softbodyMappingDone = true;
+
+	for (unsigned int i = 0; i < numvertices; ++i) {
+	}
 
 	btTransform startTrans;
 	m_bulletMotionState->getWorldTransform(startTrans);
@@ -666,7 +649,6 @@ bool CcdPhysicsController::ReplaceControllerShape(btCollisionShape *newShape)
 		delete m_object;
 		m_object = nullptr;
 		// force complete reinitialization
-		m_softbodyMappingDone = false;
 		m_prototypeTransformInitialized = false;
 		m_softBodyTransformInitialized = false;
 
@@ -1752,7 +1734,7 @@ CcdShapeConstructionInfo *CcdShapeConstructionInfo::GetReplica()
 void CcdShapeConstructionInfo::ProcessReplica()
 {
 	m_userData = nullptr;
-	m_meshObject = nullptr;
+	m_mesh = nullptr;
 	m_triangleIndexVertexArray = nullptr;
 	m_forceReInstance = false;
 	m_shapeProxy = nullptr;
@@ -1796,8 +1778,8 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 		return false;
 	}
 
-	// List of display array to convert.
-	RAS_IDisplayArrayList arrayList;
+	m_displayArrayList.clear();
+
 	// Indices count.
 	unsigned int numindices = 0;
 	// Original (without split of normal or UV) vertex count.
@@ -1816,16 +1798,15 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 		RAS_IDisplayArray *array = (deformer) ? deformer->GetDisplayArray(i) : meshmat->GetDisplayArray();
 		numindices += array->GetTriangleIndexCount();
 		numvertices = std::max(numvertices, array->GetMaxOrigIndex() + 1);
-		arrayList.push_back(array);
+		m_displayArrayList.push_back(array);
 	}
 
 	m_vertexArray.resize(numvertices * 3);
-	/// Map from original vertex index to m_vertexArray vertex index.
-	std::vector<int> vertRemap(numvertices, -1);
+	m_vertexRemap.resize(numvertices, -1);
 
 	// Current vertex written.
 	unsigned int curvert = 0;
-	for (RAS_IDisplayArray *array : arrayList) {
+	for (RAS_IDisplayArray *array : m_displayArrayList) {
 		// Convert location of all vertices and remap if vertices weren't already converted.
 		for (unsigned int j = 0, numvert = array->GetVertexCount(); j < numvert; ++j) {
 			const RAS_VertexInfo& info = array->GetVertexInfo(j);
@@ -1833,7 +1814,7 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 			/* Avoid double conversion of two unique vertices using the same base:
 			 * using the same original vertex and so the same position.
 			 */
-			if (vertRemap[origIndex] != -1) {
+			if (m_vertexRemap[origIndex] != -1) {
 				continue;
 			}
 
@@ -1844,7 +1825,7 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 			m_vertexArray[curvert * 3 + 2] = pos[2];
 
 			// Register the vertex index where the position was converted in m_vertexArray.
-			vertRemap[origIndex] = curvert++;
+			m_vertexRemap[origIndex] = curvert++;
 		}
 	}
 
@@ -1857,7 +1838,7 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 		// Current triangle written.
 		unsigned int curtri = 0;
 
-		for (RAS_IDisplayArray *array : arrayList) {
+		for (RAS_IDisplayArray *array : m_displayArrayList) {
 			// Convert triangles using remaped vertices index.
 			for (unsigned int j = 0, numind = array->GetTriangleIndexCount(); j < numind; j += 3) {
 				m_polygonIndexArray[curtri] = j / 3;
@@ -1874,7 +1855,7 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 					// Get vertex index from original index to m_vertexArray vertex index.
 					const RAS_VertexInfo& info = array->GetVertexInfo(index);
 					const unsigned int origIndex = info.getOrigIndex();
-					m_triFaceArray[curind] = vertRemap[origIndex];
+					m_triFaceArray[curind] = m_vertexRemap[origIndex];
 				}
 				++curtri;
 			}
@@ -1913,7 +1894,7 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 	// Register mesh object to shape.
 	m_meshShapeMap[MeshShapeKey(meshobj, deformer, m_shapeType)] = this;
 
-	m_meshObject = meshobj;
+	m_mesh = meshobj;
 
 	return true;
 }
@@ -1927,6 +1908,16 @@ bool CcdShapeConstructionInfo::SetProxy(CcdShapeConstructionInfo *shapeInfo)
 	m_shapeType = PHY_SHAPE_PROXY;
 	m_shapeProxy = shapeInfo;
 	return true;
+}
+
+RAS_MeshObject *CcdShapeConstructionInfo::GetMesh() const
+{
+	return m_mesh;
+}
+
+RAS_IDisplayArrayList& CcdShapeConstructionInfo::GetDisplayArrayList()
+{
+	return m_displayArrayList;
 }
 
 btCollisionShape *CcdShapeConstructionInfo::CreateBulletShape(btScalar margin, bool useGimpact, bool useBvh)

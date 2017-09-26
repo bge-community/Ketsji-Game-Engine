@@ -23,6 +23,8 @@
 
 #include "CM_RefCount.h"
 
+#include "RAS_IDisplayArray.h"
+
 #include <vector>
 #include <map>
 
@@ -80,7 +82,7 @@ public:
 		m_halfExtend(0.0f, 0.0f, 0.0f),
 		m_childScale(1.0f, 1.0f, 1.0f),
 		m_userData(nullptr),
-		m_meshObject(nullptr),
+		m_mesh(nullptr),
 		m_triangleIndexVertexArray(nullptr),
 		m_forceReInstance(false),
 		m_weldingThreshold1(0.0f),
@@ -93,7 +95,7 @@ public:
 
 	bool IsUnused(void)
 	{
-		return (m_meshObject == nullptr && m_shapeArray.size() == 0 && m_shapeProxy == nullptr);
+		return (m_displayArrayList.size() == 0 && m_shapeArray.size() == 0 && m_shapeProxy == nullptr);
 	}
 
 	void AddShape(CcdShapeConstructionInfo *shapeInfo);
@@ -138,11 +140,6 @@ public:
 		return true;
 	}
 
-	RAS_MeshObject *GetMesh(void)
-	{
-		return m_meshObject;
-	}
-
 	bool UpdateMesh(class KX_GameObject *gameobj, class RAS_MeshObject *mesh);
 
 	CcdShapeConstructionInfo *GetReplica();
@@ -155,6 +152,9 @@ public:
 		return m_shapeProxy;
 	}
 
+	RAS_MeshObject *GetMesh() const;
+	RAS_IDisplayArrayList& GetDisplayArrayList();
+
 	btCollisionShape *CreateBulletShape(btScalar margin, bool useGimpact = false, bool useBvh = true);
 
 	// member variables
@@ -165,6 +165,10 @@ public:
 	btTransform m_childTrans;
 	btVector3 m_childScale;
 	void *m_userData;
+
+	/** Vertex mapping from original vertex index to shape vertex index. */
+	std::vector<int> m_vertexRemap;
+
 	/** Contains both vertex array for polytope shape and triangle array for concave mesh shape.
 	 * Each vertex is 3 consecutive values. In this case a triangle is made of 3 consecutive points
 	 */
@@ -189,8 +193,10 @@ protected:
 	using MeshShapeMap = std::map<MeshShapeKey, CcdShapeConstructionInfo *>;
 
 	static MeshShapeMap m_meshShapeMap;
-	/// Keep a pointer to the original mesh
-	RAS_MeshObject *m_meshObject;
+	/// Converted original mesh.
+	RAS_MeshObject *m_mesh;
+	/// Hold pointer to display arrays.
+	RAS_IDisplayArrayList m_displayArrayList;
 	/// The list of vertexes and indexes for the triangle mesh, shared between Bullet shape.
 	btTriangleIndexVertexArray *m_triangleIndexVertexArray;
 	/// for compound shapes
@@ -550,10 +556,12 @@ protected:
 	friend class CcdPhysicsEnvironment;
 
 	//some book keeping for replication
-	bool m_softbodyMappingDone;
 	bool m_softBodyTransformInitialized;
 	bool m_prototypeTransformInitialized;
 	btTransform m_softbodyStartTrans;
+
+	/// Soft body indices for all original vertices.
+	std::vector<unsigned int> m_softBodyIndices;
 
 	void *m_newClientInfo;
 	int m_registerCount;            // needed when multiple sensors use the same controller
@@ -638,6 +646,8 @@ public:
 	{
 		return m_object->getCollisionShape();
 	}
+
+	const std::vector<unsigned int>& GetSoftBodyIndices() const;
 	////////////////////////////////////
 	// PHY_IPhysicsController interface
 	////////////////////////////////////
