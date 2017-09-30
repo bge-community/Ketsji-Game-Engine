@@ -73,6 +73,7 @@
 #include "RAS_FramingManager.h"
 #include "DNA_world_types.h"
 #include "DNA_scene_types.h"
+#include "DNA_mesh_types.h"
 
 #include "KX_NavMeshObject.h"
 
@@ -471,12 +472,19 @@ bool KX_KetsjiEngine::NextFrame()
 	KX_Scene *firstScene = m_scenes->GetFront();
 	for (KX_GameObject *gameobj : firstScene->GetObjectList()) {
 		Object *ob = gameobj->GetBlenderObject();
-		if (ob && (ob->type == OB_MESH || ob->type == OB_CAMERA || ob->type == OB_LAMP)) {
+		if (ob && (ob->type == OB_MESH)) {
 			float obmat[4][4];
 			gameobj->NodeGetWorldTransform().getValue(&obmat[0][0]);
 			copy_m4_m4(ob->obmat, obmat);
 			DEG_id_tag_update(&ob->id, OB_RECALC_ALL);
+			
 			WM_main_add_notifier(NC_OBJECT | ND_TRANSFORM, &ob->id);
+			Mesh *me = static_cast<Mesh*>(ob->data);
+
+			Material *ma = me ? me->mat[0] : nullptr;
+			if (ma) {
+				WM_main_add_notifier(NC_MATERIAL | ND_SHADING_DRAW, &ma->id);
+			}
 		}
 	}
 
