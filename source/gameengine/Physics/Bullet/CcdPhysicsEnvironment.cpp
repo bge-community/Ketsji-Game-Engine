@@ -1228,7 +1228,7 @@ PHY_IPhysicsController *CcdPhysicsEnvironment::RayTest(PHY_IRayCastFilterCallbac
 						}
 					}
 					// retrieve the original mesh polygon (in case of quad->tri conversion)
-					result.m_polygon = shapeInfo->m_polygonIndexArray[rayCallback.m_hitTriangleIndex]; // TODO
+					result.m_polygon = shapeInfo->m_polygonIndexArray[rayCallback.m_hitTriangleIndex];
 					// hit triangle in world coordinate, for face normal and UV coordinate
 					btVector3 triangle[3];
 					bool triangleOK = false;

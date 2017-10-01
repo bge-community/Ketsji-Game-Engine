@@ -119,7 +119,11 @@ RAS_MeshObject::PolygonInfo RAS_MeshObject::GetPolygon(unsigned int index) const
 	index *= 3;
 
 	for (const PolygonRangeInfo& range : m_polygonRanges) {
-		if (index >= range.startIndex && index <= range.endIndex) {
+		if (index >= range.startIndex && index < range.endIndex) {
+
+			// Convert to relative index.
+			index -= range.startIndex;
+
 			RAS_IDisplayArray *array = range.array;
 			PolygonInfo polyInfo{
 				array,

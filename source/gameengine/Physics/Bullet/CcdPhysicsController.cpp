@@ -463,9 +463,9 @@ bool CcdPhysicsController::CreateSoftbody()
 
 	psb->setCollisionFlags(0);
 
-	const unsigned int numvertices = m_shapeInfo->m_vertexRemap.size();
-	m_softBodyIndices.resize(numvertices);
-	for (unsigned int i = 0; i < numvertices; ++i) {
+	const unsigned int numVertices = m_shapeInfo->m_vertexRemap.size();
+	m_softBodyIndices.resize(numVertices);
+	for (unsigned int i = 0; i < numVertices; ++i) {
 		const unsigned int index = m_shapeInfo->m_vertexRemap[i];
 		if (index == -1) {
 			m_softBodyIndices[i] = 0;
@@ -475,7 +475,7 @@ bool CcdPhysicsController::CreateSoftbody()
 		m_softBodyIndices[i] = Ccd_FindClosestNode(psb, btVector3(co[0], co[1], co[2]));
 	}
 
-	for (unsigned int i = 0; i < numvertices; ++i) {
+	for (unsigned int i = 0; i < numVertices; ++i) {
 	}
 
 	btTransform startTrans;
@@ -1781,31 +1781,40 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 	m_displayArrayList.clear();
 
 	// Indices count.
-	unsigned int numindices = 0;
+	unsigned int numIndices = 0;
 	// Original (without split of normal or UV) vertex count.
-	unsigned int numvertices = 0;
+	unsigned int numVertices = 0;
+
+	/// Absolute polygon start index for each used display arrays.
+	std::vector<unsigned int> polygonStartIndices;
+	unsigned int curPolygonStartIndex = 0;
 
 	// Compute indices count and maximum vertex count.
-	for (unsigned int i = 0, nummat = meshobj->GetNumMaterials(); i < nummat; ++i) {
+	for (unsigned int i = 0, numMat = meshobj->GetNumMaterials(); i < numMat; ++i) {
 		RAS_MeshMaterial *meshmat = meshobj->GetMeshMaterial(i);
 		RAS_IPolyMaterial *mat = meshmat->GetBucket()->GetPolyMaterial();
 
+		RAS_IDisplayArray *array = (deformer) ? deformer->GetDisplayArray(i) : meshmat->GetDisplayArray();
+		const unsigned int indicesCount = array->GetTriangleIndexCount();
+
 		// If collisions are disabled: do nothing.
-		if (!mat->IsCollider()) {
-			continue;
+		if (mat->IsCollider()) {
+			numIndices += indicesCount;
+			numVertices = std::max(numVertices, array->GetMaxOrigIndex() + 1);
+			// Add valid display arrays.
+			m_displayArrayList.push_back(array);
+			polygonStartIndices.push_back(curPolygonStartIndex);
 		}
 
-		RAS_IDisplayArray *array = (deformer) ? deformer->GetDisplayArray(i) : meshmat->GetDisplayArray();
-		numindices += array->GetTriangleIndexCount();
-		numvertices = std::max(numvertices, array->GetMaxOrigIndex() + 1);
-		m_displayArrayList.push_back(array);
+		curPolygonStartIndex += indicesCount / 3;
 	}
 
-	m_vertexArray.resize(numvertices * 3);
-	m_vertexRemap.resize(numvertices, -1);
+	m_vertexArray.resize(numVertices * 3);
+	m_vertexRemap.resize(numVertices, -1);
 
 	// Current vertex written.
-	unsigned int curvert = 0;
+	unsigned int curVert = 0;
+
 	for (RAS_IDisplayArray *array : m_displayArrayList) {
 		// Convert location of all vertices and remap if vertices weren't already converted.
 		for (unsigned int j = 0, numvert = array->GetVertexCount(); j < numvert; ++j) {
@@ -1820,44 +1829,48 @@ bool CcdShapeConstructionInfo::UpdateMesh(KX_GameObject *gameobj, RAS_MeshObject
 
 			RAS_IVertex *vert = array->GetVertex(j);
 			const float *pos = vert->getXYZ();
-			m_vertexArray[curvert * 3] = pos[0];
-			m_vertexArray[curvert * 3 + 1] = pos[1];
-			m_vertexArray[curvert * 3 + 2] = pos[2];
+			m_vertexArray[curVert * 3] = pos[0];
+			m_vertexArray[curVert * 3 + 1] = pos[1];
+			m_vertexArray[curVert * 3 + 2] = pos[2];
 
 			// Register the vertex index where the position was converted in m_vertexArray.
-			m_vertexRemap[origIndex] = curvert++;
+			m_vertexRemap[origIndex] = curVert++;
 		}
 	}
 
 	// Convex shapes don't need indices.
 	if (m_shapeType == PHY_SHAPE_MESH) {
-		m_triFaceArray.resize(numindices);
-		m_triFaceUVcoArray.resize(numindices);
-		m_polygonIndexArray.resize(numindices / 3);
+		m_triFaceArray.resize(numIndices);
+		m_triFaceUVcoArray.resize(numIndices);
+		m_polygonIndexArray.resize(numIndices / 3);
 
 		// Current triangle written.
-		unsigned int curtri = 0;
+		unsigned int curTri = 0;
 
-		for (RAS_IDisplayArray *array : m_displayArrayList) {
+		for (unsigned short i = 0, numArray = m_displayArrayList.size(); i < numArray; ++i) {
+			RAS_IDisplayArray *array = m_displayArrayList[i];
+			const unsigned int polygonStartIndex = polygonStartIndices[i];
+
 			// Convert triangles using remaped vertices index.
 			for (unsigned int j = 0, numind = array->GetTriangleIndexCount(); j < numind; j += 3) {
-				m_polygonIndexArray[curtri] = j / 3;
+				// Should match polygon access index with RAS_MeshObject::GetPolygon.
+				m_polygonIndexArray[curTri] = polygonStartIndex + j / 3;
 
 				for (unsigned short k = 0; k < 3; ++k) {
 					const unsigned int index = array->GetTriangleIndex(j + k);
-					const unsigned int curind = curtri * 3 + k;
+					const unsigned int curInd = curTri * 3 + k;
 
 					// Convert UV for raycast UV computation.
 					RAS_IVertex *vert = array->GetVertex(index);
 					const float *uv = vert->getUV(0);
-					m_triFaceUVcoArray[curind] = {{uv[0], uv[1]}};
+					m_triFaceUVcoArray[curInd] = {{uv[0], uv[1]}};
 
 					// Get vertex index from original index to m_vertexArray vertex index.
 					const RAS_VertexInfo& info = array->GetVertexInfo(index);
 					const unsigned int origIndex = info.getOrigIndex();
-					m_triFaceArray[curind] = m_vertexRemap[origIndex];
+					m_triFaceArray[curInd] = m_vertexRemap[origIndex];
 				}
-				++curtri;
+				++curTri;
 			}
 		}
 	}
