@@ -132,8 +132,6 @@ private:
 
 	LayersInfo m_layersInfo;
 
-	unsigned int m_origVertexCount;
-
 	/// The mesh bounding box.
 	RAS_BoundingBox *m_boundingBox;
 

@@ -181,8 +181,8 @@ public:
 
 		return (/* m_flag == other->m_flag && */
 				/* at the moment the face only stores the smooth/flat setting so don't bother comparing it */
-				compare_v3v3(m_normal, other->m_normal, eps)
-// 				compare_v3v3(m_tangent, other->m_tangent, eps)
+				compare_v3v3(m_normal, other->m_normal, eps) &&
+				compare_v3v3(m_tangent, other->m_tangent, eps)
 				/* don't bother comparing m_localxyz since we know there from the same vert */
 				/* && compare_v3v3(m_localxyz, other->m_localxyz, eps))*/
 				);
