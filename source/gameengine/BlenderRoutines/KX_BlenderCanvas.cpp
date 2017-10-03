@@ -244,7 +244,7 @@ void KX_BlenderCanvas::SetMousePosition(int x, int y)
 	int winY = m_area_rect.GetBottom();
 	int winMaxY = m_area_rect.GetMaxY();
 
-	WM_cursor_warp(m_win, winX + x + 1, winY + (winH - y - 1));
+	WM_cursor_warp(m_win, winX + x + 1, winY + (winMaxY - y - 1));
 }
 
 void KX_BlenderCanvas::MakeScreenShot(const std::string& filename)
