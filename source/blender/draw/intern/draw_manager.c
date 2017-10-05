@@ -2321,10 +2321,7 @@ void DRW_framebuffer_init(
 				GPU_framebuffer_texture_detach(*fbotex.tex);
 			}
 		}
-
-		if (DRW_state_is_fbo()) {
-			GPU_framebuffer_bind(DST.default_framebuffer);
-		}
+		GPU_framebuffer_bind(DST.default_framebuffer);
 	}
 }
 
