@@ -337,7 +337,6 @@ static struct DRWGlobalState {
 	float size[2];
 	float screenvecs[2][3];
 	float pixsize;
-	bool is_persp;
 
 	GLenum backface, frontface;
 
@@ -911,11 +910,6 @@ DRWShadingGroup *DRW_shgroup_empty_tri_batch_create(struct GPUShader *shader, DR
 	DRW_interface_attrib(shgroup, "dummy", DRW_ATTRIB_FLOAT, 1, true);
 
 	return shgroup;
-}
-
-struct GPUShader *DRW_shgroup_shader_get(DRWShadingGroup *shgroup)
-{
-	return shgroup->shader;
 }
 
 void DRW_shgroup_free(struct DRWShadingGroup *shgroup)
@@ -1927,47 +1921,47 @@ void DRW_draw_shgroup(DRWShadingGroup *shgroup, DRWState pass_state)
 	/* Don't check anything, Interface should already contain the least uniform as possible */
 	for (DRWUniform *uni = interface->uniforms.first; uni; uni = uni->next) {
 		switch (uni->type) {
-		case DRW_UNIFORM_SHORT_TO_INT:
-			val = (int)*((short *)uni->value);
-			GPU_shader_uniform_vector_int(
-				shgroup->shader, uni->location, uni->length, uni->arraysize, (int *)&val);
-			break;
-		case DRW_UNIFORM_SHORT_TO_FLOAT:
-			fval = (float)*((short *)uni->value);
-			GPU_shader_uniform_vector(
-				shgroup->shader, uni->location, uni->length, uni->arraysize, (float *)&fval);
-			break;
-		case DRW_UNIFORM_BOOL:
-		case DRW_UNIFORM_INT:
-			GPU_shader_uniform_vector_int(
-				shgroup->shader, uni->location, uni->length, uni->arraysize, (int *)uni->value);
-			break;
-		case DRW_UNIFORM_FLOAT:
-		case DRW_UNIFORM_MAT3:
-		case DRW_UNIFORM_MAT4:
-			GPU_shader_uniform_vector(
-				shgroup->shader, uni->location, uni->length, uni->arraysize, (float *)uni->value);
-			break;
-		case DRW_UNIFORM_TEXTURE:
-			tex = (GPUTexture *)uni->value;
-			BLI_assert(tex);
-			bind_texture(tex);
-			GPU_shader_uniform_texture(shgroup->shader, uni->location, tex);
-			break;
-		case DRW_UNIFORM_BUFFER:
-			if (!DRW_state_is_fbo()) {
+			case DRW_UNIFORM_SHORT_TO_INT:
+				val = (int)*((short *)uni->value);
+				GPU_shader_uniform_vector_int(
+					shgroup->shader, uni->location, uni->length, uni->arraysize, (int *)&val);
 				break;
-			}
-			tex = *((GPUTexture **)uni->value);
-			BLI_assert(tex);
-			bind_texture(tex);
-			GPU_shader_uniform_texture(shgroup->shader, uni->location, tex);
-			break;
-		case DRW_UNIFORM_BLOCK:
-			ubo = (GPUUniformBuffer *)uni->value;
-			bind_ubo(ubo);
-			GPU_shader_uniform_buffer(shgroup->shader, uni->location, ubo);
-			break;
+			case DRW_UNIFORM_SHORT_TO_FLOAT:
+				fval = (float)*((short *)uni->value);
+				GPU_shader_uniform_vector(
+					shgroup->shader, uni->location, uni->length, uni->arraysize, (float *)&fval);
+				break;
+			case DRW_UNIFORM_BOOL:
+			case DRW_UNIFORM_INT:
+				GPU_shader_uniform_vector_int(
+					shgroup->shader, uni->location, uni->length, uni->arraysize, (int *)uni->value);
+				break;
+			case DRW_UNIFORM_FLOAT:
+			case DRW_UNIFORM_MAT3:
+			case DRW_UNIFORM_MAT4:
+				GPU_shader_uniform_vector(
+					shgroup->shader, uni->location, uni->length, uni->arraysize, (float *)uni->value);
+				break;
+			case DRW_UNIFORM_TEXTURE:
+				tex = (GPUTexture *)uni->value;
+				BLI_assert(tex);
+				bind_texture(tex);
+				GPU_shader_uniform_texture(shgroup->shader, uni->location, tex);
+				break;
+			case DRW_UNIFORM_BUFFER:
+				if (!DRW_state_is_fbo()) {
+					break;
+				}
+				tex = *((GPUTexture **)uni->value);
+				BLI_assert(tex);
+				bind_texture(tex);
+				GPU_shader_uniform_texture(shgroup->shader, uni->location, tex);
+				break;
+			case DRW_UNIFORM_BLOCK:
+				ubo = (GPUUniformBuffer *)uni->value;
+				bind_ubo(ubo);
+				GPU_shader_uniform_buffer(shgroup->shader, uni->location, ubo);
+				break;
 		}
 	}
 
@@ -2321,6 +2315,7 @@ void DRW_framebuffer_init(
 				GPU_framebuffer_texture_detach(*fbotex.tex);
 			}
 		}
+
 		GPU_framebuffer_bind(DST.default_framebuffer);
 	}
 }
@@ -2523,28 +2518,6 @@ static void DRW_viewport_var_init(void)
 {
 	RegionView3D *rv3d = DST.draw_ctx.rv3d;
 
-	DRW_viewport_size_init();
-
-	/* Refresh DST.screenvecs */
-	copy_v3_v3(DST.screenvecs[0], rv3d->viewinv[0]);
-	copy_v3_v3(DST.screenvecs[1], rv3d->viewinv[1]);
-	normalize_v3(DST.screenvecs[0]);
-	normalize_v3(DST.screenvecs[1]);
-
-	/* Refresh DST.pixelsize */
-	DST.pixsize = rv3d->pixsize;
-
-	/* Refresh DST.is_persp */
-	DST.is_persp = rv3d->is_persp;
-
-	/* Reset facing */
-	DST.frontface = GL_CCW;
-	DST.backface = GL_CW;
-	glFrontFace(DST.frontface);
-}
-
-void DRW_viewport_size_init(void)
-{
 	/* Refresh DST.size */
 	if (DST.viewport) {
 		int size[2];
@@ -2561,6 +2534,19 @@ void DRW_viewport_size_init(void)
 
 		DST.default_framebuffer = NULL;
 	}
+	/* Refresh DST.screenvecs */
+	copy_v3_v3(DST.screenvecs[0], rv3d->viewinv[0]);
+	copy_v3_v3(DST.screenvecs[1], rv3d->viewinv[1]);
+	normalize_v3(DST.screenvecs[0]);
+	normalize_v3(DST.screenvecs[1]);
+
+	/* Refresh DST.pixelsize */
+	DST.pixsize = rv3d->pixsize;
+
+	/* Reset facing */
+	DST.frontface = GL_CCW;
+	DST.backface = GL_CW;
+	glFrontFace(DST.frontface);
 
 	/* Alloc array of texture reference. */
 	if (RST.bound_texs == NULL) {
@@ -2619,7 +2605,8 @@ void DRW_viewport_matrix_override_unset(DRWViewportMatrixType type)
 
 bool DRW_viewport_is_persp_get(void)
 {
-	return DST.is_persp;
+	RegionView3D *rv3d = DST.draw_ctx.rv3d;
+	return rv3d->is_persp;
 }
 
 DefaultFramebufferList *DRW_viewport_framebuffer_list_get(void)
@@ -3531,6 +3518,11 @@ void DRW_draw_depth_loop(
 /** \} */
 
 /***********************************GAME ENGINE*******************************************/
+
+struct GPUShader *DRW_shgroup_shader_get(DRWShadingGroup *shgroup)
+{
+	return shgroup->shader;
+}
 
 void DRW_framebuffer_init_bge(
 struct GPUFrameBuffer **fb, void *engine_type, int width, int height,
