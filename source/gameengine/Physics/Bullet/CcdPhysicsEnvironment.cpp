@@ -421,6 +421,7 @@ CcdPhysicsEnvironment::CcdPhysicsEnvironment(PHY_SolverType solverType, bool use
 
 	if (!dispatcher) {
 		btCollisionDispatcher *disp = new btCollisionDispatcher(m_collisionConfiguration);
+		disp->setDispatcherFlags(disp->getDispatcherFlags() ^ btCollisionDispatcher::CD_USE_RELATIVE_CONTACT_BREAKING_THRESHOLD);
 		dispatcher = disp;
 		btGImpactCollisionAlgorithm::registerAlgorithm(disp);
 		m_ownDispatcher = dispatcher;
