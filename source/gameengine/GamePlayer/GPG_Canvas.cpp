@@ -112,8 +112,8 @@ void GPG_Canvas::Resize(int width, int height)
 	// initialize area so that it's available for game logic on frame 1 (ImageViewport)
 	m_area.SetLeft(0);
 	m_area.SetBottom(0);
-	m_area.SetRight(width);
-	m_area.SetTop(height);
+	m_area.SetRight(width - 1);
+	m_area.SetTop(height - 1);
 }
 
 void GPG_Canvas::SetViewPort(int x, int y, int width, int height)
@@ -172,7 +172,7 @@ void GPG_Canvas::SetMousePosition(int x, int y)
 		GHOST_TInt32 cx;
 		GHOST_TInt32 cy;
 		m_window->clientToScreen(gx, gy, cx, cy);
-		system->setCursorPosition(cx, cy);
+		system->setCursorPosition(cx + 1, cy);
 	}
 }
 
@@ -269,7 +269,12 @@ bool GPG_Canvas::GetFullScreen()
 
 void GPG_Canvas::ConvertMousePosition(int x, int y, int &r_x, int &r_y, bool UNUSED(screen))
 {
-	m_window->screenToClient(x, y, r_x, r_y);
+	int _x;
+	int _y;
+	m_window->screenToClient(x, y, _x, _y);
+
+	r_x = _x - 1;
+	r_y = _y;
 }
 
 float GPG_Canvas::GetMouseNormalizedX(int x)
