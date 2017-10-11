@@ -46,9 +46,7 @@
  * ----------------------------- */
 
 #include "EXP_PyObjectPlus.h"
-#include <string>
-#include "MT_Vector3.h"
-#include "MEM_guardedalloc.h"
+#include "EXP_AttributeDef.h"
 
 #include "CM_Message.h"
 
@@ -280,11 +278,12 @@ PyMethodDef PyObjectPlus::Methods[] = {
 };
 
 #define BGE_PY_ATTR_INVALID (&(PyObjectPlus::Attributes[0]))
-PyAttributeDef PyObjectPlus::Attributes[] = {
-	KX_PYATTRIBUTE_RO_FUNCTION("invalid",       PyObjectPlus, pyattr_get_invalid),
-	KX_PYATTRIBUTE_NULL // Sentinel
+EXP_Attribute PyObjectPlus::Attributes[] = {
+	EXP_AttributeDef<bool, EXP_AttributeDef::GETSET_READONLY | EXP_AttributeDef::GETSET_CUSTOM>("PyObjectPlus", "invalid", pyattr_get_invalid).GetAttribute(),
+	EXP_Attribute()
 };
 
+#if 0
 PyObject *PyObjectPlus::pyattr_get_invalid(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
 {
 	return PyBool_FromLong(self_v ? 0 : 1);
@@ -1090,7 +1089,7 @@ FREE_AND_ERROR:
 	}
 	return 0;
 }
-
+#endif
 /*------------------------------
 * PyObjectPlus repr		-- representations
    ------------------------------*/

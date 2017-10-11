@@ -38,6 +38,8 @@ set(INC_SYS
 )
 
 set(SRC
+	intern/Attribute.cpp
+	intern/AttributeDef.cpp
 	intern/BaseListValue.cpp
 	intern/BoolValue.cpp
 	intern/ConstExpr.cpp
@@ -56,6 +58,8 @@ set(SRC
 	intern/Value.cpp
 	intern/ListWrapper.cpp
 
+	EXP_Attribute.h
+	EXP_AttributeDef.h
 	EXP_BaseListValue.h
 	EXP_BoolValue.h
 	EXP_ConstExpr.h
@@ -71,6 +75,7 @@ set(SRC
 	EXP_Operator2Expr.h
 	EXP_PyObjectPlus.h
 	EXP_Python.h
+	EXP_PythonUtils.h
 	EXP_StringValue.h
 	EXP_Value.h
 	EXP_ListWrapper.h

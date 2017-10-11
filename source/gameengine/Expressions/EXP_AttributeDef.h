@@ -1,0 +1,194 @@
+#ifndef __EXP_ATTRIBUTE_DEF_H__
+#define __EXP_ATTRIBUTE_DEF_H__
+
+#include <string>
+
+#include "EXP_PyObjectPlus.h"
+#include "EXP_PythonUtils.h"
+
+class EXP_AttributeDef
+{
+public:
+	enum Type
+	{
+		TYPE_BOOL = 0,
+		TYPE_SHORT,
+		TYPE_USHORT,
+		TYPE_INT,
+		TYPE_UINT,
+		TYPE_FLOAT,
+		TYPE_STRING,
+		TYPE_VECTOR2,
+		TYPE_VECTOR3,
+		TYPE_CUSTOM
+	};
+
+	enum GetSetFlags
+	{
+		GETSET_CHECK,
+		GETSET_CLAMP,
+		GETSET_CUSTOM,
+		GETSET_READONLY
+	};
+
+private:
+	EXP_Attribute m_attribute;
+
+	template <typename Type>
+	Type *PtrFromOffset(PyObjectPlus *self)
+	{
+		return (Type *)((intptr_t)(ref) + m_offset);
+	}
+
+	static bool IsValid(PyObjectPlus *self);
+
+	template <typename Type>
+	void PrintSetterError()
+	{
+		static_assert(false, "Invalid type");
+	}
+
+	void PrintError(const std::string& msg);
+
+	template <typename Type, GetSetFlags Flags>
+	static PyObject *Getter(PyObject *self_py, const EXP_AttributeDef *attrdef)
+	{
+		PyObjectPlus *self = BGE_PROXY_REF(self_py);
+		if (!IsValid(self)) {
+			return nullptr;
+		}
+
+		if (Flags & GETSET_CUSTOM) {
+			Type temp = (Type)attrdef->m_customGetter(self, attrdef);
+			return EXP_ConvertToPython<Type>(&temp);
+		}
+		return EXP_ConvertToPython<Type>(attrdef->PtrFromOffset<Type>(self));
+	}
+
+	template <typename Type, GetSetFlags Flags>
+	static int Setter(PyObject *self_py, PyObject *value, const EXP_AttributeDef *attrdef)
+	{
+		PyObjectPlus *self = BGE_PROXY_REF(self_py);
+		if (!IsValid(self_py)) {
+			return PY_SET_ATTR_FAIL;
+		}
+
+		bool success = false;
+		Type temp;
+		if (EXP_ConvertFromPython<Type>(value, &temp)) {
+			if (Flags & GETSET_CLAMP) {
+				CLAMP(temp, attrdef->m_borders[0], attrdef->m_borders[1]);
+			}
+
+			if (Flags & GETSET_CUSTOM) {
+				success = attredef->m_customSetter(self, &temp, attrdef);
+			}
+			else {
+				Type *ptr = attrdef->PtrFromOffset<Type>(self);
+				*ptr = temp;
+				success = true;
+			}
+
+			if (Flags & GETSET_CHECK && success) {
+				if (attrdef->m_customCheck(self, attrdef)) {
+					success = false;
+				}
+			}
+		}
+
+		if (!success) {
+			attrdef->PrintSetterError<Type>();
+			return PY_SET_ATTR_FAIL;
+		}
+
+		return PY_SET_ATTR_SUCCESS;
+	}
+
+public:
+	/*
+	 * EXP_AttributeDef<float, GETSET_NONE>("KX_GameObject", "mass", offsetof(KX_GameObject, m_mass))
+	 * 
+	 */
+	template <typename Type, GetSetFlags Flags>
+	EXP_AttributeDef(const std::string& className, const std::string& name, intptr_t offset,
+			EXP_Attribute::CustomGetterFunction customGetter, EXP_Attribute::CustomSetterFunction customSetter,
+			EXP_Attribute::EXP_Attribute::CustomCheckFunction customCheck)
+	{
+		EXP_Attribute::GetterFunction getter = Getter<Type, Flags>;
+		EXP_Attribute::SetterFunction setter = (Flags & GETSET_READONLY) ? nullptr : Setter<Type, Flags>;
+		m_attribute = EXP_Attribute(className, name, getter, setter, offset, {0.0f, 0.0f}, customGetter, customSetter, customCheck);
+	}
+
+	template <typename Type, GetSetFlags Flags>
+	EXP_AttributeDef(const std::string& className, const std::string& name, intptr_t offset)
+		:EXP_AttributeDef(className, name, offset, nullptr, nullptr, nullptr)
+	{
+	}
+
+	template <typename Type, GetSetFlags Flags>
+	EXP_AttributeDef(const std::string& className, const std::string& name, EXP_Attribute::CustomGetterFunction customGetter,
+			EXP_Attribute::CustomSetterFunction customSetter, EXP_Attribute::CustomCheckFunction customCheck)
+		:EXP_AttributeDef(className, name, 0, customGetter, customSetter, customCheck)
+	{
+	}
+
+	EXP_Attribute GetAttribute() const;
+};
+
+#define EXP_ATTRIBUTE_RO(type, class)
+
+template <bool>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = bool: Excepted a boolean.")
+}
+
+template <int>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <unsigned int>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <short>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <unsigned short>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <float>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = float: Excepted a float.")
+}
+
+template <std::string>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = str: Excepted a string.")
+}
+
+template <MT_Vector2>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = Vector: Excepted a 2d vector.")
+}
+
+template <MT_Vector3>
+void EXP_AttributeDef::PrintSetterError()
+{
+	PrintError(" = Vector: Excepted a 3d vector.")
+}
+
+#endif  // __EXP_ATTRIBUTE_DEF_H__
