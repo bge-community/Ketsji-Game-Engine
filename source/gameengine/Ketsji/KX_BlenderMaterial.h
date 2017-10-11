@@ -50,7 +50,7 @@ public:
 	virtual void GetRGBAColor(unsigned char *rgba) const;
 	virtual Scene *GetBlenderScene() const;
 	virtual SCA_IScene *GetScene() const;
-	virtual void ReleaseMaterial();
+	virtual void ReloadShader();
 
 	/** Set scene owning this material and generate blender shader using
 	 * scene lights.

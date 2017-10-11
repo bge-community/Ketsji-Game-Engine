@@ -230,11 +230,24 @@ void BL_BlenderConverter::ConvertScene(BL_BlenderSceneConverter& converter, bool
 	m_sceneSlots.emplace(scene, converter);
 }
 
-void BL_BlenderConverter::InitSceneShaders(const BL_BlenderSceneConverter& converter, KX_Scene *mergeScene)
+void BL_BlenderConverter::InitSceneShaders(const BL_BlenderSceneConverter& converter, KX_Scene *mergeScene, bool reloadAllMat)
 {
 	for (KX_BlenderMaterial *mat : converter.m_materials) {
 		// Do this after lights are available so materials can use the lights in shaders.
 		mat->InitScene(mergeScene);
+	}
+
+	if (reloadAllMat) {
+		// Reload shaders for all the material in the destination scene.
+		for (std::unique_ptr<KX_BlenderMaterial>& ptr : m_sceneSlots[mergeScene].m_materials) {
+			ptr->ReloadShader();
+		}
+	}
+	else {
+		// Reload shaders only for the merge materials.
+		for (KX_BlenderMaterial *mat : converter.m_materials) {
+			mat->ReloadShader();
+		}
 	}
 
 	// Generate meshes to materials attribute's layers since the shaders are available.
@@ -317,7 +330,7 @@ void BL_BlenderConverter::MergeAsyncLoads()
 			KX_Scene *scene = converter.GetScene();
 			MergeScene(mergeScene, scene);
 			// Finalize material and mesh conversion.
-			InitSceneShaders(converter, mergeScene);
+			InitSceneShaders(converter, mergeScene, (libload->GetOptions() & LIB_LOAD_RELOAD_ALL_MATERIALS));
 			delete scene;
 		}
 
@@ -366,7 +379,8 @@ static void async_convert(TaskPool *pool, void *ptr, int UNUSED(threadid))
 	status->GetConverter()->AddScenesToMergeQueue(status);
 }
 
-KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFileMemory(void *data, int length, const char *path, char *group, KX_Scene *scene_merge, char **err_str, short options)
+KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFileMemory(void *data, int length, const char *path, char *group,
+		KX_Scene *scene_merge, char **err_str, LibLoadOptions options)
 {
 	BlendHandle *bpy_openlib = BLO_blendhandle_from_memory(data, length);
 
@@ -374,7 +388,8 @@ KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFileMemory(void *data, int lengt
 	return LinkBlendFile(bpy_openlib, path, group, scene_merge, err_str, options);
 }
 
-KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFilePath(const char *filepath, char *group, KX_Scene *scene_merge, char **err_str, short options)
+KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFilePath(const char *filepath, char *group, KX_Scene *scene_merge,
+		char **err_str, LibLoadOptions options)
 {
 	BlendHandle *bpy_openlib = BLO_blendhandle_from_file(filepath, nullptr);
 
@@ -399,7 +414,8 @@ static void load_datablocks(Main *main_tmp, BlendHandle *bpy_openlib, const char
 	BLI_linklist_free(names, free); // free linklist *and* each node's data
 }
 
-KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFile(BlendHandle *bpy_openlib, const char *path, char *group, KX_Scene *scene_merge, char **err_str, short options)
+KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFile(BlendHandle *bpy_openlib, const char *path, char *group,
+		KX_Scene *scene_merge, char **err_str, LibLoadOptions options)
 {
 	Main *main_newlib; // stored as a dynamic 'main' until we free it
 	const int idcode = BKE_idcode_from_name(group);
@@ -475,7 +491,7 @@ KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFile(BlendHandle *bpy_openlib, c
 		}
 
 		// Finalize material and mesh conversion.
-		InitSceneShaders(sceneConverter, scene_merge);
+		InitSceneShaders(sceneConverter, scene_merge, false);
 		m_sceneSlots[scene_merge].Merge(sceneConverter);
 	}
 	else if (idcode == ID_AC) {
@@ -521,7 +537,7 @@ KX_LibLoadStatus *BL_BlenderConverter::LinkBlendFile(BlendHandle *bpy_openlib, c
 				MergeScene(scene_merge, other);
 
 				// Finalize material and mesh conversion.
-				InitSceneShaders(sceneConverter, scene_merge);
+				InitSceneShaders(sceneConverter, scene_merge, (options & LIB_LOAD_RELOAD_ALL_MATERIALS));
 
 				delete other;
 			}
@@ -833,7 +849,7 @@ RAS_MeshObject *BL_BlenderConverter::ConvertMeshSpecial(KX_Scene *kx_scene, Main
 	kx_scene->GetLogicManager()->RegisterMeshName(meshobj->GetName(), meshobj);
 
 	// Finalize material and mesh conversion.
-	InitSceneShaders(sceneConverter, kx_scene);
+	InitSceneShaders(sceneConverter, kx_scene, false);
 	m_sceneSlots[kx_scene].Merge(sceneConverter);
 
 	return meshobj;

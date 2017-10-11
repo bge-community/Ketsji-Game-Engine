@@ -373,11 +373,11 @@ void RAS_BucketManager::GenerateAttribLayers()
 	}
 }
 
-void RAS_BucketManager::ReleaseMaterials(RAS_IPolyMaterial *mat)
+void RAS_BucketManager::ReloadShaders(RAS_IPolyMaterial *mat)
 {
 	for (RAS_MaterialBucket *bucket : m_buckets[ALL_BUCKET]) {
 		if (mat == nullptr || (mat == bucket->GetPolyMaterial())) {
-			bucket->GetPolyMaterial()->ReleaseMaterial();
+			bucket->GetPolyMaterial()->ReloadShader();
 		}
 	}
 }

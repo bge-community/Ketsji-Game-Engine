@@ -47,7 +47,6 @@ BL_BlenderShader::BL_BlenderShader(KX_Scene *scene, struct Material *ma, int lig
 	m_alphaBlend(GPU_BLEND_SOLID),
 	m_gpuMat(nullptr)
 {
-	ReloadMaterial();
 }
 
 BL_BlenderShader::~BL_BlenderShader()
@@ -94,7 +93,7 @@ bool BL_BlenderShader::Ok() const
 	return (m_gpuMat != nullptr);
 }
 
-void BL_BlenderShader::ReloadMaterial()
+void BL_BlenderShader::Reload()
 {
 	// Force regenerating shader by deleting it.
 	if (m_gpuMat) {

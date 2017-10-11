@@ -189,10 +189,11 @@ SCA_IScene *KX_BlenderMaterial::GetScene() const
 	return m_scene;
 }
 
-void KX_BlenderMaterial::ReleaseMaterial()
+void KX_BlenderMaterial::ReloadShader()
 {
-	if (m_blenderShader)
-		m_blenderShader->ReloadMaterial();
+	if (m_blenderShader) {
+		m_blenderShader->Reload();
+	}
 }
 
 void KX_BlenderMaterial::InitTextures()
@@ -214,11 +215,6 @@ void KX_BlenderMaterial::InitScene(KX_Scene *scene)
 
 	if (!m_blenderShader) {
 		m_blenderShader = new BL_BlenderShader(m_scene, m_material, m_lightLayer);
-	}
-
-	if (!m_blenderShader->Ok()) {
-		delete m_blenderShader;
-		m_blenderShader = nullptr;
 	}
 }
 

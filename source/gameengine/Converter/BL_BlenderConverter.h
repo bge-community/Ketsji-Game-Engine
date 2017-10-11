@@ -34,6 +34,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #ifdef _MSC_VER // MSVC doesn't support incomplete type in std::unique_ptr.
 #  include "KX_BlenderMaterial.h"
@@ -41,6 +42,8 @@
 
 #  include "BL_BlenderScalarInterpolator.h"
 #endif
+
+#include "EXP_ListValue.h"
 
 #include "CM_Thread.h"
 
@@ -68,6 +71,17 @@ using UniquePtrList = std::vector<std::unique_ptr<Value> >;
 
 class BL_BlenderConverter
 {
+public:
+	/// LibLoad Options.
+	enum LibLoadOptions
+	{
+		LIB_LOAD_LOAD_ACTIONS = (1 << 0),
+		LIB_LOAD_VERBOSE = (1 << 1),
+		LIB_LOAD_LOAD_SCRIPTS = (1 << 2),
+		LIB_LOAD_ASYNC = (1 << 3),
+		LIB_LOAD_RELOAD_ALL_MATERIALS = (1 << 4)
+	};
+
 private:
 	class SceneSlot
 	{
@@ -115,8 +129,9 @@ public:
 	 * merging.
 	 * \param converter The scene convert to finalize.
 	 * \param mergeScene The scene used to generate shaders.
+	 * \param reloadAllMat Reload all the material of the final scene.
 	 */
-	void InitSceneShaders(const BL_BlenderSceneConverter& converter, KX_Scene *mergeScene);
+	void InitSceneShaders(const BL_BlenderSceneConverter& converter, KX_Scene *mergeScene, bool reloadAllMat);
 
 	/** This function removes all entities stored in the converter for that scene
 	 * It should be used instead of direct delete scene
@@ -139,9 +154,12 @@ public:
 	Main *GetMainDynamicPath(const std::string& path) const;
 	const std::vector<Main *> &GetMainDynamic() const;
 
-	KX_LibLoadStatus *LinkBlendFileMemory(void *data, int length, const char *path, char *group, KX_Scene *scene_merge, char **err_str, short options);
-	KX_LibLoadStatus *LinkBlendFilePath(const char *path, char *group, KX_Scene *scene_merge, char **err_str, short options);
-	KX_LibLoadStatus *LinkBlendFile(BlendHandle *bpy_openlib, const char *path, char *group, KX_Scene *scene_merge, char **err_str, short options);
+	KX_LibLoadStatus *LinkBlendFileMemory(void *data, int length, const char *path, char *group, KX_Scene *scene_merge,
+			char **err_str, LibLoadOptions options);
+	KX_LibLoadStatus *LinkBlendFilePath(const char *path, char *group, KX_Scene *scene_merge, char **err_str,
+			LibLoadOptions options);
+	KX_LibLoadStatus *LinkBlendFile(BlendHandle *bpy_openlib, const char *path, char *group, KX_Scene *scene_merge,
+			char **err_str, LibLoadOptions options);
 
 	bool FreeBlendFile(Main *maggie);
 	bool FreeBlendFile(const std::string& path);
@@ -155,15 +173,6 @@ public:
 	void AddScenesToMergeQueue(KX_LibLoadStatus *status);
 
 	void PrintStats();
-
-	// LibLoad Options.
-	enum
-	{
-		LIB_LOAD_LOAD_ACTIONS = 1,
-		LIB_LOAD_VERBOSE = 2,
-		LIB_LOAD_LOAD_SCRIPTS = 4,
-		LIB_LOAD_ASYNC = 8,
-	};
 };
 
 #endif  // __KX_BLENDERCONVERTER_H__

@@ -631,13 +631,17 @@ static PyObject *gLibLoad(PyObject *, PyObject *args, PyObject *kwds)
 	KX_LibLoadStatus *status = nullptr;
 
 	short options=0;
-	int load_actions=0, verbose=0, load_scripts=1, async=0;
+	int load_actions=0, verbose=0, load_scripts=1, async=0, reloadAllMats = 0;
 
-	static const char *kwlist[] = {"path", "group", "buffer", "load_actions", "verbose", "load_scripts", "async", "scene", nullptr};
+	static const char *kwlist[] = {"path", "group", "buffer", "load_actions", "verbose", "load_scripts", "async", "scene",
+		"reload_materials", nullptr};
 	
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss|y*iiIiO:LibLoad", const_cast<char**>(kwlist),
-									&path, &group, &py_buffer, &load_actions, &verbose, &load_scripts, &async, &pyscene))
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss|y*iiIiOi:LibLoad", const_cast<char**>(kwlist),
+									&path, &group, &py_buffer, &load_actions, &verbose, &load_scripts, &async, &pyscene,
+									&reloadAllMats))
+	{
 		return nullptr;
+	}
 
 	if (!ConvertPythonToScene(pyscene, &kx_scene, true, "invalid scene")) {
 		return nullptr;
@@ -655,6 +659,9 @@ static PyObject *gLibLoad(PyObject *, PyObject *args, PyObject *kwds)
 		options |= BL_BlenderConverter::LIB_LOAD_LOAD_SCRIPTS;
 	if (async != 0)
 		options |= BL_BlenderConverter::LIB_LOAD_ASYNC;
+	if (reloadAllMats) {
+		options |= BL_BlenderConverter::LIB_LOAD_RELOAD_ALL_MATERIALS;
+	}
 
 	BL_BlenderConverter *converter = KX_GetActiveEngine()->GetConverter();
 
@@ -665,14 +672,18 @@ static PyObject *gLibLoad(PyObject *, PyObject *args, PyObject *kwds)
 		BLI_strncpy(abs_path, path, sizeof(abs_path));
 		BLI_path_abs(abs_path, KX_GetMainPath().c_str());
 
-		if ((status=converter->LinkBlendFilePath(abs_path, group, kx_scene, &err_str, options))) {
+		if ((status=converter->LinkBlendFilePath(abs_path, group, kx_scene, &err_str,
+			(BL_BlenderConverter::LibLoadOptions)options)))
+		{
 			return status->GetProxy();
 		}
 	}
 	else
 	{
 
-		if ((status=converter->LinkBlendFileMemory(py_buffer.buf, py_buffer.len, path, group, kx_scene, &err_str, options)))	{
+		if ((status=converter->LinkBlendFileMemory(py_buffer.buf, py_buffer.len, path, group, kx_scene, &err_str,
+			(BL_BlenderConverter::LibLoadOptions)options)))
+		{
 			PyBuffer_Release(&py_buffer);
 			return status->GetProxy();
 		}
@@ -1097,7 +1108,7 @@ static PyObject *gPySetGLSLMaterialSetting(PyObject *,
 				scene->GetBlenderScene()->gm.flag = gs->glslflag;
 				if (scene->GetBucketManager()) {
 					scene->GetBucketManager()->UpdateShaders();
-					scene->GetBucketManager()->ReleaseMaterials();
+					scene->GetBucketManager()->ReloadShaders();
 				}
 			}
 		}

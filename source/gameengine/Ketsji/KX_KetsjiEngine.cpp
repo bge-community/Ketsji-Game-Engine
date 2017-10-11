@@ -1371,7 +1371,7 @@ void KX_KetsjiEngine::ConvertScene(KX_Scene *scene)
 	BL_BlenderSceneConverter sceneConverter(scene);
 	m_converter->ConvertScene(sceneConverter, false);
 	// Finalize material and mesh conversion.
-	m_converter->InitSceneShaders(sceneConverter, scene);
+	m_converter->InitSceneShaders(sceneConverter, scene, false);
 }
 
 void KX_KetsjiEngine::AddScheduledScenes()

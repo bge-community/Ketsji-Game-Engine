@@ -125,7 +125,7 @@ public:
 	virtual Scene *GetBlenderScene() const = 0;
 	virtual SCA_IScene *GetScene() const = 0;
 	virtual bool UseInstancing() const = 0;
-	virtual void ReleaseMaterial() = 0;
+	virtual void ReloadShader() = 0;
 	virtual void GetRGBAColor(unsigned char *rgba) const;
 	virtual bool UsesLighting() const;
 

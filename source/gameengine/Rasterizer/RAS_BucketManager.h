@@ -117,7 +117,7 @@ public:
 	 * empty layers list only.
 	 */
 	void GenerateAttribLayers();
-	void ReleaseMaterials(RAS_IPolyMaterial *material = nullptr);
+	void ReloadShaders(RAS_IPolyMaterial *material = nullptr);
 
 	// freeing scenes only
 	void RemoveMaterial(RAS_IPolyMaterial *mat);
