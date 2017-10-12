@@ -313,7 +313,7 @@ EXP_Attribute SCA_KeyboardSensor::Attributes[] = {
 	KX_PYATTRIBUTE_SHORT_RW("hold2",0,SCA_IInputDevice::ENDKEY,true,SCA_KeyboardSensor,m_qual2),
 	KX_PYATTRIBUTE_STRING_RW("toggleProperty",0,MAX_PROP_NAME,false,SCA_KeyboardSensor,m_toggleprop),
 	KX_PYATTRIBUTE_STRING_RW("targetProperty",0,MAX_PROP_NAME,false,SCA_KeyboardSensor,m_targetprop),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 

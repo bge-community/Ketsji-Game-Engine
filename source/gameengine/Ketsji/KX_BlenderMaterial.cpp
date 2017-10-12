@@ -567,7 +567,7 @@ EXP_Attribute KX_BlenderMaterial::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("ambient", KX_BlenderMaterial, pyattr_get_ambient, pyattr_set_ambient),
 	KX_PYATTRIBUTE_RW_FUNCTION("specularAlpha", KX_BlenderMaterial, pyattr_get_specular_alpha, pyattr_set_specular_alpha),
 
-	KX_ATTRIBUTE_NULL //Sentinel
+	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
 PyTypeObject KX_BlenderMaterial::Type = {

@@ -91,7 +91,7 @@ EXP_Attribute SCA_PythonMouse::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("activeInputs", SCA_PythonMouse, pyattr_get_active_inputs),
 	KX_PYATTRIBUTE_RW_FUNCTION("position", SCA_PythonMouse, pyattr_get_position, pyattr_set_position),
 	KX_PYATTRIBUTE_RW_FUNCTION("visible", SCA_PythonMouse, pyattr_get_visible, pyattr_set_visible),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *SCA_PythonMouse::pyattr_get_events(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

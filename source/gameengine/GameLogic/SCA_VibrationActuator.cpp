@@ -131,7 +131,7 @@ EXP_Attribute SCA_VibrationActuator::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("strengthRight", 0.0, 1.0, SCA_VibrationActuator, m_strengthRight),
 	KX_PYATTRIBUTE_RO_FUNCTION("isVibrating", SCA_VibrationActuator, pyattr_get_isVibrating),
 	KX_PYATTRIBUTE_RO_FUNCTION("hasVibration", SCA_VibrationActuator, pyattr_get_hasVibration),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 KX_PYMETHODDEF_DOC_NOARGS(SCA_VibrationActuator, startVibration,

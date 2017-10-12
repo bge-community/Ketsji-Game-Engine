@@ -187,7 +187,7 @@ EXP_Attribute SCA_2DFilterActuator::Attributes[] = {
 	KX_PYATTRIBUTE_ENUM_RW("mode", RAS_2DFilterManager::FILTER_ENABLED, RAS_2DFilterManager::FILTER_NUMBER_OF_FILTERS, false, SCA_2DFilterActuator, m_type),
 KX_PYATTRIBUTE_INT_RW("passNumber", 0, 100, true, SCA_2DFilterActuator, m_int_arg),
 	KX_PYATTRIBUTE_FLOAT_RW("value", 0.0, 100.0, SCA_2DFilterActuator, m_float_arg),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 #endif

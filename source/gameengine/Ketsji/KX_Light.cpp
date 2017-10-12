@@ -180,7 +180,7 @@ EXP_Attribute KX_LightObject::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("HEMI", KX_LightObject, pyattr_get_typeconst),
 	KX_PYATTRIBUTE_RW_FUNCTION("type", KX_LightObject, pyattr_get_type, pyattr_set_type),
 	KX_PYATTRIBUTE_RW_FUNCTION("staticShadow", KX_LightObject, pyattr_get_static_shadow, pyattr_set_static_shadow),
-	KX_ATTRIBUTE_NULL // Sentinel
+	EXP_ATTRIBUTE_NULL // Sentinel
 };
 
 KX_PYMETHODDEF_DOC_NOARGS(KX_LightObject, updateShadow, "updateShadow(): Set the shadow to be updated next frame if the lamp uses a static shadow.\n")

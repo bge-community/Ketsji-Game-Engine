@@ -388,7 +388,7 @@ EXP_Attribute KX_CameraActuator::Attributes[] = {
 	KX_PYATTRIBUTE_SHORT_RW("axis", 0, 5, true, KX_CameraActuator, m_axis),
 	KX_PYATTRIBUTE_RW_FUNCTION("object", KX_CameraActuator, pyattr_get_object, pyattr_set_object),
 	KX_PYATTRIBUTE_FLOAT_RW("damping",0.f,10.f,KX_CameraActuator,m_damping),
-	KX_ATTRIBUTE_NULL
+	EXP_ATTRIBUTE_NULL
 };
 
 PyObject *KX_CameraActuator::pyattr_get_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

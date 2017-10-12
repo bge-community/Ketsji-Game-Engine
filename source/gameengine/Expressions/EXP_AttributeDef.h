@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "EXP_PyObjectPlus.h"
+#include "EXP_Attribute.h"
 #include "EXP_PythonUtils.h"
 
 class EXP_AttributeDef
@@ -34,27 +34,11 @@ public:
 private:
 	EXP_Attribute m_attribute;
 
-	template <typename Type>
-	Type *PtrFromOffset(PyObjectPlus *self)
-	{
-		return (Type *)((intptr_t)(ref) + m_offset);
-	}
-
-	static bool IsValid(PyObjectPlus *self);
-
-	template <typename Type>
-	void PrintSetterError()
-	{
-		static_assert(false, "Invalid type");
-	}
-
-	void PrintError(const std::string& msg);
-
 	template <typename Type, GetSetFlags Flags>
-	static PyObject *Getter(PyObject *self_py, const EXP_AttributeDef *attrdef)
+	static PyObject *Getter(PyObject *self_py, const EXP_Attribute *attrdef)
 	{
 		PyObjectPlus *self = BGE_PROXY_REF(self_py);
-		if (!IsValid(self)) {
+		if (!EXP_Attribute::IsValid(self)) {
 			return nullptr;
 		}
 
@@ -66,10 +50,10 @@ private:
 	}
 
 	template <typename Type, GetSetFlags Flags>
-	static int Setter(PyObject *self_py, PyObject *value, const EXP_AttributeDef *attrdef)
+	static int Setter(PyObject *self_py, PyObject *value, const EXP_Attribute *attrdef)
 	{
 		PyObjectPlus *self = BGE_PROXY_REF(self_py);
-		if (!IsValid(self_py)) {
+		if (!EXP_Attribute::IsValid(self_py)) {
 			return PY_SET_ATTR_FAIL;
 		}
 
@@ -148,59 +132,5 @@ public:
 
 #define EXP_ATTRIBUTE_NULL \
 	EXP_Attribute()
-
-template <bool>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = bool: Excepted a boolean.")
-}
-
-template <int>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = int: Excepted a int.")
-}
-
-template <unsigned int>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = int: Excepted a int.")
-}
-
-template <short>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = int: Excepted a int.")
-}
-
-template <unsigned short>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = int: Excepted a int.")
-}
-
-template <float>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = float: Excepted a float.")
-}
-
-template <std::string>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = str: Excepted a string.")
-}
-
-template <MT_Vector2>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = Vector: Excepted a 2d vector.")
-}
-
-template <MT_Vector3>
-void EXP_AttributeDef::PrintSetterError()
-{
-	PrintError(" = Vector: Excepted a 3d vector.")
-}
 
 #endif  // __EXP_ATTRIBUTE_DEF_H__

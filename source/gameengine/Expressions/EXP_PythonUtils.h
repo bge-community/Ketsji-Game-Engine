@@ -13,10 +13,7 @@ PyObject *PyUnicode_FromStdString(const std::string& str)
 }
 
 template <typename Type>
-PyObject *EXP_ConvertToPython(Type *ptr)
-{
-	return nullptr;
-}
+PyObject *EXP_ConvertToPython(Type *ptr);
 
 template <>
 PyObject *EXP_ConvertToPython(bool *ptr)
@@ -85,10 +82,7 @@ bool EXP_ConvertFromPythonHelper(const ValueType value, PtrType *ptr)
 }
 
 template <typename Type>
-bool EXP_ConvertFromPython(PyObject *value, Type *ptr)
-{
-	return false;
-}
+bool EXP_ConvertFromPython(PyObject *value, Type *ptr);
 
 template <>
 bool EXP_ConvertFromPython(PyObject *value, bool *ptr)

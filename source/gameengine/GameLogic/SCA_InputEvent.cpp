@@ -126,7 +126,7 @@ EXP_Attribute SCA_InputEvent::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("activated", SCA_InputEvent, pyattr_get_activated),
 	KX_PYATTRIBUTE_RO_FUNCTION("released", SCA_InputEvent, pyattr_get_released),
 	KX_PYATTRIBUTE_INT_RO("type", SCA_InputEvent, m_type),
-	KX_ATTRIBUTE_NULL //Sentinel
+	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
 int SCA_InputEvent::get_status_size_cb(void *self_v)

@@ -73,7 +73,7 @@ EXP_Attribute KX_CharacterWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("jumpCount", KX_CharacterWrapper, pyattr_get_jump_count),
 	KX_PYATTRIBUTE_RW_FUNCTION("jumpSpeed", KX_CharacterWrapper, pyattr_get_jumpSpeed, pyattr_set_jumpSpeed),
 	KX_PYATTRIBUTE_RW_FUNCTION("walkDirection", KX_CharacterWrapper, pyattr_get_walk_dir, pyattr_set_walk_dir),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_CharacterWrapper::pyattr_get_onground(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

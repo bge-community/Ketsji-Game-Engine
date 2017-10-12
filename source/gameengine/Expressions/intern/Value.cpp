@@ -351,7 +351,7 @@ CValue *CValue::FindIdentifier(const std::string& identifiername)
 
 EXP_Attribute CValue::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("name",  CValue, pyattr_get_name),
-	KX_ATTRIBUTE_NULL // Sentinel
+	EXP_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject *CValue::pyattr_get_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

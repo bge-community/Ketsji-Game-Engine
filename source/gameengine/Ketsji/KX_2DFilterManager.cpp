@@ -53,7 +53,7 @@ PyMethodDef KX_2DFilterManager::Methods[] = {
 };
 
 EXP_Attribute KX_2DFilterManager::Attributes[] = {
-	KX_ATTRIBUTE_NULL //Sentinel
+	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
 PyTypeObject KX_2DFilterManager::Type = {

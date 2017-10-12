@@ -119,7 +119,7 @@ PyMethodDef SCA_NANDController::Methods[] = {
 };
 
 EXP_Attribute SCA_NANDController::Attributes[] = {
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 #endif

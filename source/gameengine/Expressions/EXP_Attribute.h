@@ -4,7 +4,6 @@
 #include <string>
 
 class PyObjectPlus;
-class EXP_AttributeDef;
 
 class EXP_Attribute
 {
@@ -43,7 +42,7 @@ public:
 	using CustomCheckFunction = int (*)(PyObjectPlus *, const EXP_Attribute *);
 
 	using GetterFunction = PyObject *(*)(PyObject *, void *);
-	using SetterFunction = int (*)(PyObject *, PyObject *, void *);	
+	using SetterFunction = int (*)(PyObject *, PyObject *, void *);
 
 private:
 	/// Name of the python class.
@@ -76,6 +75,75 @@ public:
 	EXP_Attribute(const std::string& className, const std::string& name, intptr_t offset, float borders[2],
 			GetterFunction getter, SetterFunction setter,
 			CustomGetterFunction customGetter, CustomSetterFunction customSetter, CustomCheckFunction customCheck);
+
+	template <typename Type>
+	Type *PtrFromOffset(PyObjectPlus *self)
+	{
+		return (Type *)((intptr_t)(self) + m_offset);
+	}
+
+	static bool IsValid(PyObjectPlus *self);
+
+
+	template <typename Type>
+	void PrintSetterError();
+
+	void PrintError(const std::string& msg);
 };
+
+template <bool>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = bool: Excepted a boolean.")
+}
+
+template <int>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <unsigned int>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <short>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <unsigned short>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = int: Excepted a int.")
+}
+
+template <float>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = float: Excepted a float.")
+}
+
+template <std::string>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = str: Excepted a string.")
+}
+
+template <MT_Vector2>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = Vector: Excepted a 2d vector.")
+}
+
+template <MT_Vector3>
+void EXP_Attribute::PrintSetterError()
+{
+	PrintError(" = Vector: Excepted a 3d vector.")
+}
+
 
 #endif  // __EXP_ATTRIBUTE_H__

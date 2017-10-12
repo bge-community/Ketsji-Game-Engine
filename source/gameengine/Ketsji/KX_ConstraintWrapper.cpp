@@ -115,7 +115,7 @@ EXP_Attribute KX_ConstraintWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_type", KX_ConstraintWrapper, pyattr_get_constraintType),
 	KX_PYATTRIBUTE_RW_FUNCTION("breakingThreshold", KX_ConstraintWrapper, pyattr_get_breakingThreshold, pyattr_set_breakingThreshold),
 	KX_PYATTRIBUTE_RW_FUNCTION("enabled", KX_ConstraintWrapper, pyattr_get_enabled, pyattr_set_enabled),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_ConstraintWrapper::pyattr_get_constraintId(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

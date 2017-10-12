@@ -562,7 +562,7 @@ EXP_Attribute KX_SteeringActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("pathUpdatePeriod", -1, 100000, true, KX_SteeringActuator, m_pathUpdatePeriod),
 	KX_PYATTRIBUTE_BOOL_RW("lockZVelocity", KX_SteeringActuator, m_lockzvel),
 	KX_PYATTRIBUTE_RO_FUNCTION("path", KX_SteeringActuator, pyattr_get_path),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_SteeringActuator::pyattr_get_target(PyObjectPlus *self, const struct EXP_Attribute *attrdef)

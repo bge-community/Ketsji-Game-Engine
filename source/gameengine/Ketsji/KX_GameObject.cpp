@@ -1926,7 +1926,7 @@ EXP_Attribute KX_GameObject::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("sensors",		KX_GameObject, pyattr_get_sensors),
 	KX_PYATTRIBUTE_RO_FUNCTION("controllers",	KX_GameObject, pyattr_get_controllers),
 	KX_PYATTRIBUTE_RO_FUNCTION("actuators",		KX_GameObject, pyattr_get_actuators),
-	KX_ATTRIBUTE_NULL //Sentinel
+	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *KX_GameObject::PyReplaceMesh(PyObject *args, PyObject *kwds)

@@ -81,7 +81,7 @@ EXP_Attribute KX_CollisionContactPoint::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("combinedRollingFriction", KX_CollisionContactPoint, pyattr_get_combined_rolling_friction),
 	KX_PYATTRIBUTE_RO_FUNCTION("combinedRestitution", KX_CollisionContactPoint, pyattr_get_combined_restitution),
 	KX_PYATTRIBUTE_RO_FUNCTION("appliedImpulse", KX_CollisionContactPoint, pyattr_get_applied_impulse),
-	KX_ATTRIBUTE_NULL //Sentinel
+	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *KX_CollisionContactPoint::pyattr_get_local_point_a(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

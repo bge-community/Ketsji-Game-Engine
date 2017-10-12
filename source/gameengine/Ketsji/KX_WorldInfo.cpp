@@ -301,7 +301,7 @@ EXP_Attribute KX_WorldInfo::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("envLightEnergy", 0.0f, FLT_MAX, KX_WorldInfo, m_envLightEnergy),
 	KX_PYATTRIBUTE_BOOL_RO("envLightEnabled", KX_WorldInfo, m_hasEnvLight),
 	KX_PYATTRIBUTE_SHORT_RO("envLightColor", KX_WorldInfo, m_envLightColor),
-	KX_ATTRIBUTE_NULL /* Sentinel */
+	EXP_ATTRIBUTE_NULL /* Sentinel */
 };
 
 /* Attribute get/set functions */

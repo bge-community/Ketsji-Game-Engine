@@ -359,7 +359,7 @@ EXP_Attribute KX_Camera::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("OUTSIDE",	KX_Camera, pyattr_get_OUTSIDE),
 	KX_PYATTRIBUTE_RO_FUNCTION("INTERSECT",	KX_Camera, pyattr_get_INTERSECT),
 	
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyTypeObject KX_Camera::Type = {

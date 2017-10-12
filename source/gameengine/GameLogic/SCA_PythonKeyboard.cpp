@@ -102,7 +102,7 @@ EXP_Attribute SCA_PythonKeyboard::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("active_events", SCA_PythonKeyboard, pyattr_get_active_events),
 	KX_PYATTRIBUTE_RO_FUNCTION("activeInputs", SCA_PythonKeyboard, pyattr_get_active_inputs),
 	KX_PYATTRIBUTE_RO_FUNCTION("text", SCA_PythonKeyboard, pyattr_get_text),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *SCA_PythonKeyboard::pyattr_get_events(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

@@ -168,7 +168,7 @@ EXP_Attribute KX_ParentActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("mode", KX_PARENT_NODEF+1, KX_PARENT_MAX-1, true, KX_ParentActuator, m_mode),
 	KX_PYATTRIBUTE_BOOL_RW("compound", KX_ParentActuator, m_addToCompound),
 	KX_PYATTRIBUTE_BOOL_RW("ghost", KX_ParentActuator, m_ghost),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_ParentActuator::pyattr_get_object(PyObjectPlus *self, const struct EXP_Attribute *attrdef)

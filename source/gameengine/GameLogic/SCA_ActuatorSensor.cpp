@@ -151,7 +151,7 @@ PyMethodDef SCA_ActuatorSensor::Methods[] = {
 
 EXP_Attribute SCA_ActuatorSensor::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW_CHECK("actuator",0,MAX_PROP_NAME,false,SCA_ActuatorSensor,m_checkactname,CheckActuator),
-	KX_ATTRIBUTE_NULL	//Sentinel
+	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
 int SCA_ActuatorSensor::CheckActuator(PyObjectPlus *self, const EXP_Attribute*)

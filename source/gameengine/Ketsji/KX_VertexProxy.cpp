@@ -104,7 +104,7 @@ EXP_Attribute KX_VertexProxy::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("colors", KX_VertexProxy, pyattr_get_colors, pyattr_set_colors),
 	KX_PYATTRIBUTE_RW_FUNCTION("normal", KX_VertexProxy, pyattr_get_normal, pyattr_set_normal),
 
-	KX_ATTRIBUTE_NULL //Sentinel
+	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *KX_VertexProxy::pyattr_get_x(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

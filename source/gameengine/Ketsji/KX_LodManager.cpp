@@ -202,7 +202,7 @@ PyMethodDef KX_LodManager::Methods[] = {
 EXP_Attribute KX_LodManager::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("levels", KX_LodManager, pyattr_get_levels),
 	KX_PYATTRIBUTE_FLOAT_RW("distanceFactor", 0.0f, FLT_MAX, KX_LodManager, m_distanceFactor),
-	KX_ATTRIBUTE_NULL
+	EXP_ATTRIBUTE_NULL
 };
 
 static int kx_lod_manager_get_levels_size_cb(void *self_v)

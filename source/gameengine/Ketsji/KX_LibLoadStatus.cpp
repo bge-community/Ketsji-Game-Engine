@@ -143,7 +143,7 @@ EXP_Attribute KX_LibLoadStatus::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RO("libraryName", KX_LibLoadStatus, m_libname),
 	KX_PYATTRIBUTE_RO_FUNCTION("timeTaken", KX_LibLoadStatus, pyattr_get_timetaken),
 	KX_PYATTRIBUTE_BOOL_RO("finished", KX_LibLoadStatus, m_finished),
-	KX_ATTRIBUTE_NULL // Sentinel
+	EXP_ATTRIBUTE_NULL // Sentinel
 };
 
 PyTypeObject KX_LibLoadStatus::Type = {

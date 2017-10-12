@@ -248,7 +248,7 @@ EXP_Attribute BL_Texture::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("uvRotation", BL_Texture, pyattr_get_uv_rotation, pyattr_set_uv_rotation),
 	KX_PYATTRIBUTE_RW_FUNCTION("uvOffset", BL_Texture, pyattr_get_uv_offset, pyattr_set_uv_offset),
 	KX_PYATTRIBUTE_RW_FUNCTION("uvSize", BL_Texture, pyattr_get_uv_size, pyattr_set_uv_size),
-	KX_ATTRIBUTE_NULL    //Sentinel
+	EXP_ATTRIBUTE_NULL    //Sentinel
 };
 
 PyObject *BL_Texture::pyattr_get_diffuse_intensity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

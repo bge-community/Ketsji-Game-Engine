@@ -252,7 +252,7 @@ EXP_Attribute KX_BoundingBox::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("center", KX_BoundingBox, pyattr_get_center),
 	KX_PYATTRIBUTE_RO_FUNCTION("radius", KX_BoundingBox, pyattr_get_radius),
 	KX_PYATTRIBUTE_RW_FUNCTION("autoUpdate", KX_BoundingBox, pyattr_get_auto_update, pyattr_set_auto_update),
-	KX_ATTRIBUTE_NULL // Sentinel
+	EXP_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject *KX_BoundingBox::pyattr_get_min(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

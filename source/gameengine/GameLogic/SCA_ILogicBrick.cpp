@@ -142,7 +142,7 @@ PyMethodDef SCA_ILogicBrick::Methods[] = {
 EXP_Attribute SCA_ILogicBrick::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("owner",	SCA_ILogicBrick, pyattr_get_owner),
 	KX_PYATTRIBUTE_INT_RW("executePriority",0,100000,false,SCA_ILogicBrick,m_Execute_Priority),
-	KX_ATTRIBUTE_NULL //Sentinel
+	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
 int SCA_ILogicBrick::CheckProperty(PyObjectPlus *self, const EXP_Attribute *attrdef)

@@ -147,7 +147,7 @@ EXP_Attribute KX_TextureRenderer::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("clipStart", KX_TextureRenderer, pyattr_get_clip_start, pyattr_set_clip_start),
 	KX_PYATTRIBUTE_RW_FUNCTION("clipEnd", KX_TextureRenderer, pyattr_get_clip_end, pyattr_set_clip_end),
 	KX_PYATTRIBUTE_FLOAT_RW("lodDistanceFactor", 0.0f, FLT_MAX, KX_TextureRenderer, m_lodDistanceFactor),
-	KX_ATTRIBUTE_NULL // Sentinel
+	EXP_ATTRIBUTE_NULL // Sentinel
 };
 
 KX_PYMETHODDEF_DOC_NOARGS(KX_TextureRenderer, update, "update(): Set the texture rendered to be updated next frame.\n")
