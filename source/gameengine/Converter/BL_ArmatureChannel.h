@@ -45,8 +45,7 @@ struct bPose;
 
 class BL_ArmatureChannel : public CValue
 {
-	// use Py_HeaderPtr since we use generic pointer in proxy
-	Py_HeaderPtr;
+	Py_Header;
 
 private:
 	friend class BL_ArmatureObject;
@@ -77,8 +76,7 @@ public:
  * The actual proxy object will be manually created using NewProxyPtr */
 class BL_ArmatureBone : public PyObjectPlus
 {
-	// use Py_HeaderPtr since we use generic pointer in proxy
-	Py_HeaderPtr;
+	Py_Header;
 private:
 	// make constructor private to make sure no one tries to instantiate this class
 	BL_ArmatureBone() {}

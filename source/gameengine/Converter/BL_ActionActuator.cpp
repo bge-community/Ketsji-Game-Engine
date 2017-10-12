@@ -324,6 +324,21 @@ PyMethodDef BL_ActionActuator::Methods[] = {
 };
 
 EXP_Attribute BL_ActionActuator::Attributes[] = {
+	EXP_ATTRIBUTE_RW_LIMIT(float, BL_ActionActuator, "frameStart", m_startframe),
+	EXP_ATTRIBUTE_RW_LIMIT(float, BL_ActionActuator, "frameEnd", m_endframe),
+	EXP_ATTRIBUTE_RW_LIMIT(float, BL_ActionActuator, "blendIn", m_blendin),
+	EXP_ATTRIBUTE_RW_CUSTOM(std::string, BL_ActionActuator, "action", pyattr_get_action, pyattr_set_action),
+	EXP_ATTRIBUTE_RW(short, BL_ActionActuator, "priority", m_priority),
+	EXP_ATTRIBUTE_RW(short, BL_ActionActuator, "layer", m_layer),
+	EXP_ATTRIBUTE_RW(float, BL_ActionActuator, "layerWeight", m_layer_weight),
+	EXP_ATTRIBUTE_RW_CUSTOM(float, BL_ActionActuator, "frame", pyattr_get_frame, pyattr_set_frame),
+	EXP_ATTRIBUTE_RW(std::string, BL_ActionActuator, "propName", m_propname),
+	EXP_ATTRIBUTE_RW(std::string, BL_ActionActuator, "framePropName", m_framepropname),
+	EXP_ATTRIBUTE_RW_CUSTOM(bool, BL_ActionActuator, "useContinue", pyattr_get_use_continue, pyattr_set_use_continue),
+	EXP_ATTRIBUTE_RW_CHECK(float, BL_ActionActuator, "blendTime", m_blendframe, CheckBlendTime),
+	EXP_ATTRIBUTE_RW_CHECK(short, BL_ActionActuator, "mode", m_playtype, CheckType),
+
+/*
 	KX_PYATTRIBUTE_FLOAT_RW("frameStart", 0, MAXFRAMEF, BL_ActionActuator, m_startframe),
 	KX_PYATTRIBUTE_FLOAT_RW("frameEnd", 0, MAXFRAMEF, BL_ActionActuator, m_endframe),
 	KX_PYATTRIBUTE_FLOAT_RW("blendIn", 0, MAXFRAMEF, BL_ActionActuator, m_blendin),
@@ -336,75 +351,58 @@ EXP_Attribute BL_ActionActuator::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW("framePropName", 0, MAX_PROP_NAME, false, BL_ActionActuator, m_framepropname),
 	KX_PYATTRIBUTE_RW_FUNCTION("useContinue", BL_ActionActuator, pyattr_get_use_continue, pyattr_set_use_continue),
 	KX_PYATTRIBUTE_FLOAT_RW_CHECK("blendTime", 0, MAXFRAMEF, BL_ActionActuator, m_blendframe, CheckBlendTime),
-	KX_PYATTRIBUTE_SHORT_RW_CHECK("mode",0,100,false,BL_ActionActuator,m_playtype,CheckType),
+	KX_PYATTRIBUTE_SHORT_RW_CHECK("mode",0,100,false,BL_ActionActuator,m_playtype,CheckType),*/
 	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
-PyObject *BL_ActionActuator::pyattr_get_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
+bool BL_ActionActuator::pyattr_get_action(std::string &ret, const EXP_Attribute *attrdef)
 {
-	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
-	return PyUnicode_FromString(self->GetAction() ? self->GetAction()->id.name+2 : "");
+	ret = m_action ? m_action->id.name : "";
+	return true;
 }
 
-int BL_ActionActuator::pyattr_set_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
+bool BL_ActionActuator::pyattr_set_action(const std::string &val, const EXP_Attribute *attrdef)
 {
-	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
-	
-	if (!PyUnicode_Check(value))
-	{
-		PyErr_SetString(PyExc_ValueError, "actuator.action = val: Action Actuator, expected the string name of the action");
-		return PY_SET_ATTR_FAIL;
-	}
-
-	bAction *action= nullptr;
-	std::string val = _PyUnicode_AsString(value);
-	
-	if (val != "")
-	{
-		action= (bAction*)self->GetLogicManager()->GetActionByName(val);
+	bAction *action = nullptr;
+	if (val!= "") {
+		action= (bAction*)GetLogicManager()->GetActionByName(val);
 		if (!action)
 		{
 			PyErr_SetString(PyExc_ValueError, "actuator.action = val: Action Actuator, action not found!");
-			return PY_SET_ATTR_FAIL;
+			return false;
 		}
 	}
 	
-	self->SetAction(action);
-	return PY_SET_ATTR_SUCCESS;
-
+	m_action = action;
+	return true;
 }
 
-PyObject *BL_ActionActuator::pyattr_get_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
+bool BL_ActionActuator::pyattr_get_use_continue(bool& ret, const EXP_Attribute *attrdef)
 {
-	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
-	return PyBool_FromLong(self->m_flag & ACT_FLAG_CONTINUE);
+	ret = (m_flag & ACT_FLAG_CONTINUE);
+	return true;
 }
 
-int BL_ActionActuator::pyattr_set_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
+bool BL_ActionActuator::pyattr_set_use_continue(const bool& val, const EXP_Attribute *attrdef)
 {
-	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
-	
-	if (PyObject_IsTrue(value))
-		self->m_flag |= ACT_FLAG_CONTINUE;
+	if (val)
+		m_flag |= ACT_FLAG_CONTINUE;
 	else
-		self->m_flag &= ~ACT_FLAG_CONTINUE;
+		m_flag &= ~ACT_FLAG_CONTINUE;
 	
-	return PY_SET_ATTR_SUCCESS;
+	return true;
 }
 
-PyObject *BL_ActionActuator::pyattr_get_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
+bool BL_ActionActuator::pyattr_get_frame(float& ret, const EXP_Attribute *attrdef)
 {
-	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
-	return PyFloat_FromDouble(((KX_GameObject*)self->m_gameobj)->GetActionFrame(self->m_layer));
+	ret = ((KX_GameObject*)m_gameobj)->GetActionFrame(m_layer);
+	return true;
 }
 
-int BL_ActionActuator::pyattr_set_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
+bool BL_ActionActuator::pyattr_set_frame(const float& val, const EXP_Attribute *attrdef)
 {
-	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
-	
-	((KX_GameObject*)self->m_gameobj)->SetActionFrame(self->m_layer, PyFloat_AsDouble(value));
-	
-	return PY_SET_ATTR_SUCCESS;
+	((KX_GameObject*)m_gameobj)->SetActionFrame(m_layer, val);
+	return true;
 }
 
 #endif // WITH_PYTHON

@@ -35,6 +35,8 @@
 // For now keep weakrefs optional.
 #define USE_WEAKREFS
 
+#include "EXP_Python.h"
+
 #include <stddef.h>
 
 #ifdef WITH_PYTHON
@@ -283,7 +285,7 @@ public: \
 	const char class_name::method_name##_doc[] = doc_string; \
 	PyObject *class_name::Py##method_name()
 
-#include "EXP_Attribute.h"
+#include "EXP_AttributeDef.h"
 
 /*------------------------------
  * PyObjectPlus

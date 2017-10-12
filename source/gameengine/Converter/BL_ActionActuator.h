@@ -74,38 +74,34 @@ public:
 
 #ifdef WITH_PYTHON
 
-	static PyObject*	pyattr_get_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
-	static int			pyattr_set_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
-	static int			pyattr_set_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
-	static int			pyattr_set_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	bool pyattr_get_action(std::string& ret, const EXP_Attribute *attrdef);
+	bool pyattr_set_action(const std::string& val, const EXP_Attribute *attrdef);
+	bool pyattr_get_use_continue(bool& ret, const EXP_Attribute *attrdef);
+	bool pyattr_set_use_continue(const bool& val, const EXP_Attribute *attrdef);
+	bool pyattr_get_frame(float& ret, const EXP_Attribute *attrdef);
+	bool pyattr_set_frame(const float& val, const EXP_Attribute *attrdef);
 
-	static int CheckBlendTime(PyObjectPlus *self, const EXP_Attribute*)
+	bool CheckBlendTime(const EXP_Attribute*)
 	{
-		BL_ActionActuator* act = reinterpret_cast<BL_ActionActuator*>(self);
+		if (m_blendframe > m_blendin)
+			m_blendframe = m_blendin;
 
-		if (act->m_blendframe > act->m_blendin)
-			act->m_blendframe = act->m_blendin;
-
-		return 0;
+		return true;
 	}
 
-	static int CheckType(PyObjectPlus *self, const EXP_Attribute*)
+	bool CheckType(const EXP_Attribute*)
 	{
-		BL_ActionActuator* act = reinterpret_cast<BL_ActionActuator*>(self);
-
-		switch (act->m_playtype) {
+		switch (m_playtype) {
 			case ACT_ACTION_PLAY:
 			case ACT_ACTION_PINGPONG:
 			case ACT_ACTION_FLIPPER:
 			case ACT_ACTION_LOOP_STOP:
 			case ACT_ACTION_LOOP_END:
 			case ACT_ACTION_FROM_PROP:
-				return 0;
+				return true;
 			default:
 				PyErr_SetString(PyExc_ValueError, "Action Actuator, invalid play type supplied");
-				return 1;
+				return false;
 		}
 	}
 #endif  /* WITH_PYTHON */

@@ -4,68 +4,72 @@
 #include <string>
 
 #include "EXP_PyObjectPlus.h"
+#include "EXP_Attribute.h"
 #include "EXP_PythonUtils.h"
 
+enum EXP_GetSetFlags
+{
+	EXP_GETSET_NONE = 0,
+	EXP_GETSET_CHECK = (1 << 0),
+	EXP_GETSET_CLAMP = (1 << 1),
+	EXP_GETSET_LIMIT = (1 << 2),
+	EXP_GETSET_CUSTOM = (1 << 3),
+	EXP_GETSET_READONLY = (1 << 4)
+};
+
+template <typename Type, class ParentClass>
+using CustomGetterFunctionType = bool (ParentClass::*)(Type&, const EXP_Attribute *);
+
+template <typename Type, class ParentClass>
+using CustomSetterFunctionType = bool (ParentClass::*)(const Type&, const EXP_Attribute *);
+
+template <class ParentClass>
+using CustomCheckFunctionType = bool (ParentClass::*)(const EXP_Attribute *);
+
+template <typename Type, class ParentClass, EXP_GetSetFlags Flags,
+		CustomGetterFunctionType<Type, ParentClass> CustomGetterFunction = nullptr,
+		CustomSetterFunctionType<Type, ParentClass> CustomSetterFunction = nullptr,
+		CustomCheckFunctionType<ParentClass> CustomCheckFunction = nullptr>
 class EXP_AttributeDef
 {
-public:
-	enum Type
-	{
-		TYPE_BOOL = 0,
-		TYPE_SHORT,
-		TYPE_USHORT,
-		TYPE_INT,
-		TYPE_UINT,
-		TYPE_FLOAT,
-		TYPE_STRING,
-		TYPE_VECTOR2,
-		TYPE_VECTOR3,
-		TYPE_CUSTOM
-	};
-
-	enum GetSetFlags
-	{
-		GETSET_CHECK,
-		GETSET_CLAMP,
-		GETSET_CUSTOM,
-		GETSET_READONLY
-	};
-
 private:
 	EXP_Attribute m_attribute;
 
-	template <typename Type, GetSetFlags Flags>
-	static PyObject *Getter(PyObject *self_py, const EXP_Attribute *attrdef)
+	static PyObject *Getter(PyObject *self_py, void *closure)
 	{
-		PyObjectPlus *self = BGE_PROXY_REF(self_py);
+		ParentClass *self = static_cast<ParentClass *>(BGE_PROXY_REF(self_py));
 		if (!EXP_Attribute::IsValid(self)) {
 			return nullptr;
 		}
 
-		if (Flags & GETSET_CUSTOM) {
-			Type temp = (Type)attrdef->m_customGetter(self, attrdef);
-			return EXP_ConvertToPython<Type>(&temp);
+		const EXP_Attribute *attrdef = static_cast<EXP_Attribute *>(closure);
+		if (Flags & EXP_GETSET_CUSTOM) {
+			Type temp;
+			if ((self->*CustomGetterFunction)(temp, attrdef)) {
+				return EXP_ConvertToPython<Type>(&temp);
+			}
+			return nullptr;
 		}
 		return EXP_ConvertToPython<Type>(attrdef->PtrFromOffset<Type>(self));
 	}
 
-	template <typename Type, GetSetFlags Flags>
-	static int Setter(PyObject *self_py, PyObject *value, const EXP_Attribute *attrdef)
+	static int Setter(PyObject *self_py, PyObject *value, void *closure)
 	{
-		PyObjectPlus *self = BGE_PROXY_REF(self_py);
+		ParentClass *self = static_cast<ParentClass *>(BGE_PROXY_REF(self_py));
 		if (!EXP_Attribute::IsValid(self)) {
 			return PY_SET_ATTR_FAIL;
 		}
 
+		const EXP_Attribute *attrdef = static_cast<EXP_Attribute *>(closure);
 		bool success = false;
 		Type temp;
 		if (EXP_ConvertFromPython<Type>(value, &temp)) {
-			if (Flags & GETSET_CLAMP) {
-				CLAMP(temp, attrdef->m_borders[0], attrdef->m_borders[1]);
-			}
+			/*if (Flags & EXP_GETSET_CLAMP) {
+				CLAMP(temp, attrdef->m_range[0], attrdef->m_range[1]);
+			}*/ // TODO EXP_GETSET_LIMIT
 
-			if (Flags & GETSET_CUSTOM) {
-				success = attrdef->m_customSetter(self, &temp, attrdef);
+			if (Flags & EXP_GETSET_CUSTOM) {
+				success = (self->*CustomSetterFunction)(temp, attrdef);
 			}
 			else {
 				Type *ptr = attrdef->PtrFromOffset<Type>(self);
@@ -73,10 +77,8 @@ private:
 				success = true;
 			}
 
-			if (Flags & GETSET_CHECK && success) {
-				if (attrdef->m_customCheck(self, attrdef)) {
-					success = false;
-				}
+			if (Flags & EXP_GETSET_CHECK && success) {
+				success = (self->*CustomCheckFunction)(attrdef);
 			}
 		}
 
@@ -89,46 +91,44 @@ private:
 	}
 
 public:
-	template <typename Type, GetSetFlags Flags>
-	EXP_AttributeDef(const std::string& className, const std::string& name, intptr_t offset,
-			EXP_Attribute::CustomGetterFunction customGetter, EXP_Attribute::CustomSetterFunction customSetter,
-			EXP_Attribute::EXP_Attribute::CustomCheckFunction customCheck)
-	{
-		EXP_Attribute::GetterFunction getter = Getter<Type, Flags>;
-		EXP_Attribute::SetterFunction setter = (Flags & GETSET_READONLY) ? nullptr : Setter<Type, Flags>;
-		m_attribute = EXP_Attribute(className, name, getter, setter, offset, {0.0f, 0.0f}, customGetter, customSetter, customCheck);
-	}
-
-	template <typename Type, GetSetFlags Flags>
 	EXP_AttributeDef(const std::string& className, const std::string& name, intptr_t offset)
-		:EXP_AttributeDef(className, name, offset, nullptr, nullptr, nullptr)
 	{
+		EXP_Attribute::GetterFunction getter = Getter;
+		EXP_Attribute::SetterFunction setter = (Flags & EXP_GETSET_READONLY) ? nullptr : Setter;
+		float range[2] = {0.0f, 0.0f};
+		m_attribute = EXP_Attribute(className, name, offset, range, getter, setter);
 	}
 
-	template <typename Type, GetSetFlags Flags>
-	EXP_AttributeDef(const std::string& className, const std::string& name, EXP_Attribute::CustomGetterFunction customGetter,
-			EXP_Attribute::CustomSetterFunction customSetter, EXP_Attribute::CustomCheckFunction customCheck)
-		:EXP_AttributeDef(className, name, 0, customGetter, customSetter, customCheck)
+	EXP_Attribute GetAttribute() const
 	{
+		return m_attribute;
 	}
-
-	EXP_Attribute GetAttribute() const;
 };
 
 #define EXP_ATTRIBUTE_RW(type, class, name, member) \
-	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, offsetof(class, member)).GetAttribute()
+	EXP_AttributeDef<type, class, EXP_GETSET_NONE>(#class, name, offsetof(class, member)).GetAttribute()
 
 #define EXP_ATTRIBUTE_RO(type, class, name, member) \
-	EXP_AttributeDef<type, EXP_Attribute::GETSET_READONLY>(#class, name, offsetof(class, member)).GetAttribute()
+	EXP_AttributeDef<type, class, EXP_GETSET_READONLY>(#class, name, offsetof(class, member)).GetAttribute()
+
+#define EXP_ATTRIBUTE_RW_LIMIT(type, class, name, member) \
+	EXP_AttributeDef<type, class, EXP_GETSET_LIMIT>(#class, name, offsetof(class, member)).GetAttribute()
+
+#define EXP_ATTRIBUTE_RW_CLAMP(type, class, name, member) \
+	EXP_AttributeDef<type, class, EXP_GETSET_CLAMP>(#class, name, offsetof(class, member)).GetAttribute()
+
+#define EXP_ATTRIBUTE_RW_CHECK(type, class, name, member, check) \
+	EXP_AttributeDef<type, class, EXP_GETSET_CHECK, nullptr, nullptr, &class::check>(#class, name, offsetof(class, member)).GetAttribute()
+
 
 #define EXP_ATTRIBUTE_RW_CUSTOM(type, class, name, getter, setter) \
-	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, getter, setter, nullptr).GetAttribute()
+	EXP_AttributeDef<type, class, EXP_GETSET_NONE, &class::getter, &class::setter>(#class, name, 0).GetAttribute()
 
 #define EXP_ATTRIBUTE_RO_CUSTOM(type, class, name, getter) \
-	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, getter, nullptr, nullptr).GetAttribute()
+	EXP_AttributeDef<type, class, EXP_GETSET_NONE, getter, setter>(#class, name, getter, nullptr, nullptr).GetAttribute()
 
 #define EXP_ATTRIBUTE_RW_CUSTOM_CHECK(type, class, name, getter, setter, check) \
-	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, getter, setter, check).GetAttribute()
+	EXP_AttributeDef<type, class, EXP_GETSET_NONE, getter, setter>(#class, name, getter, setter, check).GetAttribute()
 
 #define EXP_ATTRIBUTE_NULL \
 	EXP_Attribute()

@@ -99,11 +99,12 @@ PyMethodDef BL_ArmatureChannel::Methods[] = {
 
 EXP_Attribute BL_ArmatureChannel::Attributes[] = {
 	// Keep these attributes in order of BCA_ defines!!! used by py_attr_getattr and py_attr_setattr
-	KX_PYATTRIBUTE_RO_FUNCTION("bone",BL_ArmatureChannel,py_attr_getattr),
-	KX_PYATTRIBUTE_RO_FUNCTION("parent",BL_ArmatureChannel,py_attr_getattr),
+// 	KX_PYATTRIBUTE_RO_FUNCTION("bone",BL_ArmatureChannel,py_attr_getattr),
+// 	KX_PYATTRIBUTE_RO_FUNCTION("parent",BL_ArmatureChannel,py_attr_getattr),
 	EXP_ATTRIBUTE_NULL //Sentinel
 };
 
+#if 0 // TODO
 /* attributes directly taken from bPoseChannel */
 EXP_Attribute BL_ArmatureChannel::AttributesPtr[] = {
 	KX_PYATTRIBUTE_CHAR_RO("name",bPoseChannel,name),
@@ -363,6 +364,7 @@ int BL_ArmatureChannel::py_attr_set_joint_rotation(PyObjectPlus *self_v, const s
 		copy_qt_qt(pchan->quat, quat);
 	return PY_SET_ATTR_SUCCESS;
 }
+#endif
 
 // *************************
 // BL_ArmatureBone
@@ -415,6 +417,8 @@ EXP_Attribute BL_ArmatureBone::Attributes[] = {
 	EXP_ATTRIBUTE_NULL	//Sentinel
 };
 
+#if 0 // TODO
+
 // attributes that work on proxy ptr (points to a Bone structure)
 EXP_Attribute BL_ArmatureBone::AttributesPtr[] = {
 	KX_PYATTRIBUTE_CHAR_RO("name",Bone,name),
@@ -460,5 +464,5 @@ PyObject *BL_ArmatureBone::py_bone_get_children(PyObjectPlus *self, const struct
 
 	return childrenlist;
 }
-
+#endif
 #endif // WITH_PYTHON
