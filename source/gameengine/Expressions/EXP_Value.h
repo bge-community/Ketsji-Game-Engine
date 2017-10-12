@@ -69,6 +69,7 @@ enum VALUE_DATA_TYPE {
 };
 
 #include "EXP_PyObjectPlus.h"
+#include "EXP_PythonUtils.h"
 #ifdef WITH_PYTHON
 #include "object.h"
 #endif

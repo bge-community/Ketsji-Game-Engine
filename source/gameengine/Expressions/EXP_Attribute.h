@@ -3,7 +3,7 @@
 
 #include <string>
 
-class PyObjectPlus
+class PyObjectPlus;
 class EXP_AttributeDef;
 
 class EXP_Attribute

@@ -6,6 +6,7 @@
 class MT_Vector2;
 class MT_Vector3;
 
+PyObject *PyUnicode_FromStdString(const std::string& str);
 PyObject *PyUnicode_FromStdString(const std::string& str)
 {
 	return PyUnicode_FromStringAndSize(str.c_str(), str.size());
@@ -14,7 +15,7 @@ PyObject *PyUnicode_FromStdString(const std::string& str)
 template <typename Type>
 PyObject *EXP_ConvertToPython(Type *ptr)
 {
-	static_assert(false);
+	return nullptr;
 }
 
 template <>
@@ -62,18 +63,19 @@ PyObject *EXP_ConvertToPython(std::string *ptr)
 template <> // TODO
 PyObject *EXP_ConvertToPython(MT_Vector2 *ptr)
 {
-	
+	return nullptr;
 }
 
 template <> // TODO
 PyObject *EXP_ConvertToPython(MT_Vector3 *ptr)
 {
+	return nullptr;
 }
 
 template <typename ValueType, typename PtrType>
 bool EXP_ConvertFromPythonHelper(const ValueType value, PtrType *ptr)
 {
-	if (value == -1 && && PyErr_Occurred()) {
+	if (value == -1 && PyErr_Occurred()) {
 		return false;
 	}
 
@@ -85,61 +87,61 @@ bool EXP_ConvertFromPythonHelper(const ValueType value, PtrType *ptr)
 template <typename Type>
 bool EXP_ConvertFromPython(PyObject *value, Type *ptr)
 {
-	static_assert(false);
+	return false;
 }
 
 template <>
-bool EXP_ConvertFromPython(PyObject *value, bool *ptr);
+bool EXP_ConvertFromPython(PyObject *value, bool *ptr)
 {
-	return EXP_ConvertFromPythonHelper(PyObject_IsTrue(value), ptr)
+	return EXP_ConvertFromPythonHelper(PyObject_IsTrue(value), ptr);
 }
 
 template <>
-bool EXP_ConvertFromPython(PyObject *value, int *ptr);
+bool EXP_ConvertFromPython(PyObject *value, int *ptr)
 {
-	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr)
+	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr);
 }
 
 template <>
-bool EXP_ConvertFromPython(PyObject *value, unsigned int *ptr);
+bool EXP_ConvertFromPython(PyObject *value, unsigned int *ptr)
 {
-	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr)
+	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr);
 }
 
 template <>
-bool EXP_ConvertFromPython(PyObject *value, short *ptr);
+bool EXP_ConvertFromPython(PyObject *value, short *ptr)
 {
-	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr)
+	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr);
 }
 
 template <>
-bool EXP_ConvertFromPython(PyObject *value, unsigned short *ptr);
+bool EXP_ConvertFromPython(PyObject *value, unsigned short *ptr)
 {
-	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr)
+	return EXP_ConvertFromPythonHelper(PyLong_AsLong(value), ptr);
 }
 
 template <>
-bool EXP_ConvertFromPython(PyObject *value, float *ptr);
+bool EXP_ConvertFromPython(PyObject *value, float *ptr)
 {
-	return EXP_ConvertFromPythonHelper(PyFloat_AsDouble(value), ptr)
+	return EXP_ConvertFromPythonHelper(PyFloat_AsDouble(value), ptr);
 }
 
 template <> // TODO
-bool EXP_ConvertFromPython(PyObject *value, std::string *ptr);
+bool EXP_ConvertFromPython(PyObject *value, std::string *ptr)
 {
-	
+	return false;
 }
 
 template <>// TODO
-bool EXP_ConvertFromPython(PyObject *value, MT_Vector2 *ptr);
+bool EXP_ConvertFromPython(PyObject *value, MT_Vector2 *ptr)
 {
-	
+	return false;
 }
 
 template <>// TODO
-bool EXP_ConvertFromPython(PyObject *value, MT_Vector3 *ptr);
+bool EXP_ConvertFromPython(PyObject *value, MT_Vector3 *ptr)
 {
-	
+	return false;
 }
 
 
