@@ -6,6 +6,7 @@
 #include "MT_Vector3.h"
 
 class PyObjectPlus;
+class PyObject;
 
 class EXP_Attribute
 {
