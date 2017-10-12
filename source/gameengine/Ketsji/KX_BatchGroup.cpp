@@ -178,7 +178,7 @@ PyAttributeDef KX_BatchGroup::Attributes[] = {
 	KX_PYATTRIBUTE_NULL // Sentinel
 };
 
-PyObject *KX_BatchGroup::pyattr_get_objects(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BatchGroup::pyattr_get_objects(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BatchGroup *self = static_cast<KX_BatchGroup *>(self_v);
 	return self->GetObjects()->GetProxy();

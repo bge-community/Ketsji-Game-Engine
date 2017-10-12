@@ -126,7 +126,7 @@ public:
 #ifdef WITH_PYTHON
 	// python methods
 	
-	static PyObject*	pyattr_get_owner(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject*	pyattr_get_owner(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 
 	// check that attribute is a property
 	static int CheckProperty(PyObjectPlus *self, const PyAttributeDef *attrdef);

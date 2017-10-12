@@ -141,7 +141,7 @@ PyAttributeDef BL_ArmatureChannel::AttributesPtr[] = {
 	KX_PYATTRIBUTE_NULL //Sentinel
 };
 
-PyObject *BL_ArmatureChannel::py_attr_getattr(PyObjectPlus *self_v, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ArmatureChannel::py_attr_getattr(PyObjectPlus *self_v, const struct EXP_Attribute *attrdef)
 {
 	BL_ArmatureChannel* self = static_cast<BL_ArmatureChannel*>(self_v);
 	bPoseChannel* channel = self->m_posechannel;
@@ -169,7 +169,7 @@ PyObject *BL_ArmatureChannel::py_attr_getattr(PyObjectPlus *self_v, const struct
 	return nullptr;
 }
 
-int BL_ArmatureChannel::py_attr_setattr(PyObjectPlus *self_v, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_ArmatureChannel::py_attr_setattr(PyObjectPlus *self_v, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_ArmatureChannel* self = static_cast<BL_ArmatureChannel*>(self_v);
 	bPoseChannel* channel = self->m_posechannel;
@@ -194,7 +194,7 @@ int BL_ArmatureChannel::py_attr_setattr(PyObjectPlus *self_v, const struct KX_PY
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *BL_ArmatureChannel::py_attr_get_joint_rotation(PyObjectPlus *self_v, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ArmatureChannel::py_attr_get_joint_rotation(PyObjectPlus *self_v, const struct EXP_Attribute *attrdef)
 {
 	BL_ArmatureChannel* self = static_cast<BL_ArmatureChannel*>(self_v);
 	bPoseChannel* pchan = self->m_posechannel;
@@ -293,7 +293,7 @@ PyObject *BL_ArmatureChannel::py_attr_get_joint_rotation(PyObjectPlus *self_v, c
 	return Vector_CreatePyObject(joints, 3, nullptr);
 }
 
-int BL_ArmatureChannel::py_attr_set_joint_rotation(PyObjectPlus *self_v, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_ArmatureChannel::py_attr_set_joint_rotation(PyObjectPlus *self_v, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_ArmatureChannel* self = static_cast<BL_ArmatureChannel*>(self_v);
 	bPoseChannel* pchan = self->m_posechannel;
@@ -435,7 +435,7 @@ PyAttributeDef BL_ArmatureBone::AttributesPtr[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
-PyObject *BL_ArmatureBone::py_bone_get_parent(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ArmatureBone::py_bone_get_parent(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	Bone* bone = reinterpret_cast<Bone*>(self);
 	if (bone->parent) {
@@ -445,7 +445,7 @@ PyObject *BL_ArmatureBone::py_bone_get_parent(PyObjectPlus *self, const struct K
 	Py_RETURN_NONE;
 }
 
-PyObject *BL_ArmatureBone::py_bone_get_children(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ArmatureBone::py_bone_get_children(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	Bone* bone = reinterpret_cast<Bone*>(self);
 	Bone* child;

@@ -354,7 +354,7 @@ PyAttributeDef CValue::Attributes[] = {
 	KX_PYATTRIBUTE_NULL // Sentinel
 };
 
-PyObject *CValue::pyattr_get_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *CValue::pyattr_get_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	CValue *self = static_cast<CValue *> (self_v);
 	return PyUnicode_FromStdString(self->GetName());

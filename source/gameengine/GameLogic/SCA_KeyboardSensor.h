@@ -104,8 +104,8 @@ public:
 	// KeyStatus: 
 	KX_PYMETHOD_DOC_O(SCA_KeyboardSensor,getKeyStatus);
 	
-	static PyObject*	pyattr_get_events(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_inputs(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject*	pyattr_get_events(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_inputs(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 #endif
 };
 

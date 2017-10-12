@@ -127,8 +127,8 @@ public:
 #ifdef WITH_PYTHON
 
 	// PYTHON
-	static PyObject *pyattr_get_constraints(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_channels(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject *pyattr_get_constraints(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_channels(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 	KX_PYMETHOD_DOC_NOARGS(BL_ArmatureObject, update);
 	KX_PYMETHOD_DOC_NOARGS(BL_ArmatureObject, draw);
 

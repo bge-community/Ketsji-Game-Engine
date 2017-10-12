@@ -57,17 +57,17 @@ public:
 	const RAS_MeshObject::PolygonInfo& GetPolygon() const;
 
 	// stuff for python integration
-	static PyObject *pyattr_get_material_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_texture_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_material(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_material_id(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_v1(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_v2(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_v3(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_v4(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_visible(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_collide(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_vertices(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject *pyattr_get_material_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_texture_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_material(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_material_id(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_v1(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_v2(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_v3(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_v4(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_visible(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_collide(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_vertices(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 
 	KX_PYMETHOD_DOC_NOARGS(KX_PolyProxy, getMaterialIndex)
 	KX_PYMETHOD_DOC_NOARGS(KX_PolyProxy, getNumVertex)

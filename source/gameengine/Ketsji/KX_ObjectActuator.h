@@ -164,20 +164,20 @@ public:
 	/* --------------------------------------------------------------------- */
 
 	/* Attributes */
-	static PyObject*	pyattr_get_forceLimitX(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_forceLimitX(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_forceLimitY(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_forceLimitY(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_forceLimitZ(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_forceLimitZ(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_reference(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_reference(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_forceLimitX(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_forceLimitX(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_forceLimitY(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_forceLimitY(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_forceLimitZ(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_forceLimitZ(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_reference(PyObjectPlus *self, const struct EXP_Attribute *attrdef);
+	static int			pyattr_set_reference(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value);
 
 #ifdef USE_MATHUTILS
-	static PyObject*	pyattr_get_linV(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_linV(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_angV(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_angV(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_linV(PyObjectPlus *self, const struct EXP_Attribute *attrdef);
+	static int			pyattr_set_linV(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_angV(PyObjectPlus *self, const struct EXP_Attribute *attrdef);
+	static int			pyattr_set_angV(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value);
 #endif
 
 	// This lets the attribute macros use UpdateFuzzyFlags()

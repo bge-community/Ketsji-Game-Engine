@@ -592,7 +592,7 @@ PyTypeObject KX_BlenderMaterial::Type = {
 	py_base_new
 };
 
-PyObject *KX_BlenderMaterial::pyattr_get_shader(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_shader(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return self->PygetShader(nullptr, nullptr);
@@ -623,7 +623,7 @@ static const std::string kx_blender_material_get_textures_item_name_cb(void *sel
 	return (tex ? tex->GetName() : "");
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_textures(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_textures(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 							 ((KX_BlenderMaterial *)self_v)->GetProxy(),
@@ -634,20 +634,20 @@ PyObject *KX_BlenderMaterial::pyattr_get_textures(PyObjectPlus *self_v, const KX
 							 nullptr))->NewProxy(true);
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_blending(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_blending(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	unsigned int *bfunc = self->GetBlendFunc();
 	return Py_BuildValue("(ll)", (long int)bfunc[0], (long int)bfunc[1]);
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_alpha(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_alpha(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return PyFloat_FromDouble(self->GetBlenderMaterial()->alpha);
 }
 
-int KX_BlenderMaterial::pyattr_set_alpha(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_alpha(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -663,13 +663,13 @@ int KX_BlenderMaterial::pyattr_set_alpha(PyObjectPlus *self_v, const KX_PYATTRIB
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_specular_alpha(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_specular_alpha(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return PyFloat_FromDouble(self->GetBlenderMaterial()->spectra);
 }
 
-int KX_BlenderMaterial::pyattr_set_specular_alpha(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_specular_alpha(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -685,13 +685,13 @@ int KX_BlenderMaterial::pyattr_set_specular_alpha(PyObjectPlus *self_v, const KX
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_hardness(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_hardness(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return PyLong_FromLong(self->GetBlenderMaterial()->har);
 }
 
-int KX_BlenderMaterial::pyattr_set_hardness(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_hardness(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	int val = PyLong_AsLong(value);
@@ -707,13 +707,13 @@ int KX_BlenderMaterial::pyattr_set_hardness(PyObjectPlus *self_v, const KX_PYATT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_specular_intensity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_specular_intensity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return PyFloat_FromDouble(self->GetBlenderMaterial()->spec);
 }
 
-int KX_BlenderMaterial::pyattr_set_specular_intensity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_specular_intensity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -729,7 +729,7 @@ int KX_BlenderMaterial::pyattr_set_specular_intensity(PyObjectPlus *self_v, cons
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_specular_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_specular_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Color_CreatePyObject_cb(BGE_PROXY_FROM_REF(self_v), mathutils_kxblendermaterial_color_cb_index, MATHUTILS_COL_CB_MATERIAL_SPECULAR_COLOR);
@@ -740,7 +740,7 @@ PyObject *KX_BlenderMaterial::pyattr_get_specular_color(PyObjectPlus *self_v, co
 #endif
 }
 
-int KX_BlenderMaterial::pyattr_set_specular_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_specular_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	MT_Vector3 color;
@@ -754,13 +754,13 @@ int KX_BlenderMaterial::pyattr_set_specular_color(PyObjectPlus *self_v, const KX
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_diffuse_intensity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_diffuse_intensity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return PyFloat_FromDouble(self->GetBlenderMaterial()->ref);
 }
 
-int KX_BlenderMaterial::pyattr_set_diffuse_intensity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_diffuse_intensity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -776,7 +776,7 @@ int KX_BlenderMaterial::pyattr_set_diffuse_intensity(PyObjectPlus *self_v, const
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_diffuse_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_diffuse_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Color_CreatePyObject_cb(BGE_PROXY_FROM_REF(self_v), mathutils_kxblendermaterial_color_cb_index, MATHUTILS_COL_CB_MATERIAL_DIFFUSE_COLOR);
@@ -787,7 +787,7 @@ PyObject *KX_BlenderMaterial::pyattr_get_diffuse_color(PyObjectPlus *self_v, con
 #endif
 }
 
-int KX_BlenderMaterial::pyattr_set_diffuse_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_diffuse_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	MT_Vector3 color;
@@ -801,13 +801,13 @@ int KX_BlenderMaterial::pyattr_set_diffuse_color(PyObjectPlus *self_v, const KX_
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_emit(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_emit(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return PyFloat_FromDouble(self->GetBlenderMaterial()->emit);
 }
 
-int KX_BlenderMaterial::pyattr_set_emit(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_emit(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -823,13 +823,13 @@ int KX_BlenderMaterial::pyattr_set_emit(PyObjectPlus *self_v, const KX_PYATTRIBU
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_BlenderMaterial::pyattr_get_ambient(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_BlenderMaterial::pyattr_get_ambient(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	return PyFloat_FromDouble(self->GetBlenderMaterial()->amb);
 }
 
-int KX_BlenderMaterial::pyattr_set_ambient(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_ambient(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -845,7 +845,7 @@ int KX_BlenderMaterial::pyattr_set_ambient(PyObjectPlus *self_v, const KX_PYATTR
 	return PY_SET_ATTR_SUCCESS;
 }
 
-int KX_BlenderMaterial::pyattr_set_blending(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_BlenderMaterial::pyattr_set_blending(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_BlenderMaterial *self = static_cast<KX_BlenderMaterial *>(self_v);
 	PyObject *obj = self->PysetBlending(value, nullptr);

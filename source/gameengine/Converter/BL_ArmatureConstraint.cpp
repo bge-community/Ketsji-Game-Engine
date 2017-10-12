@@ -315,7 +315,7 @@ PyAttributeDef BL_ArmatureConstraint::Attributes[] = {
 };
 
 
-PyObject *BL_ArmatureConstraint::py_attr_getattr(PyObjectPlus *self_v, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ArmatureConstraint::py_attr_getattr(PyObjectPlus *self_v, const struct EXP_Attribute *attrdef)
 {
 	BL_ArmatureConstraint* self = static_cast<BL_ArmatureConstraint*>(self_v);
 	bConstraint* constraint = self->m_constraint;
@@ -380,7 +380,7 @@ PyObject *BL_ArmatureConstraint::py_attr_getattr(PyObjectPlus *self_v, const str
 	return nullptr;
 }
 
-int BL_ArmatureConstraint::py_attr_setattr(PyObjectPlus *self_v, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_ArmatureConstraint::py_attr_setattr(PyObjectPlus *self_v, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_ArmatureConstraint* self = static_cast<BL_ArmatureConstraint*>(self_v);
 	bConstraint* constraint = self->m_constraint;

@@ -63,10 +63,10 @@ public:
 
 #ifdef WITH_PYTHON
 
-	static PyObject *pyattr_get_mesh(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_use_hysteresis(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_use_mesh(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_use_material(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject *pyattr_get_mesh(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_use_hysteresis(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_use_mesh(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_use_material(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 
 #endif // WITH_PYTHON
 

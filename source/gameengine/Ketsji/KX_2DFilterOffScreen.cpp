@@ -79,13 +79,13 @@ PyAttributeDef KX_2DFilterOffScreen::Attributes[] = {
 	KX_PYATTRIBUTE_NULL // Sentinel
 };
 
-PyObject *KX_2DFilterOffScreen::pyattr_get_width(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_2DFilterOffScreen::pyattr_get_width(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_2DFilterOffScreen *self = static_cast<KX_2DFilterOffScreen *>(self_v);
 	return PyLong_FromLong(self->GetWidth());
 }
 
-PyObject *KX_2DFilterOffScreen::pyattr_get_height(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_2DFilterOffScreen::pyattr_get_height(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_2DFilterOffScreen *self = static_cast<KX_2DFilterOffScreen *>(self_v);
 	return PyLong_FromLong(self->GetHeight());
@@ -102,7 +102,7 @@ static PyObject *kx_2dfilter_offscreen_get_textures_item_cb(void *self_v, int in
 	return PyLong_FromLong(bindCode);
 }
 
-PyObject *KX_2DFilterOffScreen::pyattr_get_colorBindCodes(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_2DFilterOffScreen::pyattr_get_colorBindCodes(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_2DFilterOffScreen *self = static_cast<KX_2DFilterOffScreen *>(self_v);
 
@@ -115,7 +115,7 @@ PyObject *KX_2DFilterOffScreen::pyattr_get_colorBindCodes(PyObjectPlus *self_v, 
 							 nullptr))->NewProxy(true);
 }
 
-PyObject *KX_2DFilterOffScreen::pyattr_get_depthBindCode(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_2DFilterOffScreen::pyattr_get_depthBindCode(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_2DFilterOffScreen *self = static_cast<KX_2DFilterOffScreen *>(self_v);
 	return PyLong_FromLong(self->GetDepthBindCode());

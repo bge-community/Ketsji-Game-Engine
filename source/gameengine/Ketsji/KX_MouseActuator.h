@@ -116,14 +116,14 @@ public:
 
 	/* Attributes */
 
-	static PyObject*	pyattr_get_limit_x(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_limit_x(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_limit_x(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_limit_x(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 
-	static PyObject*	pyattr_get_limit_y(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_limit_y(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_limit_y(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_limit_y(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 
-	static PyObject*	pyattr_get_angle(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_angle(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_angle(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_angle(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 #endif  /* WITH_PYTHON */
 
 };

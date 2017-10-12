@@ -322,7 +322,7 @@ PyAttributeDef KX_CollisionSensor::Attributes[] = {
 
 /* Python API */
 
-PyObject *KX_CollisionSensor::pyattr_get_object_hit(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionSensor::pyattr_get_object_hit(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionSensor *self = static_cast<KX_CollisionSensor *>(self_v);
 
@@ -334,7 +334,7 @@ PyObject *KX_CollisionSensor::pyattr_get_object_hit(PyObjectPlus *self_v, const 
 	}
 }
 
-PyObject *KX_CollisionSensor::pyattr_get_object_hit_list(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionSensor::pyattr_get_object_hit_list(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionSensor *self = static_cast<KX_CollisionSensor *>(self_v);
 	return self->m_colliders->GetProxy();

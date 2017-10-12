@@ -2056,31 +2056,31 @@ PySequenceMethods KX_Scene::Sequence = {
 	(ssizeargfunc) nullptr,        /* sq_inplace_repeat */
 };
 
-PyObject *KX_Scene::pyattr_get_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 	return PyUnicode_FromStdString(self->GetName());
 }
 
-PyObject *KX_Scene::pyattr_get_objects(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_objects(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 	return self->GetObjectList()->GetProxy();
 }
 
-PyObject *KX_Scene::pyattr_get_objects_inactive(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_objects_inactive(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 	return self->GetInactiveList()->GetProxy();
 }
 
-PyObject *KX_Scene::pyattr_get_lights(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_lights(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 	return self->GetLightList()->GetProxy();
 }
 
-PyObject *KX_Scene::pyattr_get_filter_manager(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_filter_manager(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene *self = static_cast<KX_Scene*>(self_v);
 	KX_2DFilterManager *filterManager = (KX_2DFilterManager *)self->Get2DFilterManager();
@@ -2088,7 +2088,7 @@ PyObject *KX_Scene::pyattr_get_filter_manager(PyObjectPlus *self_v, const KX_PYA
 	return filterManager->GetProxy();
 }
 
-PyObject *KX_Scene::pyattr_get_world(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_world(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 	KX_WorldInfo *world = self->GetWorldInfo();
@@ -2101,19 +2101,19 @@ PyObject *KX_Scene::pyattr_get_world(PyObjectPlus *self_v, const KX_PYATTRIBUTE_
 	}
 }
 
-PyObject *KX_Scene::pyattr_get_texts(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_texts(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene *self = static_cast<KX_Scene *>(self_v);
 	return self->GetFontList()->GetProxy();
 }
 
-PyObject *KX_Scene::pyattr_get_cameras(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_cameras(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene *self = static_cast<KX_Scene *>(self_v);
 	return self->GetCameraList()->GetProxy();
 }
 
-PyObject *KX_Scene::pyattr_get_active_camera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_active_camera(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 	KX_Camera* cam= self->GetActiveCamera();
@@ -2123,7 +2123,7 @@ PyObject *KX_Scene::pyattr_get_active_camera(PyObjectPlus *self_v, const KX_PYAT
 		Py_RETURN_NONE;
 }
 
-int KX_Scene::pyattr_set_active_camera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_Scene::pyattr_set_active_camera(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 	KX_Camera *camOb;
@@ -2135,14 +2135,14 @@ int KX_Scene::pyattr_set_active_camera(PyObjectPlus *self_v, const KX_PYATTRIBUT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_Scene::pyattr_get_overrideCullingCamera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_overrideCullingCamera(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene *self = static_cast<KX_Scene*>(self_v);
 	KX_Camera *cam = self->GetOverrideCullingCamera();
 	return (cam) ? cam->GetProxy() : Py_None;
 }
 
-int KX_Scene::pyattr_set_overrideCullingCamera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_Scene::pyattr_set_overrideCullingCamera(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_Scene *self = static_cast<KX_Scene*>(self_v);
 	KX_Camera *cam;
@@ -2161,7 +2161,7 @@ static std::map<const std::string, KX_Scene::DrawingCallbackType> callbacksTable
 	{"post_draw", KX_Scene::POST_DRAW}
 };
 
-PyObject *KX_Scene::pyattr_get_drawing_callback(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_drawing_callback(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene *self = static_cast<KX_Scene *>(self_v);
 
@@ -2175,7 +2175,7 @@ PyObject *KX_Scene::pyattr_get_drawing_callback(PyObjectPlus *self_v, const KX_P
 	return self->m_drawCallbacks[type];
 }
 
-int KX_Scene::pyattr_set_drawing_callback(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_Scene::pyattr_set_drawing_callback(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_Scene *self = static_cast<KX_Scene *>(self_v);
 
@@ -2194,14 +2194,14 @@ int KX_Scene::pyattr_set_drawing_callback(PyObjectPlus *self_v, const KX_PYATTRI
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_Scene::pyattr_get_gravity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_Scene::pyattr_get_gravity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 
 	return PyObjectFrom(self->GetGravity());
 }
 
-int KX_Scene::pyattr_set_gravity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_Scene::pyattr_set_gravity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_Scene* self = static_cast<KX_Scene*>(self_v);
 

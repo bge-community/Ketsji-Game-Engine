@@ -164,7 +164,7 @@ int SCA_ILogicBrick::CheckProperty(PyObjectPlus *self, const PyAttributeDef *att
 }
 
 /*Attribute functions */
-PyObject *SCA_ILogicBrick::pyattr_get_owner(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_ILogicBrick::pyattr_get_owner(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_ILogicBrick* self = static_cast<SCA_ILogicBrick*>(self_v);
 	CValue* parent = self->GetParent();

@@ -94,8 +94,8 @@ class KX_SceneActuator : public SCA_IActuator
 	/* Python interface ---------------------------------------------------- */
 	/* --------------------------------------------------------------------- */
 	
-	static PyObject *pyattr_get_camera(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_camera(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject *pyattr_get_camera(PyObjectPlus *self, const struct EXP_Attribute *attrdef);
+	static int pyattr_set_camera(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value);
 
 #endif  /* WITH_PYTHON */
 

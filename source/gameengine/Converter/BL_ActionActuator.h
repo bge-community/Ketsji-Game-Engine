@@ -74,12 +74,12 @@ public:
 
 #ifdef WITH_PYTHON
 
-	static PyObject*	pyattr_get_action(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_action(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_use_continue(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_use_continue(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_frame(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_frame(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 
 	static int CheckBlendTime(PyObjectPlus *self, const PyAttributeDef*)
 	{

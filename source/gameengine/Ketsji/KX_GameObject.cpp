@@ -2188,13 +2188,13 @@ PyTypeObject KX_GameObject::Type = {
 	py_base_new
 };
 
-PyObject *KX_GameObject::pyattr_get_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return PyUnicode_FromStdString(self->GetName());
 }
 
-int KX_GameObject::pyattr_set_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 
@@ -2228,7 +2228,7 @@ int KX_GameObject::pyattr_set_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DE
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_parent(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_parent(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	KX_GameObject* parent = self->GetParent();
@@ -2238,7 +2238,7 @@ PyObject *KX_GameObject::pyattr_get_parent(PyObjectPlus *self_v, const KX_PYATTR
 	Py_RETURN_NONE;
 }
 
-PyObject *KX_GameObject::pyattr_get_group_members(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_group_members(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	CListValue<KX_GameObject> *instances = self->GetInstanceObjects();
@@ -2248,7 +2248,7 @@ PyObject *KX_GameObject::pyattr_get_group_members(PyObjectPlus *self_v, const KX
 	Py_RETURN_NONE;
 }
 
-PyObject* KX_GameObject::pyattr_get_collisionCallbacks(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject* KX_GameObject::pyattr_get_collisionCallbacks(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 
@@ -2266,7 +2266,7 @@ PyObject* KX_GameObject::pyattr_get_collisionCallbacks(PyObjectPlus *self_v, con
 	return self->m_collisionCallbacks;
 }
 
-int KX_GameObject::pyattr_set_collisionCallbacks(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_collisionCallbacks(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 
@@ -2293,13 +2293,13 @@ int KX_GameObject::pyattr_set_collisionCallbacks(PyObjectPlus *self_v, const KX_
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_collisionGroup(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_collisionGroup(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return PyLong_FromLong(self->GetUserCollisionGroup());
 }
 
-int KX_GameObject::pyattr_set_collisionGroup(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_collisionGroup(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	int val = PyLong_AsLong(value);
@@ -2318,13 +2318,13 @@ int KX_GameObject::pyattr_set_collisionGroup(PyObjectPlus *self_v, const KX_PYAT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_collisionMask(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_collisionMask(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return PyLong_FromLong(self->GetUserCollisionMask());
 }
 
-int KX_GameObject::pyattr_set_collisionMask(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_collisionMask(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	int val = PyLong_AsLong(value);
@@ -2343,7 +2343,7 @@ int KX_GameObject::pyattr_set_collisionMask(PyObjectPlus *self_v, const KX_PYATT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject* KX_GameObject::pyattr_get_scene(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject* KX_GameObject::pyattr_get_scene(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 	KX_Scene *scene = self->GetScene();
@@ -2353,7 +2353,7 @@ PyObject* KX_GameObject::pyattr_get_scene(PyObjectPlus *self_v, const KX_PYATTRI
 	Py_RETURN_NONE;
 }
 
-PyObject *KX_GameObject::pyattr_get_group_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_group_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	KX_GameObject* pivot = self->GetDupliGroupObject();
@@ -2363,7 +2363,7 @@ PyObject *KX_GameObject::pyattr_get_group_object(PyObjectPlus *self_v, const KX_
 	Py_RETURN_NONE;
 }
 
-PyObject *KX_GameObject::pyattr_get_life(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_life(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 
@@ -2376,14 +2376,14 @@ PyObject *KX_GameObject::pyattr_get_life(PyObjectPlus *self_v, const KX_PYATTRIB
 		Py_RETURN_NONE;
 }
 
-PyObject *KX_GameObject::pyattr_get_mass(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_mass(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
 	return PyFloat_FromDouble(spc ? spc->GetMass() : 0.0f);
 }
 
-int KX_GameObject::pyattr_set_mass(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_mass(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
@@ -2399,7 +2399,7 @@ int KX_GameObject::pyattr_set_mass(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DE
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_is_suspend_dynamics(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_is_suspend_dynamics(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 
@@ -2409,14 +2409,14 @@ PyObject *KX_GameObject::pyattr_get_is_suspend_dynamics(PyObjectPlus *self_v, co
 	return PyBool_FromLong(self->IsDynamicsSuspended());
 }
 
-PyObject *KX_GameObject::pyattr_get_lin_vel_min(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_lin_vel_min(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
 	return PyFloat_FromDouble(spc ? spc->GetLinVelocityMin() : 0.0f);
 }
 
-int KX_GameObject::pyattr_set_lin_vel_min(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_lin_vel_min(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
@@ -2432,14 +2432,14 @@ int KX_GameObject::pyattr_set_lin_vel_min(PyObjectPlus *self_v, const KX_PYATTRI
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_lin_vel_max(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_lin_vel_max(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
 	return PyFloat_FromDouble(spc ? spc->GetLinVelocityMax() : 0.0f);
 }
 
-int KX_GameObject::pyattr_set_lin_vel_max(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_lin_vel_max(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
@@ -2455,14 +2455,14 @@ int KX_GameObject::pyattr_set_lin_vel_max(PyObjectPlus *self_v, const KX_PYATTRI
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_ang_vel_min(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_ang_vel_min(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
 	return PyFloat_FromDouble(spc ? spc->GetAngularVelocityMin() : 0.0f);
 }
 
-int KX_GameObject::pyattr_set_ang_vel_min(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_ang_vel_min(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
@@ -2479,14 +2479,14 @@ int KX_GameObject::pyattr_set_ang_vel_min(PyObjectPlus *self_v, const KX_PYATTRI
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_ang_vel_max(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_ang_vel_max(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
 	return PyFloat_FromDouble(spc ? spc->GetAngularVelocityMax() : 0.0f);
 }
 
-int KX_GameObject::pyattr_set_ang_vel_max(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_ang_vel_max(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 	PHY_IPhysicsController *spc = self->GetPhysicsController();
@@ -2504,14 +2504,14 @@ int KX_GameObject::pyattr_set_ang_vel_max(PyObjectPlus *self_v, const KX_PYATTRI
 }
 
 
-PyObject *KX_GameObject::pyattr_get_layer(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_layer(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 	return PyLong_FromLong(self->GetLayer());
 }
 
 #define MAX_LAYERS ((1 << 20) - 1)
-int KX_GameObject::pyattr_set_layer(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_layer(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 	int layer = PyLong_AsLong(value);
@@ -2535,13 +2535,13 @@ int KX_GameObject::pyattr_set_layer(PyObjectPlus *self_v, const KX_PYATTRIBUTE_D
 }
 #undef MAX_LAYERS
 
-PyObject *KX_GameObject::pyattr_get_visible(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_visible(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return PyBool_FromLong(self->GetVisible());
 }
 
-int KX_GameObject::pyattr_set_visible(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_visible(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	int param = PyObject_IsTrue( value );
@@ -2554,19 +2554,19 @@ int KX_GameObject::pyattr_set_visible(PyObjectPlus *self_v, const KX_PYATTRIBUTE
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_culled(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_culled(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 	return PyBool_FromLong(self->GetCulled());
 }
 
-PyObject *KX_GameObject::pyattr_get_cullingBox(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_cullingBox(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 	return (new KX_BoundingBox(self))->NewProxy(true);
 }
 
-PyObject *KX_GameObject::pyattr_get_worldPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_worldPosition(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2578,7 +2578,7 @@ PyObject *KX_GameObject::pyattr_get_worldPosition(PyObjectPlus *self_v, const KX
 #endif
 }
 
-int KX_GameObject::pyattr_set_worldPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_worldPosition(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 pos;
@@ -2590,7 +2590,7 @@ int KX_GameObject::pyattr_set_worldPosition(PyObjectPlus *self_v, const KX_PYATT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_localPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_localPosition(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2602,7 +2602,7 @@ PyObject *KX_GameObject::pyattr_get_localPosition(PyObjectPlus *self_v, const KX
 #endif
 }
 
-int KX_GameObject::pyattr_set_localPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_localPosition(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 pos;
@@ -2614,7 +2614,7 @@ int KX_GameObject::pyattr_set_localPosition(PyObjectPlus *self_v, const KX_PYATT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_localInertia(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_localInertia(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2628,7 +2628,7 @@ PyObject *KX_GameObject::pyattr_get_localInertia(PyObjectPlus *self_v, const KX_
 #endif
 }
 
-PyObject *KX_GameObject::pyattr_get_worldOrientation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_worldOrientation(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Matrix_CreatePyObject_cb(
@@ -2640,7 +2640,7 @@ PyObject *KX_GameObject::pyattr_get_worldOrientation(PyObjectPlus *self_v, const
 #endif
 }
 
-int KX_GameObject::pyattr_set_worldOrientation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_worldOrientation(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	
@@ -2655,7 +2655,7 @@ int KX_GameObject::pyattr_set_worldOrientation(PyObjectPlus *self_v, const KX_PY
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_localOrientation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_localOrientation(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Matrix_CreatePyObject_cb(
@@ -2667,7 +2667,7 @@ PyObject *KX_GameObject::pyattr_get_localOrientation(PyObjectPlus *self_v, const
 #endif
 }
 
-int KX_GameObject::pyattr_set_localOrientation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_localOrientation(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	
@@ -2681,7 +2681,7 @@ int KX_GameObject::pyattr_set_localOrientation(PyObjectPlus *self_v, const KX_PY
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_worldScaling(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_worldScaling(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2693,7 +2693,7 @@ PyObject *KX_GameObject::pyattr_get_worldScaling(PyObjectPlus *self_v, const KX_
 #endif
 }
 
-int KX_GameObject::pyattr_set_worldScaling(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_worldScaling(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 scale;
@@ -2705,7 +2705,7 @@ int KX_GameObject::pyattr_set_worldScaling(PyObjectPlus *self_v, const KX_PYATTR
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_localScaling(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_localScaling(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2717,7 +2717,7 @@ PyObject *KX_GameObject::pyattr_get_localScaling(PyObjectPlus *self_v, const KX_
 #endif
 }
 
-int KX_GameObject::pyattr_set_localScaling(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_localScaling(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 scale;
@@ -2729,14 +2729,14 @@ int KX_GameObject::pyattr_set_localScaling(PyObjectPlus *self_v, const KX_PYATTR
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_localTransform(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_localTransform(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 
 	return PyObjectFrom(self->NodeGetLocalTransform().toMatrix());
 }
 
-int KX_GameObject::pyattr_set_localTransform(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_localTransform(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Matrix4x4 temp;
@@ -2763,14 +2763,14 @@ int KX_GameObject::pyattr_set_localTransform(PyObjectPlus *self_v, const KX_PYAT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_worldTransform(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_worldTransform(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 
 	return PyObjectFrom(MT_Matrix4x4(self->NodeGetWorldTransform()));
 }
 
-int KX_GameObject::pyattr_set_worldTransform(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_worldTransform(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Matrix4x4 temp;
@@ -2797,7 +2797,7 @@ int KX_GameObject::pyattr_set_worldTransform(PyObjectPlus *self_v, const KX_PYAT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_worldLinearVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_worldLinearVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2809,7 +2809,7 @@ PyObject *KX_GameObject::pyattr_get_worldLinearVelocity(PyObjectPlus *self_v, co
 #endif
 }
 
-int KX_GameObject::pyattr_set_worldLinearVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_worldLinearVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 velocity;
@@ -2821,7 +2821,7 @@ int KX_GameObject::pyattr_set_worldLinearVelocity(PyObjectPlus *self_v, const KX
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_localLinearVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_localLinearVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2833,7 +2833,7 @@ PyObject *KX_GameObject::pyattr_get_localLinearVelocity(PyObjectPlus *self_v, co
 #endif
 }
 
-int KX_GameObject::pyattr_set_localLinearVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_localLinearVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 velocity;
@@ -2845,7 +2845,7 @@ int KX_GameObject::pyattr_set_localLinearVelocity(PyObjectPlus *self_v, const KX
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_worldAngularVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_worldAngularVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2857,7 +2857,7 @@ PyObject *KX_GameObject::pyattr_get_worldAngularVelocity(PyObjectPlus *self_v, c
 #endif
 }
 
-int KX_GameObject::pyattr_set_worldAngularVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_worldAngularVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 velocity;
@@ -2869,7 +2869,7 @@ int KX_GameObject::pyattr_set_worldAngularVelocity(PyObjectPlus *self_v, const K
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_localAngularVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_localAngularVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2881,7 +2881,7 @@ PyObject *KX_GameObject::pyattr_get_localAngularVelocity(PyObjectPlus *self_v, c
 #endif
 }
 
-int KX_GameObject::pyattr_set_localAngularVelocity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_localAngularVelocity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 velocity;
@@ -2893,7 +2893,7 @@ int KX_GameObject::pyattr_set_localAngularVelocity(PyObjectPlus *self_v, const K
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_gravity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_gravity(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -2905,7 +2905,7 @@ PyObject *KX_GameObject::pyattr_get_gravity(PyObjectPlus *self_v, const KX_PYATT
 #endif
 }
 
-int KX_GameObject::pyattr_set_gravity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_gravity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector3 gravity;
@@ -2917,13 +2917,13 @@ int KX_GameObject::pyattr_set_gravity(PyObjectPlus *self_v, const KX_PYATTRIBUTE
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_linearDamping(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_linearDamping(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return PyFloat_FromDouble(self->getLinearDamping());
 }
 
-int KX_GameObject::pyattr_set_linearDamping(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_linearDamping(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -2931,13 +2931,13 @@ int KX_GameObject::pyattr_set_linearDamping(PyObjectPlus *self_v, const KX_PYATT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_angularDamping(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_angularDamping(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return PyFloat_FromDouble(self->getAngularDamping());
 }
 
-int KX_GameObject::pyattr_set_angularDamping(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_angularDamping(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	float val = PyFloat_AsDouble(value);
@@ -2946,7 +2946,7 @@ int KX_GameObject::pyattr_set_angularDamping(PyObjectPlus *self_v, const KX_PYAT
 }
 
 
-PyObject *KX_GameObject::pyattr_get_timeOffset(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_timeOffset(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	SG_Node* sg_parent;
@@ -2957,7 +2957,7 @@ PyObject *KX_GameObject::pyattr_get_timeOffset(PyObjectPlus *self_v, const KX_PY
 	}
 }
 
-int KX_GameObject::pyattr_set_timeOffset(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_timeOffset(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Scalar val = PyFloat_AsDouble(value);
@@ -2971,7 +2971,7 @@ int KX_GameObject::pyattr_set_timeOffset(PyObjectPlus *self_v, const KX_PYATTRIB
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_state(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_state(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	int state = 0;
@@ -2979,7 +2979,7 @@ PyObject *KX_GameObject::pyattr_get_state(PyObjectPlus *self_v, const KX_PYATTRI
 	return PyLong_FromLong(state);
 }
 
-int KX_GameObject::pyattr_set_state(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_state(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	int state_i = PyLong_AsLong(value);
@@ -2999,7 +2999,7 @@ int KX_GameObject::pyattr_set_state(PyObjectPlus *self_v, const KX_PYATTRIBUTE_D
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_meshes(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_meshes(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	PyObject *meshes= PyList_New(self->m_meshes.size());
@@ -3014,7 +3014,7 @@ PyObject *KX_GameObject::pyattr_get_meshes(PyObjectPlus *self_v, const KX_PYATTR
 	return meshes;
 }
 
-PyObject *KX_GameObject::pyattr_get_batchGroup(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_batchGroup(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 	RAS_MeshUser *meshUser = self->GetMeshUser();
@@ -3030,7 +3030,7 @@ PyObject *KX_GameObject::pyattr_get_batchGroup(PyObjectPlus *self_v, const KX_PY
 	return batchGroup->GetProxy();
 }
 
-PyObject *KX_GameObject::pyattr_get_obcolor(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_obcolor(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Vector_CreatePyObject_cb(
@@ -3042,7 +3042,7 @@ PyObject *KX_GameObject::pyattr_get_obcolor(PyObjectPlus *self_v, const KX_PYATT
 #endif
 }
 
-int KX_GameObject::pyattr_set_obcolor(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_obcolor(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	MT_Vector4 obcolor;
@@ -3053,7 +3053,7 @@ int KX_GameObject::pyattr_set_obcolor(PyObjectPlus *self_v, const KX_PYATTRIBUTE
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject* KX_GameObject::pyattr_get_components(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject* KX_GameObject::pyattr_get_components(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 	CListValue<KX_PythonComponent> *components = self->GetComponents();
@@ -3076,7 +3076,7 @@ static const std::string kx_game_object_get_sensors_item_name_cb(void *self_v, i
 }
 
 /* These are experimental! */
-PyObject *KX_GameObject::pyattr_get_sensors(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_sensors(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 							 ((KX_GameObject *)self_v)->GetProxy(),
@@ -3102,7 +3102,7 @@ static const std::string kx_game_object_get_controllers_item_name_cb(void *self_
 	return ((KX_GameObject *)self_v)->GetControllers()[index]->GetName();
 }
 
-PyObject *KX_GameObject::pyattr_get_controllers(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_controllers(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 							 ((KX_GameObject *)self_v)->GetProxy(),
@@ -3128,7 +3128,7 @@ static const std::string kx_game_object_get_actuators_item_name_cb(void *self_v,
 	return ((KX_GameObject *)self_v)->GetActuators()[index]->GetName();
 }
 
-PyObject *KX_GameObject::pyattr_get_actuators(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_actuators(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 							 ((KX_GameObject *)self_v)->GetProxy(),
@@ -3140,19 +3140,19 @@ PyObject *KX_GameObject::pyattr_get_actuators(PyObjectPlus *self_v, const KX_PYA
 }
 /* End experimental */
 
-PyObject *KX_GameObject::pyattr_get_children(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_children(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return self->GetChildren()->NewProxy(true);
 }
 
-PyObject *KX_GameObject::pyattr_get_children_recursive(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_children_recursive(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	return self->GetChildrenRecursive()->NewProxy(true);
 }
 
-PyObject *KX_GameObject::pyattr_get_attrDict(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_attrDict(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject* self = static_cast<KX_GameObject*>(self_v);
 	
@@ -3163,14 +3163,14 @@ PyObject *KX_GameObject::pyattr_get_attrDict(PyObjectPlus *self_v, const KX_PYAT
 	return self->m_attr_dict;
 }
 
-PyObject *KX_GameObject::pyattr_get_debug(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_debug(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 
 	return PyBool_FromLong(self->GetScene()->ObjectInDebugList(self));
 }
 
-int KX_GameObject::pyattr_set_debug(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_debug(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 	int param = PyObject_IsTrue(value);
@@ -3185,14 +3185,14 @@ int KX_GameObject::pyattr_set_debug(PyObjectPlus *self_v, const KX_PYATTRIBUTE_D
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_debugRecursive(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_debugRecursive(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 
 	return PyBool_FromLong(self->GetScene()->ObjectInDebugList(self));
 }
 
-int KX_GameObject::pyattr_set_debugRecursive(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_debugRecursive(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 	int param = PyObject_IsTrue(value);
@@ -3207,14 +3207,14 @@ int KX_GameObject::pyattr_set_debugRecursive(PyObjectPlus *self_v, const KX_PYAT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_GameObject::pyattr_get_lodManager(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_GameObject::pyattr_get_lodManager(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 
 	return (self->m_lodManager) ? self->m_lodManager->GetProxy() : Py_None;
 }
 
-int KX_GameObject::pyattr_set_lodManager(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_GameObject::pyattr_set_lodManager(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_GameObject *self = static_cast<KX_GameObject*>(self_v);
 

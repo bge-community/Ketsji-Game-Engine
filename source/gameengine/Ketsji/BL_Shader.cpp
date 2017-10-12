@@ -206,13 +206,13 @@ PyTypeObject BL_Shader::Type = {
 	py_base_new
 };
 
-PyObject *BL_Shader::pyattr_get_enabled(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_Shader::pyattr_get_enabled(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	BL_Shader* self = static_cast<BL_Shader*>(self_v);
 	return PyBool_FromLong(self->GetEnabled());
 }
 
-int BL_Shader::pyattr_set_enabled(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_Shader::pyattr_set_enabled(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_Shader* self = static_cast<BL_Shader*>(self_v);
 	int param = PyObject_IsTrue(value);
@@ -230,7 +230,7 @@ static std::map<const std::string, BL_Shader::CallbacksType> callbacksTable = {
 	{"objectCallbacks", BL_Shader::CALLBACKS_OBJECT}
 };
 
-PyObject *BL_Shader::pyattr_get_callbacks(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_Shader::pyattr_get_callbacks(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	BL_Shader *self = static_cast<BL_Shader *>(self_v);
 	PyObject *callbacks = self->GetCallbacks(callbacksTable[attrdef->m_name]);
@@ -238,7 +238,7 @@ PyObject *BL_Shader::pyattr_get_callbacks(PyObjectPlus *self_v, const KX_PYATTRI
 	return callbacks;
 }
 
-int BL_Shader::pyattr_set_callbacks(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_Shader::pyattr_set_callbacks(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_Shader *self = static_cast<BL_Shader *>(self_v);
 	if (!PyList_CheckExact(value)) {

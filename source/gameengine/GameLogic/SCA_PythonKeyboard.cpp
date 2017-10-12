@@ -105,7 +105,7 @@ PyAttributeDef SCA_PythonKeyboard::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
-PyObject *SCA_PythonKeyboard::pyattr_get_events(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_PythonKeyboard::pyattr_get_events(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_PythonKeyboard* self = static_cast<SCA_PythonKeyboard*>(self_v);
 
@@ -135,7 +135,7 @@ PyObject *SCA_PythonKeyboard::pyattr_get_events(PyObjectPlus *self_v, const KX_P
 	return dict;
 }
 
-PyObject *SCA_PythonKeyboard::pyattr_get_inputs(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_PythonKeyboard::pyattr_get_inputs(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_PythonKeyboard* self = static_cast<SCA_PythonKeyboard*>(self_v);
 
@@ -154,7 +154,7 @@ PyObject *SCA_PythonKeyboard::pyattr_get_inputs(PyObjectPlus *self_v, const KX_P
 	return dict;
 }
 
-PyObject *SCA_PythonKeyboard::pyattr_get_active_inputs(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_PythonKeyboard::pyattr_get_active_inputs(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_PythonKeyboard* self = static_cast<SCA_PythonKeyboard*>(self_v);
 
@@ -175,7 +175,7 @@ PyObject *SCA_PythonKeyboard::pyattr_get_active_inputs(PyObjectPlus *self_v, con
 	return dict;
 }
 
-PyObject *SCA_PythonKeyboard::pyattr_get_active_events(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_PythonKeyboard::pyattr_get_active_events(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_PythonKeyboard* self = static_cast<SCA_PythonKeyboard*>(self_v);
 
@@ -208,7 +208,7 @@ PyObject *SCA_PythonKeyboard::pyattr_get_active_events(PyObjectPlus *self_v, con
 	return dict;
 }
 
-PyObject *SCA_PythonKeyboard::pyattr_get_text(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_PythonKeyboard::pyattr_get_text(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_PythonKeyboard *self = (SCA_PythonKeyboard *)self_v;
 

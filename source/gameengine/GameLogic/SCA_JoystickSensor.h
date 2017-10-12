@@ -171,15 +171,15 @@ public:
 	KX_PYMETHOD_DOC_NOARGS(SCA_JoystickSensor,GetButtonActiveList)
 	KX_PYMETHOD_DOC_VARARGS(SCA_JoystickSensor,GetButtonStatus)
 
-	static PyObject*	pyattr_get_axis_values(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_axis_single(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_check_hat(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_hat_values(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_hat_single(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_num_axis(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_num_buttons(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_num_hats(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_connected(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject*	pyattr_get_axis_values(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_axis_single(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_check_hat(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_hat_values(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_hat_single(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_num_axis(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_num_buttons(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_num_hats(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_connected(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 	
 
 	/* attribute check */

@@ -50,14 +50,14 @@ public:
 
 #ifdef WITH_PYTHON
 
-	static PyObject *pyattr_get_local_point_a(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_local_point_b(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_world_point(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_normal(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_combined_friction(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_combined_rolling_friction(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_combined_restitution(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_applied_impulse(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject *pyattr_get_local_point_a(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_local_point_b(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_world_point(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_normal(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_combined_friction(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_combined_rolling_friction(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_combined_restitution(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_applied_impulse(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 
 #endif  // WITH_PYTHON
 };

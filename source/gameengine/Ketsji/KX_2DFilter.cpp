@@ -120,13 +120,13 @@ PyAttributeDef KX_2DFilter::Attributes[] = {
 	KX_PYATTRIBUTE_NULL // Sentinel
 };
 
-PyObject *KX_2DFilter::pyattr_get_mipmap(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_2DFilter::pyattr_get_mipmap(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_2DFilter *self = static_cast<KX_2DFilter *>(self_v);
 	return PyBool_FromLong(self->GetMipmap());
 }
 
-int KX_2DFilter::pyattr_set_mipmap(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_2DFilter::pyattr_set_mipmap(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_2DFilter *self = static_cast<KX_2DFilter *>(self_v);
 	int param = PyObject_IsTrue(value);
@@ -139,7 +139,7 @@ int KX_2DFilter::pyattr_set_mipmap(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DE
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_2DFilter::pyattr_get_offScreen(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_2DFilter::pyattr_get_offScreen(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_2DFilter *self = static_cast<KX_2DFilter *>(self_v);
 	RAS_2DFilterOffScreen *offScreen = self->GetOffScreen();

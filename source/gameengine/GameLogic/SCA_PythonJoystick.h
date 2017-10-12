@@ -45,11 +45,11 @@ public:
 	virtual std::string GetName();
 
 #ifdef WITH_PYTHON
-	static PyObject*	pyattr_get_num_x(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_active_buttons(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_hat_values(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_axis_values(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject*	pyattr_get_num_x(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_active_buttons(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_hat_values(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_axis_values(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 #endif
 };
 

@@ -496,14 +496,14 @@ static Mathutils_Callback mathutils_obactu_vector_cb = {
 	mathutils_obactu_vector_set_index
 };
 
-PyObject *KX_ObjectActuator::pyattr_get_linV(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_ObjectActuator::pyattr_get_linV(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return Vector_CreatePyObject_cb(
 	        BGE_PROXY_FROM_REF_BORROW(self_v), 3,
 	        mathutils_kxobactu_vector_cb_index, MATHUTILS_VEC_CB_LINV);
 }
 
-int KX_ObjectActuator::pyattr_set_linV(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_ObjectActuator::pyattr_set_linV(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_ObjectActuator* self = static_cast<KX_ObjectActuator*>(self_v);
 	if (!PyVecTo(value, self->m_linear_velocity))
@@ -514,14 +514,14 @@ int KX_ObjectActuator::pyattr_set_linV(PyObjectPlus *self_v, const KX_PYATTRIBUT
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_ObjectActuator::pyattr_get_angV(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_ObjectActuator::pyattr_get_angV(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return Vector_CreatePyObject_cb(
 	        BGE_PROXY_FROM_REF_BORROW(self_v), 3,
 	        mathutils_kxobactu_vector_cb_index, MATHUTILS_VEC_CB_ANGV);
 }
 
-int KX_ObjectActuator::pyattr_set_angV(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_ObjectActuator::pyattr_set_angV(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_ObjectActuator* self = static_cast<KX_ObjectActuator*>(self_v);
 	if (!PyVecTo(value, self->m_angular_velocity))
@@ -541,7 +541,7 @@ void KX_ObjectActuator_Mathutils_Callback_Init(void)
 
 #endif // USE_MATHUTILS
 
-PyObject *KX_ObjectActuator::pyattr_get_forceLimitX(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_ObjectActuator::pyattr_get_forceLimitX(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_ObjectActuator* self = reinterpret_cast<KX_ObjectActuator*>(self_v);
 	PyObject *retVal = PyList_New(3);
@@ -553,7 +553,7 @@ PyObject *KX_ObjectActuator::pyattr_get_forceLimitX(PyObjectPlus *self_v, const 
 	return retVal;
 }
 
-int KX_ObjectActuator::pyattr_set_forceLimitX(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_ObjectActuator::pyattr_set_forceLimitX(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_ObjectActuator* self = reinterpret_cast<KX_ObjectActuator*>(self_v);
 
@@ -577,7 +577,7 @@ int KX_ObjectActuator::pyattr_set_forceLimitX(PyObjectPlus *self_v, const KX_PYA
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_ObjectActuator::pyattr_get_forceLimitY(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_ObjectActuator::pyattr_get_forceLimitY(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_ObjectActuator* self = reinterpret_cast<KX_ObjectActuator*>(self_v);
 	PyObject *retVal = PyList_New(3);
@@ -589,7 +589,7 @@ PyObject *KX_ObjectActuator::pyattr_get_forceLimitY(PyObjectPlus *self_v, const 
 	return retVal;
 }
 
-int	KX_ObjectActuator::pyattr_set_forceLimitY(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int	KX_ObjectActuator::pyattr_set_forceLimitY(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_ObjectActuator* self = reinterpret_cast<KX_ObjectActuator*>(self_v);
 
@@ -613,7 +613,7 @@ int	KX_ObjectActuator::pyattr_set_forceLimitY(PyObjectPlus *self_v, const KX_PYA
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_ObjectActuator::pyattr_get_forceLimitZ(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_ObjectActuator::pyattr_get_forceLimitZ(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_ObjectActuator* self = reinterpret_cast<KX_ObjectActuator*>(self_v);
 	PyObject *retVal = PyList_New(3);
@@ -625,7 +625,7 @@ PyObject *KX_ObjectActuator::pyattr_get_forceLimitZ(PyObjectPlus *self_v, const 
 	return retVal;
 }
 
-int	KX_ObjectActuator::pyattr_set_forceLimitZ(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int	KX_ObjectActuator::pyattr_set_forceLimitZ(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_ObjectActuator* self = reinterpret_cast<KX_ObjectActuator*>(self_v);
 
@@ -649,7 +649,7 @@ int	KX_ObjectActuator::pyattr_set_forceLimitZ(PyObjectPlus *self_v, const KX_PYA
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_ObjectActuator::pyattr_get_reference(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_ObjectActuator::pyattr_get_reference(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	KX_ObjectActuator* actuator = static_cast<KX_ObjectActuator*>(self);
 	if (!actuator->m_reference)
@@ -658,7 +658,7 @@ PyObject *KX_ObjectActuator::pyattr_get_reference(PyObjectPlus *self, const stru
 	return actuator->m_reference->GetProxy();
 }
 
-int KX_ObjectActuator::pyattr_set_reference(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_ObjectActuator::pyattr_set_reference(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_ObjectActuator* actuator = static_cast<KX_ObjectActuator*>(self);
 	KX_GameObject *refOb;

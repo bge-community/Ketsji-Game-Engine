@@ -85,7 +85,7 @@ PyAttributeDef KX_SCA_ReplaceMeshActuator::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
-PyObject *KX_SCA_ReplaceMeshActuator::pyattr_get_mesh(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_SCA_ReplaceMeshActuator::pyattr_get_mesh(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	KX_SCA_ReplaceMeshActuator* actuator = static_cast<KX_SCA_ReplaceMeshActuator*>(self);
 	if (!actuator->m_mesh)
@@ -94,7 +94,7 @@ PyObject *KX_SCA_ReplaceMeshActuator::pyattr_get_mesh(PyObjectPlus *self, const 
 	return meshproxy->NewProxy(true);
 }
 
-int KX_SCA_ReplaceMeshActuator::pyattr_set_mesh(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_SCA_ReplaceMeshActuator::pyattr_set_mesh(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_SCA_ReplaceMeshActuator* actuator = static_cast<KX_SCA_ReplaceMeshActuator*>(self);
 	RAS_MeshObject* new_mesh;

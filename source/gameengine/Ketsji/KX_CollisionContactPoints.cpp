@@ -84,49 +84,49 @@ PyAttributeDef KX_CollisionContactPoint::Attributes[] = {
 	KX_PYATTRIBUTE_NULL //Sentinel
 };
 
-PyObject *KX_CollisionContactPoint::pyattr_get_local_point_a(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_local_point_a(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyObjectFrom(self->m_collData->GetLocalPointA(self->m_index, self->m_firstObject));
 }
 
-PyObject *KX_CollisionContactPoint::pyattr_get_local_point_b(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_local_point_b(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyObjectFrom(self->m_collData->GetLocalPointB(self->m_index, self->m_firstObject));
 }
 
-PyObject *KX_CollisionContactPoint::pyattr_get_world_point(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_world_point(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyObjectFrom(self->m_collData->GetWorldPoint(self->m_index, self->m_firstObject));
 }
 
-PyObject *KX_CollisionContactPoint::pyattr_get_normal(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_normal(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyObjectFrom(self->m_collData->GetNormal(self->m_index, self->m_firstObject));
 }
 
-PyObject *KX_CollisionContactPoint::pyattr_get_combined_friction(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_combined_friction(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyFloat_FromDouble(self->m_collData->GetCombinedFriction(self->m_index, self->m_firstObject));
 }
 
-PyObject *KX_CollisionContactPoint::pyattr_get_combined_rolling_friction(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_combined_rolling_friction(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyFloat_FromDouble(self->m_collData->GetCombinedRollingFriction(self->m_index, self->m_firstObject));
 }
 
-PyObject *KX_CollisionContactPoint::pyattr_get_combined_restitution(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_combined_restitution(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyFloat_FromDouble(self->m_collData->GetCombinedRestitution(self->m_index, self->m_firstObject));
 }
 
-PyObject *KX_CollisionContactPoint::pyattr_get_applied_impulse(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_CollisionContactPoint::pyattr_get_applied_impulse(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_CollisionContactPoint *self = static_cast<KX_CollisionContactPoint *>(self_v);
 	return PyFloat_FromDouble(self->m_collData->GetAppliedImpulse(self->m_index, self->m_firstObject));

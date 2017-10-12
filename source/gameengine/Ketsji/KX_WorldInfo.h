@@ -104,17 +104,17 @@ public:
 
 #ifdef WITH_PYTHON
 	/* attributes */
-	static PyObject *pyattr_get_mist_typeconst(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_mist_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_mist_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_horizon_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_horizon_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_background_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_background_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_zenith_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_zenith_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_ambient_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_ambient_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject *pyattr_get_mist_typeconst(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_mist_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_mist_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_horizon_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_horizon_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_background_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_background_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_zenith_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_zenith_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_ambient_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_ambient_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 #endif
 };
 

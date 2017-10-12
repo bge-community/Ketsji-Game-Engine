@@ -72,14 +72,14 @@ public:
 	/// Set AABB min, return true if the max is greater than max.
 	bool SetMin(MT_Vector3 min);
 
-	static PyObject *pyattr_get_min(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_min(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_max(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_max(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_center(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_radius(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_auto_update(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_auto_update(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject *pyattr_get_min(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_min(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_max(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_max(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_center(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_radius(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_auto_update(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_auto_update(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 };
 
 #endif  // WITH_PYTHON

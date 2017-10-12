@@ -119,8 +119,8 @@ public:
 	/* --------------------------------------------------------------------- */
 
 	/* set object to look at */
-	static PyObject*	pyattr_get_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 
 #endif  /* WITH_PYTHON */
 

@@ -106,8 +106,8 @@ public:
 #ifdef WITH_PYTHON
 
 	// Python access
-	static PyObject *py_attr_getattr(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-	static int py_attr_setattr(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject *py_attr_getattr(PyObjectPlus *self, const struct EXP_Attribute *attrdef);
+	static int py_attr_setattr(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value);
 #endif  /* WITH_PYTHON */
 };
 

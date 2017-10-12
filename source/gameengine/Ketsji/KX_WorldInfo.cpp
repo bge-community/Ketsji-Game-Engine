@@ -484,7 +484,7 @@ void KX_WorldInfo_Mathutils_Callback_Init()
 }
 #endif // USE_MATHUTILS
 
-PyObject *KX_WorldInfo::pyattr_get_mist_typeconst(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_WorldInfo::pyattr_get_mist_typeconst(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	PyObject *retvalue;
 
@@ -508,7 +508,7 @@ PyObject *KX_WorldInfo::pyattr_get_mist_typeconst(PyObjectPlus *self_v, const KX
 	return retvalue;
 }
 
-PyObject *KX_WorldInfo::pyattr_get_mist_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_WorldInfo::pyattr_get_mist_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Color_CreatePyObject_cb(
@@ -520,7 +520,7 @@ PyObject *KX_WorldInfo::pyattr_get_mist_color(PyObjectPlus *self_v, const KX_PYA
 #endif
 }
 
-int KX_WorldInfo::pyattr_set_mist_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_WorldInfo::pyattr_set_mist_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_WorldInfo *self = static_cast<KX_WorldInfo*>(self_v);
 
@@ -533,7 +533,7 @@ int KX_WorldInfo::pyattr_set_mist_color(PyObjectPlus *self_v, const KX_PYATTRIBU
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_WorldInfo::pyattr_get_horizon_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_WorldInfo::pyattr_get_horizon_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 
 #ifdef USE_MATHUTILS
@@ -546,7 +546,7 @@ PyObject *KX_WorldInfo::pyattr_get_horizon_color(PyObjectPlus *self_v, const KX_
 #endif
 }
 
-int KX_WorldInfo::pyattr_set_horizon_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_WorldInfo::pyattr_set_horizon_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_WorldInfo *self = static_cast<KX_WorldInfo*>(self_v);
 
@@ -559,7 +559,7 @@ int KX_WorldInfo::pyattr_set_horizon_color(PyObjectPlus *self_v, const KX_PYATTR
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_WorldInfo::pyattr_get_background_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_WorldInfo::pyattr_get_background_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Color_CreatePyObject_cb(
@@ -571,7 +571,7 @@ PyObject *KX_WorldInfo::pyattr_get_background_color(PyObjectPlus *self_v, const 
 #endif
 }
 
-int KX_WorldInfo::pyattr_set_background_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_WorldInfo::pyattr_set_background_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_WorldInfo *self = static_cast<KX_WorldInfo*>(self_v);
 
@@ -583,7 +583,7 @@ int KX_WorldInfo::pyattr_set_background_color(PyObjectPlus *self_v, const KX_PYA
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_WorldInfo::pyattr_get_zenith_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_WorldInfo::pyattr_get_zenith_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 
 #ifdef USE_MATHUTILS
@@ -596,7 +596,7 @@ PyObject *KX_WorldInfo::pyattr_get_zenith_color(PyObjectPlus *self_v, const KX_P
 #endif
 }
 
-int KX_WorldInfo::pyattr_set_zenith_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_WorldInfo::pyattr_set_zenith_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_WorldInfo *self = static_cast<KX_WorldInfo*>(self_v);
 
@@ -609,7 +609,7 @@ int KX_WorldInfo::pyattr_set_zenith_color(PyObjectPlus *self_v, const KX_PYATTRI
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_WorldInfo::pyattr_get_ambient_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_WorldInfo::pyattr_get_ambient_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 #ifdef USE_MATHUTILS
 	return Color_CreatePyObject_cb(
@@ -621,7 +621,7 @@ PyObject *KX_WorldInfo::pyattr_get_ambient_color(PyObjectPlus *self_v, const KX_
 #endif
 }
 
-int KX_WorldInfo::pyattr_set_ambient_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_WorldInfo::pyattr_set_ambient_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_WorldInfo *self = static_cast<KX_WorldInfo*>(self_v);
 

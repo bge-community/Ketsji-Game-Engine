@@ -59,10 +59,10 @@ public:
 	// Python interface
 #ifdef WITH_PYTHON
 
-	static PyObject *pyattr_get_enabled(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_enabled(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_callbacks(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_callbacks(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject *pyattr_get_enabled(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_enabled(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_callbacks(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_callbacks(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 
 	// -----------------------------------
 	KX_PYMETHOD_DOC(BL_Shader, setSource);

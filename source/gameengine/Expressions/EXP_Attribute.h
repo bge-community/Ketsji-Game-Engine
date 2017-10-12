@@ -37,10 +37,10 @@ public:
 		GETSET_CUSTOM = (1 << 2)
 	};
 
-	using CustomGetterFunction = void (*)(PyObjectPlus *, void *, const EXP_AttributeDef *);
+	using CustomGetterFunction = void (*)(PyObjectPlus *, void *, const EXP_Attribute *);
 	/// The second parameter can be cast to any basic type by casting the whole function.
-	using CustomSetterFunction = int (*)(PyObjectPlus *, void *, const EXP_AttributeDef *);
-	using CustomCheckFunction = int (*)(PyObjectPlus *, const EXP_AttributeDef *);
+	using CustomSetterFunction = int (*)(PyObjectPlus *, void *, const EXP_Attribute *);
+	using CustomCheckFunction = int (*)(PyObjectPlus *, const EXP_Attribute *);
 
 	using GetterFunction = PyObject *(*)(PyObject *, void *);
 	using SetterFunction = int (*)(PyObject *, PyObject *, void *);	

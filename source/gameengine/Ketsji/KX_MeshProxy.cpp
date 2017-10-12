@@ -363,7 +363,7 @@ PyObject *KX_MeshProxy::PyReplaceMaterial(PyObject *args, PyObject *kwds)
 	Py_RETURN_NONE;
 }
 
-PyObject *KX_MeshProxy::pyattr_get_materials(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_MeshProxy::pyattr_get_materials(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_MeshProxy *self = static_cast<KX_MeshProxy *>(self_v);
 
@@ -380,13 +380,13 @@ PyObject *KX_MeshProxy::pyattr_get_materials(PyObjectPlus *self_v, const KX_PYAT
 	return materials;
 }
 
-PyObject *KX_MeshProxy::pyattr_get_numMaterials(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_MeshProxy::pyattr_get_numMaterials(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_MeshProxy *self = static_cast<KX_MeshProxy *> (self_v);
 	return PyLong_FromLong(self->m_meshobj->GetNumMaterials());
 }
 
-PyObject *KX_MeshProxy::pyattr_get_numPolygons(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_MeshProxy::pyattr_get_numPolygons(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_MeshProxy *self = static_cast<KX_MeshProxy *> (self_v);
 	return PyLong_FromLong(self->m_meshobj->GetNumPolygons());
@@ -407,7 +407,7 @@ static PyObject *kx_mesh_proxy_get_polygons_item_cb(void *self_v, int index)
 	return polyProxy->NewProxy(true);
 }
 
-PyObject *KX_MeshProxy::pyattr_get_polygons(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_MeshProxy::pyattr_get_polygons(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 		((KX_MeshProxy *)self_v)->GetProxy(),

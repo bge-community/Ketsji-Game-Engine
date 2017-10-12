@@ -560,22 +560,22 @@ public:
 
 
 	/* attributes */
-	static PyObject*	pyattr_get_name(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_objects(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_objects_inactive(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_lights(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_texts(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_cameras(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_filter_manager(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_world(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_active_camera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_active_camera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_overrideCullingCamera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_overrideCullingCamera(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_drawing_callback(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_drawing_callback(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject*	pyattr_get_gravity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int			pyattr_set_gravity(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_name(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_objects(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_objects_inactive(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_lights(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_texts(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_cameras(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_filter_manager(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_world(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_active_camera(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_active_camera(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_overrideCullingCamera(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_overrideCullingCamera(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_drawing_callback(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_drawing_callback(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject*	pyattr_get_gravity(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int			pyattr_set_gravity(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 	
 	/* getitem/setitem */
 	static PyMappingMethods	Mapping;

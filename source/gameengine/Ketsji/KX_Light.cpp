@@ -189,13 +189,13 @@ KX_PYMETHODDEF_DOC_NOARGS(KX_LightObject, updateShadow, "updateShadow(): Set the
 	Py_RETURN_NONE;
 }
 
-PyObject *KX_LightObject::pyattr_get_energy(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_energy(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_energy);
 }
 
-int KX_LightObject::pyattr_set_energy(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_energy(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 
@@ -214,73 +214,73 @@ int KX_LightObject::pyattr_set_energy(PyObjectPlus *self_v, const KX_PYATTRIBUTE
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_clip_start(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_clip_start(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_shadowclipstart);
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_clip_end(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_clip_end(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_shadowclipend);
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_frustum_size(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_frustum_size(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_shadowfrustumsize);
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_bind_code(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_bind_code(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyLong_FromLong(self->m_lightobj->GetShadowBindCode());
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_bias(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_bias(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_shadowbias);
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_bleed_bias(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_bleed_bias(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_shadowbleedbias);
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_map_type(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_map_type(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyLong_FromLong(self->m_lightobj->m_shadowmaptype);
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_matrix(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_matrix(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyObjectFrom(self->m_lightobj->GetShadowMatrix());
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyColorFromVector(MT_Vector3(self->m_lightobj->m_shadowcolor));
 }
 
-PyObject *KX_LightObject::pyattr_get_shadow_active(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_shadow_active(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyBool_FromLong(self->m_lightobj->HasShadowBuffer());
 }
 
-PyObject *KX_LightObject::pyattr_get_distance(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_distance(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_distance);
 }
 
-int KX_LightObject::pyattr_set_distance(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_distance(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 
@@ -299,13 +299,13 @@ int KX_LightObject::pyattr_set_distance(PyObjectPlus *self_v, const KX_PYATTRIBU
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_LightObject::pyattr_get_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyColorFromVector(MT_Vector3(self->m_lightobj->m_color));
 }
 
-int KX_LightObject::pyattr_set_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_color(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 
@@ -317,13 +317,13 @@ int KX_LightObject::pyattr_set_color(PyObjectPlus *self_v, const KX_PYATTRIBUTE_
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_LightObject::pyattr_get_lin_attenuation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_lin_attenuation(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_att1);
 }
 
-int KX_LightObject::pyattr_set_lin_attenuation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_lin_attenuation(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 
@@ -342,13 +342,13 @@ int KX_LightObject::pyattr_set_lin_attenuation(PyObjectPlus *self_v, const KX_PY
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_LightObject::pyattr_get_quad_attenuation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_quad_attenuation(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_att2);
 }
 
-int KX_LightObject::pyattr_set_quad_attenuation(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_quad_attenuation(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 
@@ -367,13 +367,13 @@ int KX_LightObject::pyattr_set_quad_attenuation(PyObjectPlus *self_v, const KX_P
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_LightObject::pyattr_get_spotsize(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_spotsize(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(RAD2DEG(self->m_lightobj->m_spotsize));
 }
 
-int KX_LightObject::pyattr_set_spotsize(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_spotsize(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 
@@ -391,13 +391,13 @@ int KX_LightObject::pyattr_set_spotsize(PyObjectPlus *self_v, const KX_PYATTRIBU
 	PyErr_Format(PyExc_TypeError, "expected float value for attribute \"%s\"", attrdef->m_name.c_str());
 	return PY_SET_ATTR_FAIL;
 }
-PyObject *KX_LightObject::pyattr_get_spotblend(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_spotblend(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyFloat_FromDouble(self->m_lightobj->m_spotblend);
 }
 
-int KX_LightObject::pyattr_set_spotblend(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_spotblend(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 
@@ -416,7 +416,7 @@ int KX_LightObject::pyattr_set_spotblend(PyObjectPlus *self_v, const KX_PYATTRIB
 	return PY_SET_ATTR_FAIL;
 }
 
-PyObject *KX_LightObject::pyattr_get_typeconst(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_typeconst(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	PyObject *retvalue;
 
@@ -443,13 +443,13 @@ PyObject *KX_LightObject::pyattr_get_typeconst(PyObjectPlus *self_v, const KX_PY
 	return retvalue;
 }
 
-PyObject *KX_LightObject::pyattr_get_type(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_type(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyLong_FromLong(self->m_lightobj->m_type);
 }
 
-int KX_LightObject::pyattr_set_type(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_type(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	const int val = PyLong_AsLong(value);
@@ -476,13 +476,13 @@ int KX_LightObject::pyattr_set_type(PyObjectPlus *self_v, const KX_PYATTRIBUTE_D
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_LightObject::pyattr_get_static_shadow(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_LightObject::pyattr_get_static_shadow(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	return PyBool_FromLong(self->m_lightobj->m_staticShadow);
 }
 
-int KX_LightObject::pyattr_set_static_shadow(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_LightObject::pyattr_set_static_shadow(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_LightObject *self = static_cast<KX_LightObject *>(self_v);
 	int param = PyObject_IsTrue(value);

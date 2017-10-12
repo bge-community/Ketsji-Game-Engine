@@ -111,13 +111,13 @@ class KX_MouseFocusSensor : public SCA_MouseSensor
 	/* --------------------------------------------------------------------- */
 
 	/* attributes */
-	static PyObject*	pyattr_get_ray_source(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_ray_target(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_ray_direction(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_hit_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_hit_position(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_hit_normal(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_hit_uv(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject*	pyattr_get_ray_source(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_ray_target(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_ray_direction(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_hit_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_hit_position(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_hit_normal(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject*	pyattr_get_hit_uv(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 		
 #endif  /* WITH_PYTHON */
 

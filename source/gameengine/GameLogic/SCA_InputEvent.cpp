@@ -139,7 +139,7 @@ PyObject *SCA_InputEvent::get_status_item_cb(void *self_v, int index)
 	return PyLong_FromLong(((SCA_InputEvent *)self_v)->m_status[index]);
 }
 
-PyObject *SCA_InputEvent::pyattr_get_status(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_InputEvent::pyattr_get_status(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 							 ((SCA_InputEvent *)self_v)->GetProxy(),
@@ -161,7 +161,7 @@ PyObject *SCA_InputEvent::get_queue_item_cb(void *self_v, int index)
 	return PyLong_FromLong(((SCA_InputEvent *)self_v)->m_queue[index]);
 }
 
-PyObject *SCA_InputEvent::pyattr_get_queue(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_InputEvent::pyattr_get_queue(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 							 ((SCA_InputEvent *)self_v)->GetProxy(),
@@ -183,7 +183,7 @@ PyObject *SCA_InputEvent::get_values_item_cb(void *self_v, int index)
 	return PyLong_FromLong(((SCA_InputEvent *)self_v)->m_values[index]);
 }
 
-PyObject *SCA_InputEvent::pyattr_get_values(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_InputEvent::pyattr_get_values(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self_v,
 							 ((SCA_InputEvent *)self_v)->GetProxy(),
@@ -195,28 +195,28 @@ PyObject *SCA_InputEvent::pyattr_get_values(PyObjectPlus *self_v, const KX_PYATT
 							 CListWrapper::FLAG_FIND_VALUE))->NewProxy(true);
 }
 
-PyObject *SCA_InputEvent::pyattr_get_inactive(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_InputEvent::pyattr_get_inactive(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_InputEvent *self = static_cast<SCA_InputEvent *>(self_v);
 
 	return PyBool_FromLong(self->Find(SCA_InputEvent::NONE));
 }
 
-PyObject *SCA_InputEvent::pyattr_get_active(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_InputEvent::pyattr_get_active(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_InputEvent *self = static_cast<SCA_InputEvent *>(self_v);
 
 	return PyBool_FromLong(self->Find(SCA_InputEvent::ACTIVE));
 }
 
-PyObject *SCA_InputEvent::pyattr_get_activated(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_InputEvent::pyattr_get_activated(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_InputEvent *self = static_cast<SCA_InputEvent *>(self_v);
 
 	return PyBool_FromLong(self->Find(SCA_InputEvent::JUSTACTIVATED));
 }
 
-PyObject *SCA_InputEvent::pyattr_get_released(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *SCA_InputEvent::pyattr_get_released(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	SCA_InputEvent *self = static_cast<SCA_InputEvent *>(self_v);
 

@@ -105,12 +105,12 @@ public:
 #ifdef WITH_PYTHON
 	KX_PYMETHOD_DOC_NOARGS(KX_TextureRenderer, update);
 
-	static PyObject *pyattr_get_viewpoint_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_viewpoint_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_clip_start(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_clip_start(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_clip_end(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_clip_end(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
+	static PyObject *pyattr_get_viewpoint_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_viewpoint_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_clip_start(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_clip_start(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_clip_end(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static int pyattr_set_clip_end(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 #endif
 };
 

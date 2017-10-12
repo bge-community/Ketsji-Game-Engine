@@ -156,7 +156,7 @@ KX_PYMETHODDEF_DOC_NOARGS(KX_TextureRenderer, update, "update(): Set the texture
 	Py_RETURN_NONE;
 }
 
-PyObject *KX_TextureRenderer::pyattr_get_viewpoint_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_TextureRenderer::pyattr_get_viewpoint_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_TextureRenderer *self = static_cast<KX_TextureRenderer *>(self_v);
 	KX_GameObject *gameobj = self->GetViewpointObject();
@@ -166,7 +166,7 @@ PyObject *KX_TextureRenderer::pyattr_get_viewpoint_object(PyObjectPlus *self_v, 
 	Py_RETURN_NONE;
 }
 
-int KX_TextureRenderer::pyattr_set_viewpoint_object(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_TextureRenderer::pyattr_set_viewpoint_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_TextureRenderer *self = static_cast<KX_TextureRenderer *>(self_v);
 	KX_GameObject *gameobj = nullptr;
@@ -181,13 +181,13 @@ int KX_TextureRenderer::pyattr_set_viewpoint_object(PyObjectPlus *self_v, const 
 }
 
 
-PyObject *KX_TextureRenderer::pyattr_get_clip_start(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_TextureRenderer::pyattr_get_clip_start(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_TextureRenderer *self = static_cast<KX_TextureRenderer *>(self_v);
 	return PyFloat_FromDouble(self->GetClipStart());
 }
 
-int KX_TextureRenderer::pyattr_set_clip_start(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_TextureRenderer::pyattr_set_clip_start(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_TextureRenderer *self = static_cast<KX_TextureRenderer *>(self_v);
 
@@ -204,13 +204,13 @@ int KX_TextureRenderer::pyattr_set_clip_start(PyObjectPlus *self_v, const KX_PYA
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_TextureRenderer::pyattr_get_clip_end(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_TextureRenderer::pyattr_get_clip_end(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	KX_TextureRenderer *self = static_cast<KX_TextureRenderer *>(self_v);
 	return PyFloat_FromDouble(self->GetClipEnd());
 }
 
-int KX_TextureRenderer::pyattr_set_clip_end(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_TextureRenderer::pyattr_set_clip_end(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_TextureRenderer *self = static_cast<KX_TextureRenderer *>(self_v);
 

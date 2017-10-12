@@ -340,13 +340,13 @@ PyAttributeDef BL_ActionActuator::Attributes[] = {
 	KX_PYATTRIBUTE_NULL //Sentinel
 };
 
-PyObject *BL_ActionActuator::pyattr_get_action(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ActionActuator::pyattr_get_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
 	return PyUnicode_FromString(self->GetAction() ? self->GetAction()->id.name+2 : "");
 }
 
-int BL_ActionActuator::pyattr_set_action(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_ActionActuator::pyattr_set_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
 	
@@ -374,13 +374,13 @@ int BL_ActionActuator::pyattr_set_action(PyObjectPlus *self_v, const KX_PYATTRIB
 
 }
 
-PyObject *BL_ActionActuator::pyattr_get_use_continue(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ActionActuator::pyattr_get_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
 	return PyBool_FromLong(self->m_flag & ACT_FLAG_CONTINUE);
 }
 
-int BL_ActionActuator::pyattr_set_use_continue(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_ActionActuator::pyattr_set_use_continue(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
 	
@@ -392,13 +392,13 @@ int BL_ActionActuator::pyattr_set_use_continue(PyObjectPlus *self_v, const KX_PY
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *BL_ActionActuator::pyattr_get_frame(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *BL_ActionActuator::pyattr_get_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
 	return PyFloat_FromDouble(((KX_GameObject*)self->m_gameobj)->GetActionFrame(self->m_layer));
 }
 
-int BL_ActionActuator::pyattr_set_frame(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int BL_ActionActuator::pyattr_set_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value)
 {
 	BL_ActionActuator* self = static_cast<BL_ActionActuator*>(self_v);
 	

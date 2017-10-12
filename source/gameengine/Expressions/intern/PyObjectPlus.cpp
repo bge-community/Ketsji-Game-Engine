@@ -284,7 +284,7 @@ EXP_Attribute PyObjectPlus::Attributes[] = {
 };
 
 #if 0
-PyObject *PyObjectPlus::pyattr_get_invalid(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *PyObjectPlus::pyattr_get_invalid(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
 {
 	return PyBool_FromLong(self_v ? 0 : 1);
 }

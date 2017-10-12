@@ -171,7 +171,7 @@ PyAttributeDef KX_ParentActuator::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
-PyObject *KX_ParentActuator::pyattr_get_object(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_ParentActuator::pyattr_get_object(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	KX_ParentActuator* actuator = static_cast<KX_ParentActuator*>(self);
 	if (!actuator->m_ob)
@@ -180,7 +180,7 @@ PyObject *KX_ParentActuator::pyattr_get_object(PyObjectPlus *self, const struct 
 		return actuator->m_ob->GetProxy();
 }
 
-int KX_ParentActuator::pyattr_set_object(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_ParentActuator::pyattr_set_object(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_ParentActuator* actuator = static_cast<KX_ParentActuator*>(self);
 	KX_GameObject *gameobj;

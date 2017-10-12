@@ -82,8 +82,8 @@ public:
 	/* ------------------------------------------------------------- */
 
 	/* attributes */
-	static PyObject *pyattr_get_bodies(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_subjects(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject *pyattr_get_bodies(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_subjects(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 
 #endif  /* WITH_PYTHON */
 };

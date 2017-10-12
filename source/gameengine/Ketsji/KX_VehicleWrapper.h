@@ -48,10 +48,10 @@ public:
 	
 	KX_PYMETHOD_VARARGS(KX_VehicleWrapper,SetRollInfluence);
 
-	static PyObject *pyattr_get_ray_mask(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
-	static int pyattr_set_ray_mask(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_constraintId(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject *pyattr_get_constraintType(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
+	static PyObject *pyattr_get_ray_mask(PyObjectPlus *self, const struct EXP_Attribute *attrdef);
+	static int pyattr_set_ray_mask(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value);
+	static PyObject *pyattr_get_constraintId(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
+	static PyObject *pyattr_get_constraintType(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 
 #endif  /* WITH_PYTHON */
 

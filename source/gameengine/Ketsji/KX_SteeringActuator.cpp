@@ -565,7 +565,7 @@ PyAttributeDef KX_SteeringActuator::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
-PyObject *KX_SteeringActuator::pyattr_get_target(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_SteeringActuator::pyattr_get_target(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
 	if (!actuator->m_target)
@@ -574,7 +574,7 @@ PyObject *KX_SteeringActuator::pyattr_get_target(PyObjectPlus *self, const struc
 		return actuator->m_target->GetProxy();
 }
 
-int KX_SteeringActuator::pyattr_set_target(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_SteeringActuator::pyattr_set_target(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
 	KX_GameObject *gameobj;
@@ -593,7 +593,7 @@ int KX_SteeringActuator::pyattr_set_target(PyObjectPlus *self, const struct KX_P
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_SteeringActuator::pyattr_get_navmesh(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_SteeringActuator::pyattr_get_navmesh(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
 	if (!actuator->m_navmesh)
@@ -602,7 +602,7 @@ PyObject *KX_SteeringActuator::pyattr_get_navmesh(PyObjectPlus *self, const stru
 		return actuator->m_navmesh->GetProxy();
 }
 
-int KX_SteeringActuator::pyattr_set_navmesh(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value)
+int KX_SteeringActuator::pyattr_set_navmesh(PyObjectPlus *self, const struct EXP_Attribute *attrdef, PyObject *value)
 {
 	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
 	KX_GameObject *gameobj;
@@ -626,7 +626,7 @@ int KX_SteeringActuator::pyattr_set_navmesh(PyObjectPlus *self, const struct KX_
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyObject *KX_SteeringActuator::pyattr_get_steeringVec(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_SteeringActuator::pyattr_get_steeringVec(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	KX_SteeringActuator* actuator = static_cast<KX_SteeringActuator*>(self);
 	const MT_Vector3& steeringVec = actuator->GetSteeringVec();
@@ -645,7 +645,7 @@ static PyObject *kx_steering_actuator_get_path_item_cb(void *self, int index)
 	return PyObjectFrom(point);
 }
 
-PyObject *KX_SteeringActuator::pyattr_get_path(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef)
+PyObject *KX_SteeringActuator::pyattr_get_path(PyObjectPlus *self, const struct EXP_Attribute *attrdef)
 {
 	return (new CListWrapper(self,
 							((KX_SteeringActuator *)self)->GetProxy(),
