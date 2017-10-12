@@ -71,7 +71,7 @@ PyMethodDef KX_2DFilterOffScreen::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_2DFilterOffScreen::Attributes[] = {
+EXP_Attribute KX_2DFilterOffScreen::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("width", KX_2DFilterOffScreen, pyattr_get_width),
 	KX_PYATTRIBUTE_RO_FUNCTION("height", KX_2DFilterOffScreen, pyattr_get_height),
 	KX_PYATTRIBUTE_RO_FUNCTION("colorBindCodes", KX_2DFilterOffScreen, pyattr_get_colorBindCodes),

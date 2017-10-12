@@ -381,7 +381,7 @@ PyMethodDef KX_CameraActuator::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_CameraActuator::Attributes[] = {
+EXP_Attribute KX_CameraActuator::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("min",-FLT_MAX,FLT_MAX,KX_CameraActuator,m_minHeight),
 	KX_PYATTRIBUTE_FLOAT_RW("max",-FLT_MAX,FLT_MAX,KX_CameraActuator,m_maxHeight),
 	KX_PYATTRIBUTE_FLOAT_RW("height",-FLT_MAX,FLT_MAX,KX_CameraActuator,m_height),

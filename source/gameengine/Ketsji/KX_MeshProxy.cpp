@@ -86,7 +86,7 @@ PyMethodDef KX_MeshProxy::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_MeshProxy::Attributes[] = {
+EXP_Attribute KX_MeshProxy::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("materials",     KX_MeshProxy, pyattr_get_materials),
 	KX_PYATTRIBUTE_RO_FUNCTION("numPolygons",   KX_MeshProxy, pyattr_get_numPolygons),
 	KX_PYATTRIBUTE_RO_FUNCTION("numMaterials",  KX_MeshProxy, pyattr_get_numMaterials),

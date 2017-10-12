@@ -295,7 +295,7 @@ PyMethodDef BL_ArmatureConstraint::Methods[] = {
 #define BCA_IKDIST		12
 #define BCA_IKMODE		13
 
-PyAttributeDef BL_ArmatureConstraint::Attributes[] = {
+EXP_Attribute BL_ArmatureConstraint::Attributes[] = {
 	// Keep these attributes in order of BCA_ defines!!! used by py_attr_getattr and py_attr_setattr
 	KX_PYATTRIBUTE_RO_FUNCTION("type",BL_ArmatureConstraint,py_attr_getattr),
 	KX_PYATTRIBUTE_RO_FUNCTION("name",BL_ArmatureConstraint,py_attr_getattr),

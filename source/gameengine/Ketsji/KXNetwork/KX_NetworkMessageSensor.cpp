@@ -185,7 +185,7 @@ PyMethodDef KX_NetworkMessageSensor::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_NetworkMessageSensor::Attributes[] = {
+EXP_Attribute KX_NetworkMessageSensor::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW("subject", 0, 100, false, KX_NetworkMessageSensor, m_subject),
 	KX_PYATTRIBUTE_INT_RO("frameMessageCount", KX_NetworkMessageSensor, m_frame_message_count),
 	KX_PYATTRIBUTE_RO_FUNCTION("bodies", KX_NetworkMessageSensor, pyattr_get_bodies),

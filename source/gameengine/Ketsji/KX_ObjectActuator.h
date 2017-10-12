@@ -181,7 +181,7 @@ public:
 #endif
 
 	// This lets the attribute macros use UpdateFuzzyFlags()
-	static int PyUpdateFuzzyFlags(PyObjectPlus *self, const PyAttributeDef *attrdef)
+	static int PyUpdateFuzzyFlags(PyObjectPlus *self, const EXP_Attribute *attrdef)
 	{
 		KX_ObjectActuator* act = reinterpret_cast<KX_ObjectActuator*>(self);
 		act->UpdateFuzzyFlags();
@@ -189,7 +189,7 @@ public:
 	}
 
 	// This is the keep the PID values in check after they are assigned with Python
-	static int PyCheckPid(PyObjectPlus *self, const PyAttributeDef *attrdef)
+	static int PyCheckPid(PyObjectPlus *self, const EXP_Attribute *attrdef)
 	{
 		KX_ObjectActuator* act = reinterpret_cast<KX_ObjectActuator*>(self);
 

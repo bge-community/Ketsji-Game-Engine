@@ -186,7 +186,7 @@ PyMethodDef KX_ArmatureSensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_ArmatureSensor::Attributes[] = {
+EXP_Attribute KX_ArmatureSensor::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint", KX_ArmatureSensor, pyattr_get_constraint),
 	KX_PYATTRIBUTE_FLOAT_RW("value",-FLT_MAX,FLT_MAX,KX_ArmatureSensor,m_value),
 	KX_PYATTRIBUTE_INT_RW("type",0,SENS_ARM_MAXTYPE,false,KX_ArmatureSensor,m_type),

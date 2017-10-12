@@ -118,7 +118,7 @@ PyMethodDef SCA_NORController::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_NORController::Attributes[] = {
+EXP_Attribute SCA_NORController::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 

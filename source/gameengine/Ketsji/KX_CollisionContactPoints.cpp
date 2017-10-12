@@ -72,7 +72,7 @@ PyMethodDef KX_CollisionContactPoint::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_CollisionContactPoint::Attributes[] = {
+EXP_Attribute KX_CollisionContactPoint::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("localPointA", KX_CollisionContactPoint, pyattr_get_local_point_a),
 	KX_PYATTRIBUTE_RO_FUNCTION("localPointB", KX_CollisionContactPoint, pyattr_get_local_point_b),
 	KX_PYATTRIBUTE_RO_FUNCTION("worldPoint", KX_CollisionContactPoint, pyattr_get_world_point),

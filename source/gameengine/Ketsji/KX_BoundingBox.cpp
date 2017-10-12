@@ -246,7 +246,7 @@ PyMethodDef KX_BoundingBox::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_BoundingBox::Attributes[] = {
+EXP_Attribute KX_BoundingBox::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("min", KX_BoundingBox, pyattr_get_min, pyattr_set_min),
 	KX_PYATTRIBUTE_RW_FUNCTION("max", KX_BoundingBox, pyattr_get_max, pyattr_set_max),
 	KX_PYATTRIBUTE_RO_FUNCTION("center", KX_BoundingBox, pyattr_get_center),

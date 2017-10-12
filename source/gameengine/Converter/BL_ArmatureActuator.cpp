@@ -217,7 +217,7 @@ PyMethodDef BL_ArmatureActuator::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef BL_ArmatureActuator::Attributes[] = {
+EXP_Attribute BL_ArmatureActuator::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint", BL_ArmatureActuator, pyattr_get_constraint),
 	KX_PYATTRIBUTE_RW_FUNCTION("target", BL_ArmatureActuator, pyattr_get_object, pyattr_set_object),
 	KX_PYATTRIBUTE_RW_FUNCTION("subtarget", BL_ArmatureActuator, pyattr_get_object, pyattr_set_object),

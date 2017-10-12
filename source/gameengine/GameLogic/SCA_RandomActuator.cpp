@@ -344,7 +344,7 @@ PyMethodDef SCA_RandomActuator::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_RandomActuator::Attributes[] = {
+EXP_Attribute SCA_RandomActuator::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RO("para1",SCA_RandomActuator,m_parameter1),
 	KX_PYATTRIBUTE_FLOAT_RO("para2",SCA_RandomActuator,m_parameter2),
 	KX_PYATTRIBUTE_ENUM_RO("distribution",SCA_RandomActuator,m_distribution),

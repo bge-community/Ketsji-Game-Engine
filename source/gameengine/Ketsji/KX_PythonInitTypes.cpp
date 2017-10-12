@@ -117,7 +117,7 @@
 #include "EXP_ListWrapper.h"
 #include "Texture.h"
 
-static void PyType_Attr_Set(PyGetSetDef *attr_getset, PyAttributeDef *attr)
+static void PyType_Attr_Set(PyGetSetDef *attr_getset, EXP_Attribute *attr)
 {
 	attr_getset->name = (char *)attr->m_name.c_str();
 	attr_getset->doc= nullptr;
@@ -132,9 +132,9 @@ static void PyType_Attr_Set(PyGetSetDef *attr_getset, PyAttributeDef *attr)
 	attr_getset->closure= reinterpret_cast<void *>(attr);
 }
 
-static void PyType_Ready_ADD(PyObject *dict, PyTypeObject *tp, PyAttributeDef *attributes, PyAttributeDef *attributesPtr, int init_getset)
+static void PyType_Ready_ADD(PyObject *dict, PyTypeObject *tp, EXP_Attribute *attributes, EXP_Attribute *attributesPtr, int init_getset)
 {
-	PyAttributeDef *attr;
+	EXP_Attribute *attr;
 
 	if (init_getset) {
 		/* we need to do this for all types before calling PyType_Ready

@@ -139,7 +139,7 @@ PyMethodDef KX_TextureRenderer::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_TextureRenderer::Attributes[] = {
+EXP_Attribute KX_TextureRenderer::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("viewpointObject", KX_TextureRenderer, pyattr_get_viewpoint_object, pyattr_set_viewpoint_object),
 	KX_PYATTRIBUTE_BOOL_RW("autoUpdate", KX_TextureRenderer, m_autoUpdate),
 	KX_PYATTRIBUTE_BOOL_RW("enabled", KX_TextureRenderer, m_enabled),

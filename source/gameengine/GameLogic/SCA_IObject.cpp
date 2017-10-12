@@ -317,7 +317,7 @@ PyMethodDef SCA_IObject::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_IObject::Attributes[] = {
+EXP_Attribute SCA_IObject::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 

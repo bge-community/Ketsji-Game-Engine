@@ -149,12 +149,12 @@ PyMethodDef SCA_ActuatorSensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_ActuatorSensor::Attributes[] = {
+EXP_Attribute SCA_ActuatorSensor::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW_CHECK("actuator",0,MAX_PROP_NAME,false,SCA_ActuatorSensor,m_checkactname,CheckActuator),
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
-int SCA_ActuatorSensor::CheckActuator(PyObjectPlus *self, const PyAttributeDef*)
+int SCA_ActuatorSensor::CheckActuator(PyObjectPlus *self, const EXP_Attribute*)
 {
 	SCA_ActuatorSensor* sensor = reinterpret_cast<SCA_ActuatorSensor*>(self);
 	SCA_IActuator* act = sensor->GetParent()->FindActuator(sensor->m_checkactname);

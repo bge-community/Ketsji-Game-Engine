@@ -62,7 +62,7 @@ public:
 	/* Python interface ---------------------------------------------------- */
 	/* --------------------------------------------------------------------- */
 
-	static int CheckActuator(PyObjectPlus *self, const PyAttributeDef*);
+	static int CheckActuator(PyObjectPlus *self, const EXP_Attribute*);
 	
 #endif  /* WITH_PYTHON */
 };

@@ -387,7 +387,7 @@ PyMethodDef KX_TrackToActuator::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_TrackToActuator::Attributes[] = {
+EXP_Attribute KX_TrackToActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("time",0,1000,true,KX_TrackToActuator,m_time),
 	KX_PYATTRIBUTE_BOOL_RW("use3D",KX_TrackToActuator,m_allow3D),
 	KX_PYATTRIBUTE_INT_RW("upAxis", 0, 2, true, KX_TrackToActuator,m_upflag),

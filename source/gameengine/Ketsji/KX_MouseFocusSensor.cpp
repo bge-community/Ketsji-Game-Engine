@@ -450,7 +450,7 @@ PyMethodDef KX_MouseFocusSensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_MouseFocusSensor::Attributes[] = {
+EXP_Attribute KX_MouseFocusSensor::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("raySource",		KX_MouseFocusSensor, pyattr_get_ray_source),
 	KX_PYATTRIBUTE_RO_FUNCTION("rayTarget",		KX_MouseFocusSensor, pyattr_get_ray_target),
 	KX_PYATTRIBUTE_RO_FUNCTION("rayDirection",	KX_MouseFocusSensor, pyattr_get_ray_direction),

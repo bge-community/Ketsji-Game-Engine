@@ -282,7 +282,7 @@ PyMethodDef KX_WorldInfo::Methods[] = {
 	{nullptr,nullptr} /* Sentinel */
 };
 
-PyAttributeDef KX_WorldInfo::Attributes[] = {
+EXP_Attribute KX_WorldInfo::Attributes[] = {
 	KX_PYATTRIBUTE_BOOL_RW("mistEnable", KX_WorldInfo, m_hasmist),
 	KX_PYATTRIBUTE_FLOAT_RW("mistStart", 0.0f, 10000.0f, KX_WorldInfo, m_miststart),
 	KX_PYATTRIBUTE_FLOAT_RW("mistDistance", 0.001f, 10000.0f, KX_WorldInfo, m_mistdistance),

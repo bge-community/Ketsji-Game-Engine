@@ -90,7 +90,7 @@ PyMethodDef SCA_PythonJoystick::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_PythonJoystick::Attributes[] = {
+EXP_Attribute SCA_PythonJoystick::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("numButtons", SCA_PythonJoystick, pyattr_get_num_x),
 	KX_PYATTRIBUTE_RO_FUNCTION("numHats", SCA_PythonJoystick, pyattr_get_num_x),
 	KX_PYATTRIBUTE_RO_FUNCTION("numAxis", SCA_PythonJoystick, pyattr_get_num_x),

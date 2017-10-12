@@ -304,7 +304,7 @@ PyMethodDef SCA_KeyboardSensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_KeyboardSensor::Attributes[] = {
+EXP_Attribute SCA_KeyboardSensor::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("events", SCA_KeyboardSensor, pyattr_get_events),
 	KX_PYATTRIBUTE_RO_FUNCTION("inputs", SCA_KeyboardSensor, pyattr_get_inputs),
 	KX_PYATTRIBUTE_BOOL_RW("useAllKeys",SCA_KeyboardSensor,m_bAllKeys),

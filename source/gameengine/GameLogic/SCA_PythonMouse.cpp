@@ -84,7 +84,7 @@ PyMethodDef SCA_PythonMouse::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_PythonMouse::Attributes[] = {
+EXP_Attribute SCA_PythonMouse::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("events", SCA_PythonMouse, pyattr_get_events),
 	KX_PYATTRIBUTE_RO_FUNCTION("inputs", SCA_PythonMouse, pyattr_get_inputs),
 	KX_PYATTRIBUTE_RO_FUNCTION("active_events", SCA_PythonMouse, pyattr_get_active_events),

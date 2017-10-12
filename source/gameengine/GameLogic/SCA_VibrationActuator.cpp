@@ -124,7 +124,7 @@ PyMethodDef SCA_VibrationActuator::Methods[] = {
 	{ nullptr, nullptr } //Sentinel
 };
 
-PyAttributeDef SCA_VibrationActuator::Attributes[] = {
+EXP_Attribute SCA_VibrationActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("duration", 0, INT_MAX, true, SCA_VibrationActuator, m_duration),
 	KX_PYATTRIBUTE_INT_RW("joyindex", 0, 7, true, SCA_VibrationActuator, m_joyindex),
 	KX_PYATTRIBUTE_FLOAT_RW("strengthLeft", 0.0, 1.0, SCA_VibrationActuator, m_strengthLeft),

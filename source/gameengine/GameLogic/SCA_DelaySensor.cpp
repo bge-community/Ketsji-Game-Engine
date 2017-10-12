@@ -158,7 +158,7 @@ PyMethodDef SCA_DelaySensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_DelaySensor::Attributes[] = {
+EXP_Attribute SCA_DelaySensor::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("delay",0,100000,true,SCA_DelaySensor,m_delay),
 	KX_PYATTRIBUTE_INT_RW("duration",0,100000,true,SCA_DelaySensor,m_duration),
 	KX_PYATTRIBUTE_BOOL_RW("repeat",SCA_DelaySensor,m_repeat),

@@ -199,7 +199,7 @@ PyMethodDef KX_LodManager::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_LodManager::Attributes[] = {
+EXP_Attribute KX_LodManager::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("levels", KX_LodManager, pyattr_get_levels),
 	KX_PYATTRIBUTE_FLOAT_RW("distanceFactor", 0.0f, FLT_MAX, KX_LodManager, m_distanceFactor),
 	KX_PYATTRIBUTE_NULL

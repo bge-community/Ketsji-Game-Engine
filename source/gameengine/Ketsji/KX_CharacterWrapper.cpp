@@ -65,7 +65,7 @@ PyTypeObject KX_CharacterWrapper::Type = {
 	py_base_new
 };
 
-PyAttributeDef KX_CharacterWrapper::Attributes[] = {
+EXP_Attribute KX_CharacterWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("onGround", KX_CharacterWrapper, pyattr_get_onground),
 	KX_PYATTRIBUTE_RW_FUNCTION("gravity", KX_CharacterWrapper, pyattr_get_gravity, pyattr_set_gravity),
 	KX_PYATTRIBUTE_RW_FUNCTION("fallSpeed", KX_CharacterWrapper, pyattr_get_fallSpeed, pyattr_set_fallSpeed),

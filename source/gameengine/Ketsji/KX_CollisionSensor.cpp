@@ -310,7 +310,7 @@ PyMethodDef KX_CollisionSensor::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_CollisionSensor::Attributes[] = {
+EXP_Attribute KX_CollisionSensor::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW("propName", 0, MAX_PROP_NAME, false, KX_CollisionSensor, m_touchedpropname),
 	KX_PYATTRIBUTE_BOOL_RW("useMaterial", KX_CollisionSensor, m_bFindMaterial),
 	KX_PYATTRIBUTE_BOOL_RW("usePulseCollision", KX_CollisionSensor, m_bCollisionPulse),

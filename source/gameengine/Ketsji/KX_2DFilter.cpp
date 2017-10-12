@@ -114,7 +114,7 @@ PyMethodDef KX_2DFilter::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_2DFilter::Attributes[] = {
+EXP_Attribute KX_2DFilter::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("mipmap", KX_2DFilter, pyattr_get_mipmap, pyattr_set_mipmap),
 	KX_PYATTRIBUTE_RO_FUNCTION("offScreen", KX_2DFilter, pyattr_get_offScreen),
 	KX_PYATTRIBUTE_NULL // Sentinel

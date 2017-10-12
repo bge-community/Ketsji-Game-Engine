@@ -110,7 +110,7 @@ PyMethodDef KX_ConstraintWrapper::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_ConstraintWrapper::Attributes[] = {
+EXP_Attribute KX_ConstraintWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_id", KX_ConstraintWrapper, pyattr_get_constraintId),
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_type", KX_ConstraintWrapper, pyattr_get_constraintType),
 	KX_PYATTRIBUTE_RW_FUNCTION("breakingThreshold", KX_ConstraintWrapper, pyattr_get_breakingThreshold, pyattr_set_breakingThreshold),

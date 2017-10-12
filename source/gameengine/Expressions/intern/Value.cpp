@@ -349,7 +349,7 @@ CValue *CValue::FindIdentifier(const std::string& identifiername)
 
 #ifdef WITH_PYTHON
 
-PyAttributeDef CValue::Attributes[] = {
+EXP_Attribute CValue::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("name",  CValue, pyattr_get_name),
 	KX_PYATTRIBUTE_NULL // Sentinel
 };

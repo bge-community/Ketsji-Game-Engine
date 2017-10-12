@@ -220,7 +220,7 @@ PyMethodDef SCA_PythonController::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_PythonController::Attributes[] = {
+EXP_Attribute SCA_PythonController::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("script", SCA_PythonController, pyattr_get_script, pyattr_set_script),
 	KX_PYATTRIBUTE_INT_RO("mode", SCA_PythonController, m_mode),
 	KX_PYATTRIBUTE_NULL	//Sentinel

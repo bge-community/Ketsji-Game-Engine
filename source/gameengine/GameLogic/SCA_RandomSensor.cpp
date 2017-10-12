@@ -158,7 +158,7 @@ PyMethodDef SCA_RandomSensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_RandomSensor::Attributes[] = {
+EXP_Attribute SCA_RandomSensor::Attributes[] = {
 	KX_PYATTRIBUTE_BOOL_RO("lastDraw",SCA_RandomSensor,m_lastdraw),
 	KX_PYATTRIBUTE_RW_FUNCTION("seed", SCA_RandomSensor, pyattr_get_seed, pyattr_set_seed),
 	KX_PYATTRIBUTE_NULL //Sentinel

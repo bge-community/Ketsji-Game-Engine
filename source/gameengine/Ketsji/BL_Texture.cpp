@@ -228,7 +228,7 @@ PyMethodDef BL_Texture::Methods[] = {
 	{ nullptr, nullptr } //Sentinel
 };
 
-PyAttributeDef BL_Texture::Attributes[] = {
+EXP_Attribute BL_Texture::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("diffuseIntensity", BL_Texture, pyattr_get_diffuse_intensity, pyattr_set_diffuse_intensity),
 	KX_PYATTRIBUTE_RW_FUNCTION("diffuseFactor", BL_Texture, pyattr_get_diffuse_factor, pyattr_set_diffuse_factor),
 	KX_PYATTRIBUTE_RW_FUNCTION("alpha", BL_Texture, pyattr_get_alpha, pyattr_set_alpha),

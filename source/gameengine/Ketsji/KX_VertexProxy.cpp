@@ -80,7 +80,7 @@ PyMethodDef KX_VertexProxy::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_VertexProxy::Attributes[] = {
+EXP_Attribute KX_VertexProxy::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("x", KX_VertexProxy, pyattr_get_x, pyattr_set_x),
 	KX_PYATTRIBUTE_RW_FUNCTION("y", KX_VertexProxy, pyattr_get_y, pyattr_set_y),
 	KX_PYATTRIBUTE_RW_FUNCTION("z", KX_VertexProxy, pyattr_get_z, pyattr_set_z),

@@ -173,7 +173,7 @@ PyMethodDef KX_BatchGroup::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_BatchGroup::Attributes[] = {
+EXP_Attribute KX_BatchGroup::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("objects", KX_BatchGroup, pyattr_get_objects),
 	KX_PYATTRIBUTE_NULL // Sentinel
 };

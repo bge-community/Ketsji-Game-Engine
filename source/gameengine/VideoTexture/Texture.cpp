@@ -532,7 +532,7 @@ PyMethodDef Texture::Methods[] = {
 };
 
 // class Texture attributes
-PyAttributeDef Texture::Attributes[] = {
+EXP_Attribute Texture::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("mipmap", Texture, pyattr_get_mipmap, pyattr_set_mipmap),
 	KX_PYATTRIBUTE_RW_FUNCTION("source", Texture, pyattr_get_source, pyattr_set_source),
 	KX_PYATTRIBUTE_RO_FUNCTION("bindId", Texture, pyattr_get_bindId),

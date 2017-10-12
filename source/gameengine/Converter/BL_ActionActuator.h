@@ -81,7 +81,7 @@ public:
 	static PyObject*	pyattr_get_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 	static int			pyattr_set_frame(PyObjectPlus *self_v, const EXP_Attribute *attrdef, PyObject *value);
 
-	static int CheckBlendTime(PyObjectPlus *self, const PyAttributeDef*)
+	static int CheckBlendTime(PyObjectPlus *self, const EXP_Attribute*)
 	{
 		BL_ActionActuator* act = reinterpret_cast<BL_ActionActuator*>(self);
 
@@ -91,7 +91,7 @@ public:
 		return 0;
 	}
 
-	static int CheckType(PyObjectPlus *self, const PyAttributeDef*)
+	static int CheckType(PyObjectPlus *self, const EXP_Attribute*)
 	{
 		BL_ActionActuator* act = reinterpret_cast<BL_ActionActuator*>(self);
 

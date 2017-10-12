@@ -118,7 +118,7 @@ PyMethodDef SCA_ANDController::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_ANDController::Attributes[] = {
+EXP_Attribute SCA_ANDController::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 #endif // WITH_PYTHON

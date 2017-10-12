@@ -122,7 +122,7 @@ PyMethodDef SCA_XORController::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_XORController::Attributes[] = {
+EXP_Attribute SCA_XORController::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 #endif // WITH_PYTHON

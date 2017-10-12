@@ -289,8 +289,8 @@ PyObject *PyObjectPlus::pyattr_get_invalid(PyObjectPlus *self_v, const EXP_Attri
 	return PyBool_FromLong(self_v ? 0 : 1);
 }
 
-// Note, this is called as a python 'getset, where the PyAttributeDef is the closure.
-PyObject *PyObjectPlus::py_get_attrdef(PyObject *self_py, const PyAttributeDef *attrdef)
+// Note, this is called as a python 'getset, where the EXP_Attribute is the closure.
+PyObject *PyObjectPlus::py_get_attrdef(PyObject *self_py, const EXP_Attribute *attrdef)
 {
 	PyObjectPlus *ref = (BGE_PROXY_REF(self_py));
 	void *vptr = (attrdef->m_usePtr) ? (char *)BGE_PROXY_PTR(self_py) : (char *)ref;
@@ -495,7 +495,7 @@ PyObject *PyObjectPlus::py_get_attrdef(PyObject *self_py, const PyAttributeDef *
 }
 
 
-static bool py_check_attr_float(float *var, PyObject *value, const PyAttributeDef *attrdef)
+static bool py_check_attr_float(float *var, PyObject *value, const EXP_Attribute *attrdef)
 {
 	float val = PyFloat_AsDouble(value);
 	if (val == -1.0f && PyErr_Occurred()) {
@@ -519,7 +519,7 @@ static bool py_check_attr_float(float *var, PyObject *value, const PyAttributeDe
 }
 
 // Note, this is called as a python getset.
-int PyObjectPlus::py_set_attrdef(PyObject *self_py, PyObject *value, const PyAttributeDef *attrdef)
+int PyObjectPlus::py_set_attrdef(PyObject *self_py, PyObject *value, const EXP_Attribute *attrdef)
 {
 	PyObjectPlus *ref = (BGE_PROXY_REF(self_py));
 	char *ptr = (attrdef->m_usePtr) ? (char *)BGE_PROXY_PTR(self_py) : (char *)ref;

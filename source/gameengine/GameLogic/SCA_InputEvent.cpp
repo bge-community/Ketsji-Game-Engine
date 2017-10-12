@@ -117,7 +117,7 @@ PyMethodDef SCA_InputEvent::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_InputEvent::Attributes[] = {
+EXP_Attribute SCA_InputEvent::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("status", SCA_InputEvent, pyattr_get_status),
 	KX_PYATTRIBUTE_RO_FUNCTION("queue", SCA_InputEvent, pyattr_get_queue),
 	KX_PYATTRIBUTE_RO_FUNCTION("values", SCA_InputEvent, pyattr_get_values),

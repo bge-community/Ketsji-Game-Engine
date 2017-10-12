@@ -356,7 +356,7 @@ PyMethodDef KX_RaySensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_RaySensor::Attributes[] = {
+EXP_Attribute KX_RaySensor::Attributes[] = {
 	KX_PYATTRIBUTE_BOOL_RW("useMaterial", KX_RaySensor, m_bFindMaterial),
 	KX_PYATTRIBUTE_BOOL_RW("useXRay", KX_RaySensor, m_bXRay),
 	KX_PYATTRIBUTE_FLOAT_RW("range", 0, 10000, KX_RaySensor, m_distance),

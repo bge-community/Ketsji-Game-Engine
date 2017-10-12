@@ -217,7 +217,7 @@ PyMethodDef KX_MovementSensor::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_MovementSensor::Attributes[] = {
+EXP_Attribute KX_MovementSensor::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("threshold", 0.001f, 10000.0f, KX_MovementSensor, m_threshold),
 	KX_PYATTRIBUTE_INT_RW("axis", 0, 6, true, KX_MovementSensor, m_axis),
 	KX_PYATTRIBUTE_NULL // Sentinel

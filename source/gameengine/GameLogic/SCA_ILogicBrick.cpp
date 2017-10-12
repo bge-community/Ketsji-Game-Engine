@@ -139,13 +139,13 @@ PyMethodDef SCA_ILogicBrick::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_ILogicBrick::Attributes[] = {
+EXP_Attribute SCA_ILogicBrick::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("owner",	SCA_ILogicBrick, pyattr_get_owner),
 	KX_PYATTRIBUTE_INT_RW("executePriority",0,100000,false,SCA_ILogicBrick,m_Execute_Priority),
 	KX_PYATTRIBUTE_NULL //Sentinel
 };
 
-int SCA_ILogicBrick::CheckProperty(PyObjectPlus *self, const PyAttributeDef *attrdef)
+int SCA_ILogicBrick::CheckProperty(PyObjectPlus *self, const EXP_Attribute *attrdef)
 {
 	if (attrdef->m_type != KX_PYATTRIBUTE_TYPE_STRING || attrdef->m_length != 1) {
 		PyErr_SetString(PyExc_AttributeError, "inconsistent check function for attribute type, report to blender.org");

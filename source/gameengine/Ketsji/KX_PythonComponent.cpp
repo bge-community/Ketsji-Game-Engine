@@ -152,7 +152,7 @@ PyMethodDef KX_PythonComponent::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_PythonComponent::Attributes[] = {
+EXP_Attribute KX_PythonComponent::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("object", KX_PythonComponent, pyattr_get_object),
 	KX_PYATTRIBUTE_NULL // Sentinel
 };

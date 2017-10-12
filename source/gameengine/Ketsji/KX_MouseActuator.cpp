@@ -375,7 +375,7 @@ PyMethodDef KX_MouseActuator::Methods[] = {
 
 
 
-PyAttributeDef KX_MouseActuator::Attributes[] = {
+EXP_Attribute KX_MouseActuator::Attributes[] = {
 	KX_PYATTRIBUTE_BOOL_RW("visible", KX_MouseActuator, m_visible),
 	KX_PYATTRIBUTE_BOOL_RW("use_axis_x", KX_MouseActuator, m_use_axis_x),
 	KX_PYATTRIBUTE_BOOL_RW("use_axis_y", KX_MouseActuator, m_use_axis_y),

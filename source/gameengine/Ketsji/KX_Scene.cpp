@@ -2213,7 +2213,7 @@ int KX_Scene::pyattr_set_gravity(PyObjectPlus *self_v, const EXP_Attribute *attr
 	return PY_SET_ATTR_SUCCESS;
 }
 
-PyAttributeDef KX_Scene::Attributes[] = {
+EXP_Attribute KX_Scene::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("name",				KX_Scene, pyattr_get_name),
 	KX_PYATTRIBUTE_RO_FUNCTION("objects",			KX_Scene, pyattr_get_objects),
 	KX_PYATTRIBUTE_RO_FUNCTION("objectsInactive",	KX_Scene, pyattr_get_objects_inactive),

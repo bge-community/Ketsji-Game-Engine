@@ -226,7 +226,7 @@ PyMethodDef SCA_IController::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef SCA_IController::Attributes[] = {
+EXP_Attribute SCA_IController::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("state", SCA_IController, pyattr_get_state),
 	KX_PYATTRIBUTE_RO_FUNCTION("sensors", SCA_IController, pyattr_get_sensors),
 	KX_PYATTRIBUTE_RO_FUNCTION("actuators", SCA_IController, pyattr_get_actuators),

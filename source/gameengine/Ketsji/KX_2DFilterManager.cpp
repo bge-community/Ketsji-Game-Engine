@@ -52,7 +52,7 @@ PyMethodDef KX_2DFilterManager::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_2DFilterManager::Attributes[] = {
+EXP_Attribute KX_2DFilterManager::Attributes[] = {
 	KX_PYATTRIBUTE_NULL //Sentinel
 };
 

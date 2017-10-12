@@ -254,7 +254,7 @@ PyMethodDef KX_PlanarMap::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_PlanarMap::Attributes[] = {
+EXP_Attribute KX_PlanarMap::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("normal", KX_PlanarMap, pyattr_get_normal, pyattr_set_normal),
 	KX_PYATTRIBUTE_NULL // Sentinel
 };

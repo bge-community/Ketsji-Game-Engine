@@ -78,7 +78,7 @@ PyMethodDef KX_SCA_ReplaceMeshActuator::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_SCA_ReplaceMeshActuator::Attributes[] = {
+EXP_Attribute KX_SCA_ReplaceMeshActuator::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("mesh", KX_SCA_ReplaceMeshActuator, pyattr_get_mesh, pyattr_set_mesh),
 	KX_PYATTRIBUTE_BOOL_RW    ("useDisplayMesh", KX_SCA_ReplaceMeshActuator, m_use_gfx),
 	KX_PYATTRIBUTE_BOOL_RW    ("usePhysicsMesh", KX_SCA_ReplaceMeshActuator, m_use_phys),

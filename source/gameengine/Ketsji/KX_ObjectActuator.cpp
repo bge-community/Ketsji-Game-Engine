@@ -386,7 +386,7 @@ PyMethodDef KX_ObjectActuator::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_ObjectActuator::Attributes[] = {
+EXP_Attribute KX_ObjectActuator::Attributes[] = {
 	KX_PYATTRIBUTE_VECTOR_RW_CHECK("force", -1000, 1000, false, KX_ObjectActuator, m_force, PyUpdateFuzzyFlags),
 	KX_PYATTRIBUTE_BOOL_RW("useLocalForce", KX_ObjectActuator, m_bitLocalFlag.Force),
 	KX_PYATTRIBUTE_VECTOR_RW_CHECK("torque", -1000, 1000, false, KX_ObjectActuator, m_torque, PyUpdateFuzzyFlags),

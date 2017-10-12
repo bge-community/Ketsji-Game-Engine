@@ -1866,7 +1866,7 @@ PyMethodDef KX_GameObject::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_GameObject::Attributes[] = {
+EXP_Attribute KX_GameObject::Attributes[] = {
 	KX_PYATTRIBUTE_SHORT_RO("currentLodLevel", KX_GameObject, m_currentLodLevel),
 	KX_PYATTRIBUTE_RW_FUNCTION("lodManager", KX_GameObject, pyattr_get_lodManager, pyattr_set_lodManager),
 	KX_PYATTRIBUTE_RW_FUNCTION("name",		KX_GameObject, pyattr_get_name, pyattr_set_name),

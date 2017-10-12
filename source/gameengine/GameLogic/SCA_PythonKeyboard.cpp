@@ -96,7 +96,7 @@ PyMethodDef SCA_PythonKeyboard::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_PythonKeyboard::Attributes[] = {
+EXP_Attribute SCA_PythonKeyboard::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("events", SCA_PythonKeyboard, pyattr_get_events),
 	KX_PYATTRIBUTE_RO_FUNCTION("inputs", SCA_PythonKeyboard, pyattr_get_inputs),
 	KX_PYATTRIBUTE_RO_FUNCTION("active_events", SCA_PythonKeyboard, pyattr_get_active_events),

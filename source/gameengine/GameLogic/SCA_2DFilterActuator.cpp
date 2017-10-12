@@ -181,7 +181,7 @@ PyMethodDef SCA_2DFilterActuator::Methods[] = {
 	{nullptr,nullptr}
 };
 
-PyAttributeDef SCA_2DFilterActuator::Attributes[] = {
+EXP_Attribute SCA_2DFilterActuator::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW("shaderText", 0, 64000, false, SCA_2DFilterActuator, m_shaderText),
 	KX_PYATTRIBUTE_SHORT_RW("disableMotionBlur", 0, 1, true, SCA_2DFilterActuator, m_disableMotionBlur),
 	KX_PYATTRIBUTE_ENUM_RW("mode", RAS_2DFilterManager::FILTER_ENABLED, RAS_2DFilterManager::FILTER_NUMBER_OF_FILTERS, false, SCA_2DFilterActuator, m_type),

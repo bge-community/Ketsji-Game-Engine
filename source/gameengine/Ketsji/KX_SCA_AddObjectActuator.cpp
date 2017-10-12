@@ -197,7 +197,7 @@ PyMethodDef KX_SCA_AddObjectActuator::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_SCA_AddObjectActuator::Attributes[] = {
+EXP_Attribute KX_SCA_AddObjectActuator::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("object",KX_SCA_AddObjectActuator,pyattr_get_object,pyattr_set_object),
 	KX_PYATTRIBUTE_RO_FUNCTION("objectLastCreated",KX_SCA_AddObjectActuator,pyattr_get_objectLastCreated),
 	KX_PYATTRIBUTE_FLOAT_RW("time", 0.0f, FLT_MAX, KX_SCA_AddObjectActuator, m_timeProp),

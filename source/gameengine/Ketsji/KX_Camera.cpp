@@ -333,7 +333,7 @@ PyMethodDef KX_Camera::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_Camera::Attributes[] = {
+EXP_Attribute KX_Camera::Attributes[] = {
 	
 	KX_PYATTRIBUTE_BOOL_RW("frustum_culling", KX_Camera, m_frustum_culling),
 	KX_PYATTRIBUTE_RW_FUNCTION("perspective", KX_Camera, pyattr_get_perspective, pyattr_set_perspective),

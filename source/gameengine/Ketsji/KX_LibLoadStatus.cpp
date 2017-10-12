@@ -136,7 +136,7 @@ PyMethodDef KX_LibLoadStatus::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_LibLoadStatus::Attributes[] = {
+EXP_Attribute KX_LibLoadStatus::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("onFinish", KX_LibLoadStatus, pyattr_get_onfinish, pyattr_set_onfinish),
 	// KX_PYATTRIBUTE_RW_FUNCTION("onProgress", KX_LibLoadStatus, pyattr_get_onprogress, pyattr_set_onprogress),
 	KX_PYATTRIBUTE_FLOAT_RO("progress", KX_LibLoadStatus, m_progress),

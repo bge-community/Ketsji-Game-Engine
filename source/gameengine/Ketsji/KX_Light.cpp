@@ -156,7 +156,7 @@ PyMethodDef KX_LightObject::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_LightObject::Attributes[] = {
+EXP_Attribute KX_LightObject::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("energy", KX_LightObject, pyattr_get_energy, pyattr_set_energy),
 	KX_PYATTRIBUTE_RW_FUNCTION("distance", KX_LightObject, pyattr_get_distance, pyattr_set_distance),
 	KX_PYATTRIBUTE_RW_FUNCTION("color", KX_LightObject, pyattr_get_color, pyattr_set_color),

@@ -98,7 +98,7 @@ PyMethodDef KX_LodLevel::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef KX_LodLevel::Attributes[] = {
+EXP_Attribute KX_LodLevel::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("mesh", KX_LodLevel, pyattr_get_mesh),
 	KX_PYATTRIBUTE_SHORT_RO("level", KX_LodLevel, m_level),
 	KX_PYATTRIBUTE_FLOAT_RO("distance", KX_LodLevel, m_distance),

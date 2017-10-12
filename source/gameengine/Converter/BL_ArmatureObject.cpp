@@ -585,7 +585,7 @@ PyMethodDef BL_ArmatureObject::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef BL_ArmatureObject::Attributes[] = {
+EXP_Attribute BL_ArmatureObject::Attributes[] = {
 
 	KX_PYATTRIBUTE_RO_FUNCTION("constraints",       BL_ArmatureObject, pyattr_get_constraints),
 	KX_PYATTRIBUTE_RO_FUNCTION("channels",      BL_ArmatureObject, pyattr_get_channels),

@@ -97,7 +97,7 @@ PyMethodDef BL_ArmatureChannel::Methods[] = {
 #define BCA_BONE		0
 #define BCA_PARENT		1
 
-PyAttributeDef BL_ArmatureChannel::Attributes[] = {
+EXP_Attribute BL_ArmatureChannel::Attributes[] = {
 	// Keep these attributes in order of BCA_ defines!!! used by py_attr_getattr and py_attr_setattr
 	KX_PYATTRIBUTE_RO_FUNCTION("bone",BL_ArmatureChannel,py_attr_getattr),
 	KX_PYATTRIBUTE_RO_FUNCTION("parent",BL_ArmatureChannel,py_attr_getattr),
@@ -105,7 +105,7 @@ PyAttributeDef BL_ArmatureChannel::Attributes[] = {
 };
 
 /* attributes directly taken from bPoseChannel */
-PyAttributeDef BL_ArmatureChannel::AttributesPtr[] = {
+EXP_Attribute BL_ArmatureChannel::AttributesPtr[] = {
 	KX_PYATTRIBUTE_CHAR_RO("name",bPoseChannel,name),
 	KX_PYATTRIBUTE_FLAG_RO("has_ik",bPoseChannel,flag, POSE_CHAIN),
 	KX_PYATTRIBUTE_FLAG_NEGATIVE_RO("ik_dof_x",bPoseChannel,ikflag, BONE_IK_NO_XDOF),
@@ -411,12 +411,12 @@ PyMethodDef BL_ArmatureBone::Methods[] = {
 };
 
 /* no attributes on C++ class since it is never instantiated */
-PyAttributeDef BL_ArmatureBone::Attributes[] = {
+EXP_Attribute BL_ArmatureBone::Attributes[] = {
 	KX_PYATTRIBUTE_NULL	//Sentinel
 };
 
 // attributes that work on proxy ptr (points to a Bone structure)
-PyAttributeDef BL_ArmatureBone::AttributesPtr[] = {
+EXP_Attribute BL_ArmatureBone::AttributesPtr[] = {
 	KX_PYATTRIBUTE_CHAR_RO("name",Bone,name),
 	KX_PYATTRIBUTE_FLAG_RO("connected",Bone,flag, BONE_CONNECTED),
 	KX_PYATTRIBUTE_FLAG_RO("hinge",Bone,flag, BONE_HINGE),

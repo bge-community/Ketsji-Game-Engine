@@ -436,7 +436,7 @@ PyMethodDef CBaseListValue::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef CBaseListValue::Attributes[] = {
+EXP_Attribute CBaseListValue::Attributes[] = {
 	KX_PYATTRIBUTE_NULL // Sentinel
 };
 

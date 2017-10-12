@@ -183,7 +183,7 @@ public:
 	
 
 	/* attribute check */
-	static int CheckAxis(PyObjectPlus *self, const PyAttributeDef*)
+	static int CheckAxis(PyObjectPlus *self, const EXP_Attribute*)
 	{
 		SCA_JoystickSensor* sensor = reinterpret_cast<SCA_JoystickSensor*>(self);
 		if (sensor->m_axis < 1)

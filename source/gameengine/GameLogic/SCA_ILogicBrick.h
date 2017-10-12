@@ -129,7 +129,7 @@ public:
 	static PyObject*	pyattr_get_owner(PyObjectPlus *self_v, const EXP_Attribute *attrdef);
 
 	// check that attribute is a property
-	static int CheckProperty(PyObjectPlus *self, const PyAttributeDef *attrdef);
+	static int CheckProperty(PyObjectPlus *self, const EXP_Attribute *attrdef);
 
 	enum KX_BOOL_TYPE {
 		KX_BOOL_NODEF = 0,

@@ -78,7 +78,7 @@ PyMethodDef KX_PolyProxy::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_PolyProxy::Attributes[] = {
+EXP_Attribute KX_PolyProxy::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("material_name", KX_PolyProxy, pyattr_get_material_name),
 	KX_PYATTRIBUTE_RO_FUNCTION("texture_name", KX_PolyProxy, pyattr_get_texture_name),
 	KX_PYATTRIBUTE_RO_FUNCTION("material", KX_PolyProxy, pyattr_get_material),

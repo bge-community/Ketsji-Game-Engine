@@ -361,7 +361,7 @@ PyMethodDef KX_VehicleWrapper::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_VehicleWrapper::Attributes[] = {
+EXP_Attribute KX_VehicleWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("rayMask", KX_VehicleWrapper, pyattr_get_ray_mask, pyattr_set_ray_mask),
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_id", KX_VehicleWrapper, pyattr_get_constraintId),
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_type", KX_VehicleWrapper, pyattr_get_constraintType),

@@ -145,7 +145,7 @@ void BL_ConvertProperties(Object* object,KX_GameObject* gameobj,SCA_TimeEventMan
 		
 #ifdef WITH_PYTHON
 		/* Warn if we double up on attributes, this isn't quite right since it wont find inherited attributes however there arnt many */
-		for (PyAttributeDef *attrdef = KX_GameObject::Attributes; !attrdef->m_name.empty(); attrdef++) {
+		for (EXP_Attribute *attrdef = KX_GameObject::Attributes; !attrdef->m_name.empty(); attrdef++) {
 			if (prop->name == attrdef->m_name) {
 				CM_Warning("user defined property name \"" << prop->name << "\" is also a python attribute for object \""
 					<< object->id.name+2 << "\". Use ob[\"" << prop->name << "\"] syntax to avoid conflict");

@@ -371,7 +371,7 @@ PyMethodDef SCA_ISensor::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef SCA_ISensor::Attributes[] = {
+EXP_Attribute SCA_ISensor::Attributes[] = {
 	KX_PYATTRIBUTE_BOOL_RW("usePosPulseMode", SCA_ISensor, m_pos_pulsemode),
 	KX_PYATTRIBUTE_BOOL_RW("useNegPulseMode", SCA_ISensor, m_neg_pulsemode),
 	KX_PYATTRIBUTE_INT_RW("skippedTicks", 0, 100000, true, SCA_ISensor, m_skipped_ticks),

@@ -250,7 +250,7 @@ PyMethodDef SCA_JoystickSensor::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef SCA_JoystickSensor::Attributes[] = {
+EXP_Attribute SCA_JoystickSensor::Attributes[] = {
 	KX_PYATTRIBUTE_SHORT_RW("index",0,JOYINDEX_MAX-1,true,SCA_JoystickSensor,m_joyindex),
 	KX_PYATTRIBUTE_INT_RW("threshold",0,32768,true,SCA_JoystickSensor,m_precision),
 	KX_PYATTRIBUTE_INT_RW("button", 0, KX_JOYSENS_BUTTON_MAX - 1, false, SCA_JoystickSensor, m_button),

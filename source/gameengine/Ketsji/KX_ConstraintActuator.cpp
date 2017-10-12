@@ -582,7 +582,7 @@ PyMethodDef KX_ConstraintActuator::Methods[] = {
 	{nullptr,nullptr} //Sentinel
 };
 
-PyAttributeDef KX_ConstraintActuator::Attributes[] = {
+EXP_Attribute KX_ConstraintActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("damp",0,100,true,KX_ConstraintActuator,m_posDampTime),
 	KX_PYATTRIBUTE_INT_RW("rotDamp",0,100,true,KX_ConstraintActuator,m_rotDampTime),
 	KX_PYATTRIBUTE_FLOAT_ARRAY_RW_CHECK("direction",-FLT_MAX,FLT_MAX,KX_ConstraintActuator,m_refDirection,3,pyattr_check_direction),

@@ -325,7 +325,7 @@ PyMethodDef KX_SoundActuator::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef KX_SoundActuator::Attributes[] = {
+EXP_Attribute KX_SoundActuator::Attributes[] = {
 	KX_PYATTRIBUTE_BOOL_RO("is3D", KX_SoundActuator, m_is3d),
 	KX_PYATTRIBUTE_RW_FUNCTION("volume_maximum", KX_SoundActuator, pyattr_get_3d_property, pyattr_set_3d_property),
 	KX_PYATTRIBUTE_RW_FUNCTION("volume_minimum", KX_SoundActuator, pyattr_get_3d_property, pyattr_set_3d_property),

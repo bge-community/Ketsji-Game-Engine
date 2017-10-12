@@ -372,7 +372,7 @@ PyMethodDef CListWrapper::Methods[] = {
 	{nullptr, nullptr} // Sentinel
 };
 
-PyAttributeDef CListWrapper::Attributes[] = {
+EXP_Attribute CListWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_NULL // Sentinel
 };
 

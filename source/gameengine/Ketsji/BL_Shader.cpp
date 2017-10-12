@@ -177,7 +177,7 @@ PyMethodDef BL_Shader::Methods[] = {
 	{nullptr, nullptr} //Sentinel
 };
 
-PyAttributeDef BL_Shader::Attributes[] = {
+EXP_Attribute BL_Shader::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("enabled", BL_Shader, pyattr_get_enabled, pyattr_set_enabled),
 	KX_PYATTRIBUTE_RW_FUNCTION("bindCallbacks", BL_Shader, pyattr_get_callbacks, pyattr_set_callbacks),
 	KX_PYATTRIBUTE_RW_FUNCTION("objectCallbacks", BL_Shader, pyattr_get_callbacks, pyattr_set_callbacks),
