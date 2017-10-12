@@ -1,4 +1,5 @@
 #include "EXP_Attribute.h"
+#include "EXP_Python.h"
 
 #include "BLI_math_vector.h"
 

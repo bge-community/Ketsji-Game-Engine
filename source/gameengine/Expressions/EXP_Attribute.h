@@ -2,6 +2,8 @@
 #define __EXP_ATTRIBUTE_H__
 
 #include <string>
+#include "MT_Vector2.h"
+#include "MT_Vector3.h"
 
 class PyObjectPlus;
 
@@ -84,66 +86,64 @@ public:
 
 	static bool IsValid(PyObjectPlus *self);
 
-
 	template <typename Type>
 	void PrintSetterError();
 
 	void PrintError(const std::string& msg);
 };
 
-template <bool>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<bool>()
 {
-	PrintError(" = bool: Excepted a boolean.")
+	PrintError(" = bool: Excepted a boolean.");
 }
 
-template <int>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<int>()
 {
-	PrintError(" = int: Excepted a int.")
+	PrintError(" = int: Excepted a int.");
 }
 
-template <unsigned int>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<unsigned int>()
 {
-	PrintError(" = int: Excepted a int.")
+	PrintError(" = int: Excepted a int.");
 }
 
-template <short>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<short>()
 {
-	PrintError(" = int: Excepted a int.")
+	PrintError(" = int: Excepted a int.");
 }
 
-template <unsigned short>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<unsigned short>()
 {
-	PrintError(" = int: Excepted a int.")
+	PrintError(" = int: Excepted a int.");
 }
 
-template <float>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<float>()
 {
-	PrintError(" = float: Excepted a float.")
+	PrintError(" = float: Excepted a float.");
 }
 
-template <std::string>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<std::string>()
 {
-	PrintError(" = str: Excepted a string.")
+	PrintError(" = str: Excepted a string.");
 }
 
-template <MT_Vector2>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<MT_Vector2>()
 {
-	PrintError(" = Vector: Excepted a 2d vector.")
+	PrintError(" = Vector: Excepted a 2d vector.");
 }
 
-template <MT_Vector3>
-void EXP_Attribute::PrintSetterError()
+template <>
+void EXP_Attribute::PrintSetterError<MT_Vector3>()
 {
-	PrintError(" = Vector: Excepted a 3d vector.")
+	PrintError(" = Vector: Excepted a 3d vector.");
 }
-
 
 #endif  // __EXP_ATTRIBUTE_H__

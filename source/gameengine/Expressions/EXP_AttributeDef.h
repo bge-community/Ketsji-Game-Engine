@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "EXP_Attribute.h"
+#include "EXP_PyObjectPlus.h"
 #include "EXP_PythonUtils.h"
 
 class EXP_AttributeDef
@@ -53,7 +53,7 @@ private:
 	static int Setter(PyObject *self_py, PyObject *value, const EXP_Attribute *attrdef)
 	{
 		PyObjectPlus *self = BGE_PROXY_REF(self_py);
-		if (!EXP_Attribute::IsValid(self_py)) {
+		if (!EXP_Attribute::IsValid(self)) {
 			return PY_SET_ATTR_FAIL;
 		}
 
