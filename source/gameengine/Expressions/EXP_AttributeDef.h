@@ -65,7 +65,7 @@ private:
 			}
 
 			if (Flags & GETSET_CUSTOM) {
-				success = attredef->m_customSetter(self, &temp, attrdef);
+				success = attrdef->m_customSetter(self, &temp, attrdef);
 			}
 			else {
 				Type *ptr = attrdef->PtrFromOffset<Type>(self);
