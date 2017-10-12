@@ -92,7 +92,7 @@ EXP_Attribute KX_MeshProxy::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("numMaterials",  KX_MeshProxy, pyattr_get_numMaterials),
 	KX_PYATTRIBUTE_RO_FUNCTION("polygons",      KX_MeshProxy, pyattr_get_polygons),
 
-	KX_PYATTRIBUTE_NULL    //Sentinel
+	KX_ATTRIBUTE_NULL    //Sentinel
 };
 
 KX_MeshProxy::KX_MeshProxy(RAS_MeshObject *mesh)

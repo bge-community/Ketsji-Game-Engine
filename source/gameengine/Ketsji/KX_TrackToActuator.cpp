@@ -394,7 +394,7 @@ EXP_Attribute KX_TrackToActuator::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("trackAxis", 0, 5, true, KX_TrackToActuator,m_trackflag),
 	KX_PYATTRIBUTE_RW_FUNCTION("object", KX_TrackToActuator, pyattr_get_object, pyattr_set_object),
 
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_TrackToActuator::pyattr_get_object(PyObjectPlus *self, const struct EXP_Attribute *attrdef)

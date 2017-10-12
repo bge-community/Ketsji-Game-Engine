@@ -175,7 +175,7 @@ PyMethodDef KX_BatchGroup::Methods[] = {
 
 EXP_Attribute KX_BatchGroup::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("objects", KX_BatchGroup, pyattr_get_objects),
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject *KX_BatchGroup::pyattr_get_objects(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

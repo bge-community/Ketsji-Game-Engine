@@ -283,7 +283,7 @@ PyMethodDef KX_NearSensor::Methods[] = {
 EXP_Attribute KX_NearSensor::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW_CHECK("distance", 0, 10000, KX_NearSensor, m_Margin, CheckResetDistance),
 	KX_PYATTRIBUTE_FLOAT_RW_CHECK("resetDistance", 0, 10000, KX_NearSensor, m_ResetMargin, CheckResetDistance),
-	KX_PYATTRIBUTE_NULL //Sentinel
+	KX_ATTRIBUTE_NULL //Sentinel
 };
 
 #endif // WITH_PYTHON

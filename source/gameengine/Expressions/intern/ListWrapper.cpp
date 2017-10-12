@@ -373,7 +373,7 @@ PyMethodDef CListWrapper::Methods[] = {
 };
 
 EXP_Attribute CListWrapper::Attributes[] = {
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_ATTRIBUTE_NULL // Sentinel
 };
 
 // Matches python dict.get(key, [default]).

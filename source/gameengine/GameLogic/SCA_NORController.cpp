@@ -119,7 +119,7 @@ PyMethodDef SCA_NORController::Methods[] = {
 };
 
 EXP_Attribute SCA_NORController::Attributes[] = {
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 #endif // WITH_PYTHON

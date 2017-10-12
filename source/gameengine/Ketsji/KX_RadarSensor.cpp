@@ -210,7 +210,7 @@ EXP_Attribute KX_RadarSensor::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RO("distance", KX_RadarSensor, m_coneheight),
 	KX_PYATTRIBUTE_RO_FUNCTION("angle", KX_RadarSensor, pyattr_get_angle),
 	KX_PYATTRIBUTE_INT_RW("axis", 0, 5, true, KX_RadarSensor, m_axis),
-	KX_PYATTRIBUTE_NULL //Sentinel
+	KX_ATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *KX_RadarSensor::pyattr_get_angle(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

@@ -90,7 +90,7 @@ EXP_Attribute KX_PolyProxy::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("visible", KX_PolyProxy, pyattr_get_visible),
 	KX_PYATTRIBUTE_RO_FUNCTION("collide", KX_PolyProxy, pyattr_get_collide),
 	KX_PYATTRIBUTE_RO_FUNCTION("vertices", KX_PolyProxy, pyattr_get_vertices),
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 KX_PolyProxy::KX_PolyProxy(KX_MeshProxy *meshProxy, RAS_MeshObject *mesh, const RAS_MeshObject::PolygonInfo& polygon)

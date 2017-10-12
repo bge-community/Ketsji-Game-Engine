@@ -154,7 +154,7 @@ PyMethodDef KX_PythonComponent::Methods[] = {
 
 EXP_Attribute KX_PythonComponent::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("object", KX_PythonComponent, pyattr_get_object),
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject* KX_PythonComponent::pyattr_get_object(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

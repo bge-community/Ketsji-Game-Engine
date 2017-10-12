@@ -162,7 +162,7 @@ EXP_Attribute SCA_DelaySensor::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RW("delay",0,100000,true,SCA_DelaySensor,m_delay),
 	KX_PYATTRIBUTE_INT_RW("duration",0,100000,true,SCA_DelaySensor,m_duration),
 	KX_PYATTRIBUTE_BOOL_RW("repeat",SCA_DelaySensor,m_repeat),
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 #endif // WITH_PYTHON

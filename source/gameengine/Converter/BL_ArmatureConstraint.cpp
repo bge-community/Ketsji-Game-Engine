@@ -311,7 +311,7 @@ EXP_Attribute BL_ArmatureConstraint::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("ik_flag",BL_ArmatureConstraint,py_attr_getattr),
 	KX_PYATTRIBUTE_RW_FUNCTION("ik_dist",BL_ArmatureConstraint,py_attr_getattr,py_attr_setattr),
 	KX_PYATTRIBUTE_RW_FUNCTION("ik_mode",BL_ArmatureConstraint,py_attr_getattr,py_attr_setattr),
-	KX_PYATTRIBUTE_NULL //Sentinel
+	KX_ATTRIBUTE_NULL //Sentinel
 };
 
 

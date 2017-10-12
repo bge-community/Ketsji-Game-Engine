@@ -337,7 +337,7 @@ EXP_Attribute BL_ActionActuator::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("useContinue", BL_ActionActuator, pyattr_get_use_continue, pyattr_set_use_continue),
 	KX_PYATTRIBUTE_FLOAT_RW_CHECK("blendTime", 0, MAXFRAMEF, BL_ActionActuator, m_blendframe, CheckBlendTime),
 	KX_PYATTRIBUTE_SHORT_RW_CHECK("mode",0,100,false,BL_ActionActuator,m_playtype,CheckType),
-	KX_PYATTRIBUTE_NULL //Sentinel
+	KX_ATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *BL_ActionActuator::pyattr_get_action(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

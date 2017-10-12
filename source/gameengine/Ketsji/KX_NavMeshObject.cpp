@@ -681,7 +681,7 @@ PyTypeObject KX_NavMeshObject::Type = {
 };
 
 EXP_Attribute KX_NavMeshObject::Attributes[] = {
-	KX_PYATTRIBUTE_NULL //Sentinel
+	KX_ATTRIBUTE_NULL //Sentinel
 };
 
 //KX_PYMETHODTABLE_NOARGS(KX_GameObject, getD),

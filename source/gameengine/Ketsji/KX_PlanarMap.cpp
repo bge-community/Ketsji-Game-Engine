@@ -256,7 +256,7 @@ PyMethodDef KX_PlanarMap::Methods[] = {
 
 EXP_Attribute KX_PlanarMap::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("normal", KX_PlanarMap, pyattr_get_normal, pyattr_set_normal),
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject *KX_PlanarMap::pyattr_get_normal(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

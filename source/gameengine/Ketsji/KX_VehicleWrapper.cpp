@@ -365,7 +365,7 @@ EXP_Attribute KX_VehicleWrapper::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("rayMask", KX_VehicleWrapper, pyattr_get_ray_mask, pyattr_set_ray_mask),
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_id", KX_VehicleWrapper, pyattr_get_constraintId),
 	KX_PYATTRIBUTE_RO_FUNCTION("constraint_type", KX_VehicleWrapper, pyattr_get_constraintType),
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_VehicleWrapper::pyattr_get_constraintId(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

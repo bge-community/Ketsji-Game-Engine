@@ -76,7 +76,7 @@ EXP_Attribute KX_2DFilterOffScreen::Attributes[] = {
 	KX_PYATTRIBUTE_RO_FUNCTION("height", KX_2DFilterOffScreen, pyattr_get_height),
 	KX_PYATTRIBUTE_RO_FUNCTION("colorBindCodes", KX_2DFilterOffScreen, pyattr_get_colorBindCodes),
 	KX_PYATTRIBUTE_RO_FUNCTION("depthBindCode", KX_2DFilterOffScreen, pyattr_get_depthBindCode),
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject *KX_2DFilterOffScreen::pyattr_get_width(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

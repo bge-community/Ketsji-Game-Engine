@@ -368,7 +368,7 @@ EXP_Attribute KX_RaySensor::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_ARRAY_RO("hitNormal", KX_RaySensor, m_hitNormal, 3),
 	KX_PYATTRIBUTE_STRING_RO("hitMaterial", KX_RaySensor, m_hitMaterial),
 	KX_PYATTRIBUTE_RO_FUNCTION("hitObject", KX_RaySensor, pyattr_get_hitobject),
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 PyObject *KX_RaySensor::pyattr_get_hitobject(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

@@ -224,7 +224,7 @@ EXP_Attribute BL_ArmatureActuator::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("weight",0.0f,1.0f,BL_ArmatureActuator,m_weight),
 	KX_PYATTRIBUTE_FLOAT_RW("influence",0.0f,1.0f,BL_ArmatureActuator,m_influence),
 	KX_PYATTRIBUTE_INT_RW("type",0,ACT_ARM_MAXTYPE,false,BL_ArmatureActuator,m_type),
-	KX_PYATTRIBUTE_NULL //Sentinel
+	KX_ATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *BL_ArmatureActuator::pyattr_get_object(PyObjectPlus *self, const struct EXP_Attribute *attrdef)

@@ -437,7 +437,7 @@ PyMethodDef CBaseListValue::Methods[] = {
 };
 
 EXP_Attribute CBaseListValue::Attributes[] = {
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject *CBaseListValue::Pyappend(PyObject *value)

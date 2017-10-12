@@ -338,7 +338,7 @@ EXP_Attribute KX_FontObject::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("size", 0.0001f, 40.0f, KX_FontObject, m_fsize),
 	KX_PYATTRIBUTE_FLOAT_RW("resolution", 0.1f, 50.0f, KX_FontObject, m_resolution),
 	/* KX_PYATTRIBUTE_INT_RW("dpi", 0, 10000, false, KX_FontObject, m_dpi), */// no real need for expose this I think
-	KX_PYATTRIBUTE_NULL    //Sentinel
+	KX_ATTRIBUTE_NULL    //Sentinel
 };
 
 PyObject *KX_FontObject::pyattr_get_text(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

@@ -318,7 +318,7 @@ PyMethodDef SCA_IObject::Methods[] = {
 };
 
 EXP_Attribute SCA_IObject::Attributes[] = {
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 #endif // WITH_PYTHON

@@ -270,7 +270,7 @@ EXP_Attribute SCA_PropertyActuator::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RW_CHECK("propName",0,MAX_PROP_NAME,false,SCA_PropertyActuator,m_propname,CheckProperty),
 	KX_PYATTRIBUTE_STRING_RW("value",0,100,false,SCA_PropertyActuator,m_exprtxt),
 	KX_PYATTRIBUTE_INT_RW("mode", KX_ACT_PROP_NODEF+1, KX_ACT_PROP_MAX-1, false, SCA_PropertyActuator, m_type), /* ATTR_TODO add constents to game logic dict */
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 #endif

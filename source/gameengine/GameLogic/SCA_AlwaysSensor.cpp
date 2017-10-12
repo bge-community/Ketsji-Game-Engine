@@ -131,7 +131,7 @@ PyMethodDef SCA_AlwaysSensor::Methods[] = {
 };
 
 EXP_Attribute SCA_AlwaysSensor::Attributes[] = {
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 #endif

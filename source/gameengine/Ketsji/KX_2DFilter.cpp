@@ -117,7 +117,7 @@ PyMethodDef KX_2DFilter::Methods[] = {
 EXP_Attribute KX_2DFilter::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("mipmap", KX_2DFilter, pyattr_get_mipmap, pyattr_set_mipmap),
 	KX_PYATTRIBUTE_RO_FUNCTION("offScreen", KX_2DFilter, pyattr_get_offScreen),
-	KX_PYATTRIBUTE_NULL // Sentinel
+	KX_ATTRIBUTE_NULL // Sentinel
 };
 
 PyObject *KX_2DFilter::pyattr_get_mipmap(PyObjectPlus *self_v, const EXP_Attribute *attrdef)

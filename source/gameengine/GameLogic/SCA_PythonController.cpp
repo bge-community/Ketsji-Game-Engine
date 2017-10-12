@@ -223,7 +223,7 @@ PyMethodDef SCA_PythonController::Methods[] = {
 EXP_Attribute SCA_PythonController::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("script", SCA_PythonController, pyattr_get_script, pyattr_set_script),
 	KX_PYATTRIBUTE_INT_RO("mode", SCA_PythonController, m_mode),
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 void SCA_PythonController::ErrorPrint(const char *error_msg)

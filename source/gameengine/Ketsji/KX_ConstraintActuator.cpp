@@ -594,7 +594,7 @@ EXP_Attribute KX_ConstraintActuator::Attributes[] = {
 	KX_PYATTRIBUTE_FLOAT_RW("max",-FLT_MAX,FLT_MAX,KX_ConstraintActuator,m_maximumBound),
 	KX_PYATTRIBUTE_FLOAT_RW("rayLength",0,2000.f,KX_ConstraintActuator,m_maximumBound),
 	KX_PYATTRIBUTE_INT_RW("limit",KX_ConstraintActuator::KX_ACT_CONSTRAINT_NODEF+1,KX_ConstraintActuator::KX_ACT_CONSTRAINT_MAX-1,false,KX_ConstraintActuator,m_locrot),
-	KX_PYATTRIBUTE_NULL	//Sentinel
+	KX_ATTRIBUTE_NULL	//Sentinel
 };
 
 int KX_ConstraintActuator::pyattr_check_direction(PyObjectPlus *self_v, const struct EXP_Attribute *attrdef)

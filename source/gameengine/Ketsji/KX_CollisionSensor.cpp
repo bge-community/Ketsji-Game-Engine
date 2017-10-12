@@ -317,7 +317,7 @@ EXP_Attribute KX_CollisionSensor::Attributes[] = {
 	KX_PYATTRIBUTE_STRING_RO("hitMaterial", KX_CollisionSensor, m_hitMaterial),
 	KX_PYATTRIBUTE_RO_FUNCTION("hitObject", KX_CollisionSensor, pyattr_get_object_hit),
 	KX_PYATTRIBUTE_RO_FUNCTION("hitObjectList", KX_CollisionSensor, pyattr_get_object_hit_list),
-	KX_PYATTRIBUTE_NULL    //Sentinel
+	KX_ATTRIBUTE_NULL    //Sentinel
 };
 
 /* Python API */

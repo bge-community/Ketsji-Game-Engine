@@ -190,7 +190,7 @@ EXP_Attribute KX_NetworkMessageSensor::Attributes[] = {
 	KX_PYATTRIBUTE_INT_RO("frameMessageCount", KX_NetworkMessageSensor, m_frame_message_count),
 	KX_PYATTRIBUTE_RO_FUNCTION("bodies", KX_NetworkMessageSensor, pyattr_get_bodies),
 	KX_PYATTRIBUTE_RO_FUNCTION("subjects", KX_NetworkMessageSensor, pyattr_get_subjects),
-	KX_PYATTRIBUTE_NULL //Sentinel
+	KX_ATTRIBUTE_NULL //Sentinel
 };
 
 PyObject *KX_NetworkMessageSensor::pyattr_get_bodies(PyObjectPlus *self_v, const EXP_Attribute *attrdef)
