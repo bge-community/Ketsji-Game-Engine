@@ -105,10 +105,6 @@ private:
 	}
 
 public:
-	/*
-	 * EXP_AttributeDef<float, GETSET_NONE>("KX_GameObject", "mass", offsetof(KX_GameObject, m_mass))
-	 * 
-	 */
 	template <typename Type, GetSetFlags Flags>
 	EXP_AttributeDef(const std::string& className, const std::string& name, intptr_t offset,
 			EXP_Attribute::CustomGetterFunction customGetter, EXP_Attribute::CustomSetterFunction customSetter,
@@ -135,7 +131,23 @@ public:
 	EXP_Attribute GetAttribute() const;
 };
 
-#define EXP_ATTRIBUTE_RO(type, class)
+#define EXP_ATTRIBUTE_RW(type, class, name, member) \
+	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, offsetof(class, member)).GetAttribute()
+
+#define EXP_ATTRIBUTE_RO(type, class, name, member) \
+	EXP_AttributeDef<type, EXP_Attribute::GETSET_READONLY>(#class, name, offsetof(class, member)).GetAttribute()
+
+#define EXP_ATTRIBUTE_RW_CUSTOM(type, class, name, getter, setter) \
+	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, getter, setter, nullptr).GetAttribute()
+
+#define EXP_ATTRIBUTE_RO_CUSTOM(type, class, name, getter) \
+	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, getter, nullptr, nullptr).GetAttribute()
+
+#define EXP_ATTRIBUTE_RW_CUSTOM_CHECK(type, class, name, getter, setter, check) \
+	EXP_AttributeDef<type, EXP_Attribute::GETSET_NONE>(#class, name, getter, setter, check).GetAttribute()
+
+#define EXP_ATTRIBUTE_NULL \
+	EXP_Attribute()
 
 template <bool>
 void EXP_AttributeDef::PrintSetterError()

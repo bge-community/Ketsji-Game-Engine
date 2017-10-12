@@ -279,8 +279,8 @@ PyMethodDef PyObjectPlus::Methods[] = {
 
 #define BGE_PY_ATTR_INVALID (&(PyObjectPlus::Attributes[0]))
 EXP_Attribute PyObjectPlus::Attributes[] = {
-	EXP_AttributeDef<bool, EXP_AttributeDef::GETSET_READONLY | EXP_AttributeDef::GETSET_CUSTOM>("PyObjectPlus", "invalid", pyattr_get_invalid).GetAttribute(),
-	EXP_Attribute()
+	EXP_ATTRIBUTE_RO_CUSTOM(bool, PyObjectPlus, "invalid", pyattr_get_invalid),
+	EXP_ATTRIBUTE_NULL
 };
 
 #if 0

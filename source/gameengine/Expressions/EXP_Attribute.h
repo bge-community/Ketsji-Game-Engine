@@ -4,6 +4,7 @@
 #include <string>
 
 class PyObjectPlus
+class EXP_AttributeDef;
 
 class EXP_Attribute
 {
@@ -30,9 +31,10 @@ public:
 
 	enum GetSetFlags
 	{
-		GETSET_CHECK,
-		GETSET_CLAMP,
-		GETSET_CUSTOM
+		GETSET_NONE = 0,
+		GETSET_CHECK = (1 << 0),
+		GETSET_CLAMP = (1 << 1),
+		GETSET_CUSTOM = (1 << 2)
 	};
 
 	using CustomGetterFunction = void (*)(PyObjectPlus *, void *, const EXP_AttributeDef *);
