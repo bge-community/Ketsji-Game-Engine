@@ -896,9 +896,10 @@ static KX_GameObject *BL_GameObjectFromBlenderObject(Object *ob, KX_Scene *kxsce
 
 		case OB_ARMATURE:
 		{
-			gameobj = new BL_ArmatureObject(kxscene, KX_Scene::m_callbacks, ob, kxscene->GetBlenderScene());
+			BL_ArmatureObject *armature = new BL_ArmatureObject(kxscene, KX_Scene::m_callbacks, ob, kxscene->GetBlenderScene());
+			kxscene->AddArmatureObject(armature); // TODO add only for active arma.
 
-			kxscene->AddAnimatedObject(gameobj);
+			gameobj = armature;
 
 			break;
 		}
@@ -1507,12 +1508,34 @@ void BL_ConvertBlenderObjects(struct Main *maggie,
 		kxscene->GetPhysicsEnvironment()->SetNumTimeSubSteps(blenderscene->gm.physubstep);
 	}
 
-	/* Now that the scenegraph is complete, let's instantiate the deformers.
-	 * We need that to create reusable derived mesh and physic shapes.
-	 */
+	// Create and set bounding volume.
 	for (KX_GameObject *gameobj : sumolist) {
-		if (gameobj->GetDeformer()) {
-			gameobj->GetDeformer()->UpdateBuckets();
+		Object *blenderobject = gameobj->GetBlenderObject();
+		Mesh *predifinedBoundMesh = blenderobject->gamePredefinedBound;
+
+		if (predifinedBoundMesh) {
+			RAS_MeshObject *meshobj = converter.FindGameMesh(predifinedBoundMesh);
+			// In case of mesh taken in a other scene.
+			if (!meshobj) {
+				continue;
+			}
+
+			gameobj->SetAutoUpdateBounds(false);
+
+			// AABB Box : min/max.
+			mt::vec3 aabbMin;
+			mt::vec3 aabbMax;
+			// Get the mesh bounding box for none deformer.
+			RAS_BoundingBox *boundingBox = meshobj->GetBoundingBox();
+			// Get the AABB.
+			boundingBox->GetAabb(aabbMin, aabbMax);
+			gameobj->SetBoundsAabb(aabbMin, aabbMax);
+		}
+		else {
+			// The object allow AABB auto update only if there's no predefined bound.
+			gameobj->SetAutoUpdateBounds(true);
+
+			gameobj->UpdateBounds(true);
 		}
 	}
 
@@ -1529,6 +1552,15 @@ void BL_ConvertBlenderObjects(struct Main *maggie,
 					deformer->LoadShapeDrivers(armobj);
 				}
 			}
+		}
+	}
+
+	/* Now that the scenegraph is complete, let's instantiate the deformers.
+	 * We need that to create reusable derived mesh and physic shapes.
+	 */
+	for (KX_GameObject *gameobj : sumolist) {
+		if (gameobj->GetDeformer()) {
+			gameobj->GetDeformer()->Update();
 		}
 	}
 
@@ -1575,37 +1607,6 @@ void BL_ConvertBlenderObjects(struct Main *maggie,
 					kxscene->GetTextureRendererManager()->AddRenderer(type, tex, viewpoint);
 				}
 			}
-		}
-	}
-
-	// Create and set bounding volume.
-	for (KX_GameObject *gameobj : sumolist) {
-		Object *blenderobject = gameobj->GetBlenderObject();
-		Mesh *predifinedBoundMesh = blenderobject->gamePredefinedBound;
-
-		if (predifinedBoundMesh) {
-			RAS_MeshObject *meshobj = converter.FindGameMesh(predifinedBoundMesh);
-			// In case of mesh taken in a other scene.
-			if (!meshobj) {
-				continue;
-			}
-
-			gameobj->SetAutoUpdateBounds(false);
-
-			// AABB Box : min/max.
-			mt::vec3 aabbMin;
-			mt::vec3 aabbMax;
-			// Get the mesh bounding box for none deformer.
-			RAS_BoundingBox *boundingBox = meshobj->GetBoundingBox();
-			// Get the AABB.
-			boundingBox->GetAabb(aabbMin, aabbMax);
-			gameobj->SetBoundsAabb(aabbMin, aabbMax);
-		}
-		else {
-			// The object allow AABB auto update only if there's no predefined bound.
-			gameobj->SetAutoUpdateBounds(true);
-
-			gameobj->UpdateBounds(true);
 		}
 	}
 

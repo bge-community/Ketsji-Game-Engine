@@ -67,8 +67,8 @@ public:
 	virtual RAS_Deformer *GetReplica();
 	virtual ~BL_ModifierDeformer();
 
-	bool Update();
-	virtual void Apply(RAS_IDisplayArray *array);
+	virtual void Update();
+	virtual bool NeedUpdate() const;
 	void ForceUpdate()
 	{
 		m_lastModifierUpdate = -1.0;

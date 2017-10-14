@@ -473,9 +473,9 @@ bool KX_GameObject::IsActionsSuspended()
 	return GetActionManager()->IsSuspended();
 }
 
-void KX_GameObject::UpdateActionManager(float curtime, bool applyToObject)
+void KX_GameObject::UpdateActionManager(float curtime, bool applyToObject, bool redundant)
 {
-	GetActionManager()->Update(curtime, applyToObject);
+	GetActionManager()->Update(curtime, applyToObject, redundant);
 }
 
 float KX_GameObject::GetActionFrame(short layer)

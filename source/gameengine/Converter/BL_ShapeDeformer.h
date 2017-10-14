@@ -57,7 +57,10 @@ public:
 	virtual void ProcessReplica();
 	virtual ~BL_ShapeDeformer();
 
-	bool Update();
+	virtual void Update();
+	bool NeedShapeUpdate() const;
+	virtual bool NeedUpdate() const;
+
 	bool LoadShapeDrivers(KX_GameObject *parent);
 	bool ExecuteShapeDrivers();
 

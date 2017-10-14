@@ -70,6 +70,7 @@ class KX_GameObject;
 class KX_LightObject;
 struct KX_ClientObjectInfo;
 class BL_BlenderSceneConverter;
+class BL_ArmatureObject;
 class SG_Node;
 class PHY_IPhysicsEnvironment;
 class RAS_MeshObject;
@@ -145,6 +146,7 @@ private:
 	EXP_ListValue<KX_GameObject> *m_inactivelist;
 	/// All animated objects, no need of EXP_ListValue because the list isn't exposed in python.
 	std::vector<KX_GameObject *> m_animatedlist;
+	std::vector<BL_ArmatureObject *> m_armatureList;
 
 	/// The list of cameras for this scene.
 	EXP_ListValue<KX_Camera> *m_cameralist;
@@ -246,8 +248,6 @@ private:
 
 	KX_ObstacleSimulation *m_obstacleSimulation;
 
-	AnimationPoolData m_animationPoolData;
-	TaskPool *m_animationPool;
 	double m_previousAnimTime;
 
 	/// LOD Hysteresis settings.
@@ -290,6 +290,7 @@ public:
 	bool NewRemoveObject(KX_GameObject *gameobj);
 
 	void AddAnimatedObject(KX_GameObject *gameobj);
+	void AddArmatureObject(BL_ArmatureObject *armature);
 
 	/**
 	 * \section Logic stuff

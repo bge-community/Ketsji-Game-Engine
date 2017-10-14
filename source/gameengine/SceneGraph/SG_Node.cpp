@@ -37,8 +37,8 @@
 
 #include "BLI_utildefines.h"
 
-static CM_ThreadMutex scheduleMutex;
-static CM_ThreadMutex transformMutex;
+static std::mutex scheduleMutex;
+static std::mutex transformMutex;
 
 SG_Node::SG_Node(void *clientobj, void *clientinfo, SG_Callbacks& callbacks)
 	:SG_QList(),
@@ -240,12 +240,12 @@ void SG_Node::UpdateWorldData(double time, bool parentUpdated)
 
 void SG_Node::UpdateWorldDataThread(double time, bool parentUpdated)
 {
-	CM_ThreadSpinLock& famillyMutex = m_familly->GetMutex();
-	famillyMutex.Lock();
+	std::mutex& famillyMutex = m_familly->GetMutex();
+	famillyMutex.lock();
 
 	UpdateWorldDataThreadSchedule(time, parentUpdated);
 
-	famillyMutex.Unlock();
+	famillyMutex.unlock();
 }
 
 void SG_Node::UpdateWorldDataThreadSchedule(double time, bool parentUpdated)
@@ -255,10 +255,10 @@ void SG_Node::UpdateWorldDataThreadSchedule(double time, bool parentUpdated)
 		ActivateUpdateTransformCallback();
 	}
 
-	scheduleMutex.Lock();
+	scheduleMutex.lock();
 	// The node is updated, remove it from the update list
 	Delink();
-	scheduleMutex.Unlock();
+	scheduleMutex.unlock();
 
 	// update children's worlddata
 	for (SG_Node *childnode : m_children) {
@@ -281,8 +281,8 @@ void SG_Node::SetSimulatedTime(double time, bool recurse)
 
 void SG_Node::SetSimulatedTimeThread(double time, bool recurse)
 {
-	CM_ThreadSpinLock& famillyMutex = m_familly->GetMutex();
-	famillyMutex.Lock();
+	std::mutex& famillyMutex = m_familly->GetMutex();
+	famillyMutex.lock();
 	// update the controllers of this node.
 	SetControllerTime(time);
 
@@ -292,44 +292,44 @@ void SG_Node::SetSimulatedTimeThread(double time, bool recurse)
 			childnode->SetSimulatedTime(time, recurse);
 		}
 	}
-	famillyMutex.Unlock();
+	famillyMutex.unlock();
 }
 
 bool SG_Node::Schedule(SG_QList& head)
 {
-	scheduleMutex.Lock();
+	scheduleMutex.lock();
 	// Put top parent in front of list to make sure they are updated before their
 	// children => the children will be udpated and removed from the list before
 	// we get to them, should they be in the list too.
 	const bool result = (m_SGparent) ? head.AddBack(this) : head.AddFront(this);
-	scheduleMutex.Unlock();
+	scheduleMutex.unlock();
 
 	return result;
 }
 
 SG_Node *SG_Node::GetNextScheduled(SG_QList& head)
 {
-	scheduleMutex.Lock();
+	scheduleMutex.lock();
 	SG_Node *result = static_cast<SG_Node *>(head.Remove());
-	scheduleMutex.Unlock();
+	scheduleMutex.unlock();
 
 	return result;
 }
 
 bool SG_Node::Reschedule(SG_QList& head)
 {
-	scheduleMutex.Lock();
+	scheduleMutex.lock();
 	const bool result = head.QAddBack(this);
-	scheduleMutex.Unlock();
+	scheduleMutex.unlock();
 
 	return result;
 }
 
 SG_Node *SG_Node::GetNextRescheduled(SG_QList& head)
 {
-	scheduleMutex.Lock();
+	scheduleMutex.lock();
 	SG_Node *result = static_cast<SG_Node *>(head.QRemove());
-	scheduleMutex.Unlock();
+	scheduleMutex.unlock();
 
 	return result;
 }
@@ -341,9 +341,9 @@ void SG_Node::AddSGController(SG_Controller *cont)
 
 void SG_Node::RemoveSGController(SG_Controller *cont)
 {
-	m_mutex.Lock();
+	m_mutex.lock();
 	CM_ListRemoveIfFound(m_SGcontrollers, cont);
-	m_mutex.Unlock();
+	m_mutex.unlock();
 }
 
 void SG_Node::RemoveAllControllers()
@@ -622,9 +622,9 @@ void SG_Node::ActivateUpdateTransformCallback()
 {
 	if (m_callbacks.m_updatefunc) {
 		// Call client provided update func.
-		transformMutex.Lock();
+		transformMutex.lock();
 		m_callbacks.m_updatefunc(this, m_SGclientObject, m_SGclientInfo);
-		transformMutex.Unlock();
+		transformMutex.unlock();
 	}
 }
 
@@ -633,9 +633,9 @@ bool SG_Node::ActivateScheduleUpdateCallback()
 	// HACK, this check assumes that the scheduled nodes are put on a DList (see SG_Node.h)
 	// The early check on Empty() allows up to avoid calling the callback function
 	// when the node is already scheduled for update.
-	scheduleMutex.Lock();
+	scheduleMutex.lock();
 	const bool empty = Empty();
-	scheduleMutex.Unlock();
+	scheduleMutex.unlock();
 
 	if (empty && m_callbacks.m_schedulefunc) {
 		// Call client provided update func.

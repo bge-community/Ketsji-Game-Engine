@@ -365,15 +365,14 @@ void BL_Action::BlendShape(Key* key, float srcweight, std::vector<float>& blends
 	}
 }
 
-void BL_Action::Update(float curtime, bool applyToObject)
+void BL_Action::Update(float curtime, bool applyToObject, bool redundant)
 {
 	/* Don't bother if we're done with the animation and if the animation was already applied to the object.
 	 * of if the animation made a double update for the same time and that it was applied to the object.
 	 */
-	if ((m_done || m_prevUpdate == curtime) && m_appliedToObject) {
+	if ((m_done || redundant) && m_appliedToObject) {
 		return;
 	}
-	m_prevUpdate = curtime;
 
 	KX_Scene *scene = m_obj->GetScene();
 	curtime -= (float)scene->GetSuspendedDelta();

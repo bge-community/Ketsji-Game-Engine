@@ -49,6 +49,7 @@ set(INC
 	../../blender/imbuf
 	../../blender/makesdna
 	../../blender/makesrna
+	../../../intern/enkiTS
 	../../../intern/ghost
 	../../../intern/guardedalloc
 	../../../intern/string

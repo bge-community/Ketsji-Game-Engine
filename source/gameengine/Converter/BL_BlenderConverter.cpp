@@ -313,7 +313,7 @@ Main *BL_BlenderConverter::GetMainDynamicPath(const std::string& path) const
 
 void BL_BlenderConverter::MergeAsyncLoads()
 {
-	m_threadinfo.m_mutex.Lock();
+	m_threadinfo.m_mutex.lock();
 
 	for (KX_LibLoadStatus *libload : m_mergequeue) {
 		KX_Scene *mergeScene = libload->GetMergeScene();
@@ -330,7 +330,7 @@ void BL_BlenderConverter::MergeAsyncLoads()
 
 	m_mergequeue.clear();
 
-	m_threadinfo.m_mutex.Unlock();
+	m_threadinfo.m_mutex.unlock();
 }
 
 void BL_BlenderConverter::FinalizeAsyncLoads()
@@ -343,9 +343,9 @@ void BL_BlenderConverter::FinalizeAsyncLoads()
 
 void BL_BlenderConverter::AddScenesToMergeQueue(KX_LibLoadStatus *status)
 {
-	m_threadinfo.m_mutex.Lock();
+	m_threadinfo.m_mutex.lock();
 	m_mergequeue.push_back(status);
-	m_threadinfo.m_mutex.Unlock();
+	m_threadinfo.m_mutex.unlock();
 }
 
 static void async_convert(TaskPool *pool, void *ptr, int UNUSED(threadid))
@@ -569,9 +569,9 @@ bool BL_BlenderConverter::FreeBlendFile(Main *maggie)
 
 	// If the given library is currently in loading, we do nothing.
 	if (m_status_map.count(maggie->name)) {
-		m_threadinfo.m_mutex.Lock();
+		m_threadinfo.m_mutex.lock();
 		const bool finished = m_status_map[maggie->name]->IsFinished();
-		m_threadinfo.m_mutex.Unlock();
+		m_threadinfo.m_mutex.unlock();
 
 		if (!finished) {
 			CM_Error("Library (" << maggie->name << ") is currently being loaded asynchronously, and cannot be freed until this process is done");

@@ -518,6 +518,8 @@ function(setup_liblinks
 
 	#target_link_libraries(${target} ${PLATFORM_LINKLIBS} ${CMAKE_DL_LIBS})
 	target_link_libraries(${target} ${PLATFORM_LINKLIBS})
+
+	target_link_libraries(${target} ${TBB_LIBRARIES})
 endfunction()
 
 
@@ -651,6 +653,7 @@ function(SETUP_BLENDER_SORTED_LIBS)
 		bf_intern_ctr
 		bf_intern_utfconv
 		bf_intern_smoke
+		bf_intern_enkits
 		bf_intern_opencolorio
 		bf_intern_eigen
 		bf_intern_libmv

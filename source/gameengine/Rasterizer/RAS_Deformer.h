@@ -54,9 +54,8 @@ public:
 	void InitializeDisplayArrays();
 
 	virtual void Relink(std::map<SCA_IObject *, SCA_IObject *>& map) = 0;
-	virtual void Apply(RAS_IDisplayArray *array) = 0;
-	virtual bool Update(void)=0;
-	virtual void UpdateBuckets(void)=0;
+	virtual void Update() = 0;
+	virtual bool NeedUpdate() const = 0;
 	virtual RAS_Deformer *GetReplica()=0;
 	virtual void ProcessReplica();
 
