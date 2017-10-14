@@ -107,6 +107,8 @@
 #include "CM_Message.h"
 #include "CM_List.h"
 
+#include "tbb/parallel_for.h"
+
 static void *KX_SceneReplicationFunc(SG_Node *node, void *gameobj, void *scene)
 {
 	KX_GameObject *replica = ((KX_Scene *)scene)->AddNodeReplicaObject(node, (KX_GameObject *)gameobj);
@@ -198,8 +200,6 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_bucketmanager = new RAS_BucketManager(textMaterial);
 	m_boundingBoxManager = new RAS_BoundingBoxManager();
 
-	m_animationPool = BLI_task_pool_create(KX_GetActiveEngine()->GetTaskScheduler(), &m_animationPoolData);
-
 #ifdef WITH_PYTHON
 	m_attrDict = nullptr;
 
@@ -224,10 +224,6 @@ KX_Scene::~KX_Scene()
 
 	if (m_obstacleSimulation) {
 		delete m_obstacleSimulation;
-	}
-
-	if (m_animationPool) {
-		BLI_task_pool_free(m_animationPool);
 	}
 
 	if (m_objectlist) {
@@ -530,7 +526,7 @@ KX_GameObject *KX_Scene::AddNodeReplicaObject(SG_Node *node, KX_GameObject *game
 		}
 		case SCA_IObject::OBJ_ARMATURE:
 		{
-			AddAnimatedObject(newobj);
+			m_armatureList.push_back(static_cast<BL_ArmatureObject *>(newobj));
 			break;
 		}
 	}
@@ -1046,6 +1042,7 @@ bool KX_Scene::NewRemoveObject(KX_GameObject *gameobj)
 
 	// WARNING: 'gameobj' maybe be freed now, only compare, don't access.
 	CM_ListRemoveIfFound(m_animatedlist, gameobj);
+	CM_ListRemoveIfFound(m_armatureList, gameobj);
 	CM_ListRemoveIfFound(m_euthanasyobjects, gameobj);
 	CM_ListRemoveIfFound(m_tempObjectList, gameobj);
 
@@ -1127,17 +1124,10 @@ void KX_Scene::CalculateVisibleMeshes(std::vector<KX_GameObject *>& objects, con
 	bool dbvt_culling = false;
 	if (m_dbvtCulling) {
 		for (KX_GameObject *gameobj : m_objectlist) {
-			gameobj->SetCulled(true);
 			/* Reset KX_GameObject m_culled to true before doing culling
 			 * since DBVT culling will only set it to false.
 			 */
-			if (gameobj->GetDeformer()) {
-				/** Update all the deformer, not only per material.
-				 * One of the side effect is to clear some flags about AABB calculation.
-				 * like in KX_SoftBodyDeformer.
-				 */
-				gameobj->GetDeformer()->UpdateBuckets();
-			}
+			gameobj->SetCulled(true);
 			// Update the object bounding volume box.
 			gameobj->UpdateBounds(false);
 		}
@@ -1154,13 +1144,6 @@ void KX_Scene::CalculateVisibleMeshes(std::vector<KX_GameObject *>& objects, con
 		KX_CullingHandler handler(objects, frustum);
 		for (KX_GameObject *gameobj : m_objectlist) {
 			if (gameobj->UseCulling() && gameobj->GetVisible() && (layer == 0 || gameobj->GetLayer() & layer)) {
-				if (gameobj->GetDeformer()) {
-					/** Update all the deformer, not only per material.
-					 * One of the side effect is to clear some flags about AABB calculation.
-					 * like in KX_SoftBodyDeformer.
-					 */
-					gameobj->GetDeformer()->UpdateBuckets();
-				}
 				// Update the object bounding volume box.
 				gameobj->UpdateBounds(false);
 
@@ -1289,13 +1272,13 @@ void KX_Scene::AddAnimatedObject(KX_GameObject *gameobj)
 	CM_ListAddIfNotFound(m_animatedlist, gameobj);
 }
 
-static void update_anim_thread_func(TaskPool *pool, void *taskdata, int UNUSED(threadid))
+void KX_Scene::AddArmatureObject(BL_ArmatureObject *armature)
 {
-	KX_Scene::AnimationPoolData *data = (KX_Scene::AnimationPoolData *)BLI_task_pool_userdata(pool);
-	double curtime = data->curtime;
+	m_armatureList.push_back(armature);
+}
 
-	KX_GameObject *gameobj = (KX_GameObject *)taskdata;
-
+static void task_func(KX_GameObject *gameobj, double curtime)
+{
 	// Non-armature updates are fast enough, so just update them
 	bool needs_update = gameobj->GetGameObjectType() != SCA_IObject::OBJ_ARMATURE;
 
@@ -1331,23 +1314,6 @@ static void update_anim_thread_func(TaskPool *pool, void *taskdata, int UNUSED(t
 
 	// If the object is a culled armature, then we manage only the animation time and end of its animations.
 	gameobj->UpdateActionManager(curtime, needs_update);
-
-	if (needs_update) {
-		const std::vector<KX_GameObject *> children = gameobj->GetChildren();
-		KX_GameObject *parent = gameobj->GetParent();
-
-		// Only do deformers here if they are not parented to an armature, otherwise the armature will
-		// handle updating its children
-		if (gameobj->GetDeformer() && (!parent || parent->GetGameObjectType() != SCA_IObject::OBJ_ARMATURE)) {
-			gameobj->GetDeformer()->Update();
-		}
-
-		for (KX_GameObject *child : children) {
-			if (child->GetDeformer()) {
-				child->GetDeformer()->Update();
-			}
-		}
-	}
 }
 
 void KX_Scene::UpdateAnimations(double curtime, bool restrict)
@@ -1366,15 +1332,74 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 		m_previousAnimTime = curtime;
 	}
 
-	m_animationPoolData.curtime = curtime;
+	struct AnimationTaskSet
+	{
+		const std::vector<KX_GameObject *>& m_animatedObjects;
+		double m_curtime;
 
-	for (KX_GameObject *gameobj : m_animatedlist) {
-		if (!gameobj->IsActionsSuspended()) {
-			BLI_task_pool_push(m_animationPool, update_anim_thread_func, gameobj, false, TASK_PRIORITY_LOW);
+		AnimationTaskSet(const std::vector<KX_GameObject *>& animatedObjects, double curtime)
+			:m_animatedObjects(animatedObjects),
+			m_curtime(curtime)
+		{
 		}
-	}
 
-	BLI_task_pool_work_and_wait(m_animationPool);
+		void operator()(const tbb::blocked_range<unsigned int>& range) const
+		{
+			for (unsigned int i = range.begin(), end = range.end(); i < end; ++i) {
+				task_func(m_animatedObjects[i], m_curtime);
+			}
+		}
+	};
+
+
+	/*struct ArmatureTask
+	{
+		virtual void ExecuteRange(enki::TaskSetPartition range, uint32_t UNUSED(threadnum))
+		{
+			for (unsigned int i = range.start, end = range.end; i < end; ++i) {
+				m_armatures[i]->ApplyPose(); ? tester update nécessaire
+			}
+		}
+	};
+
+	struct DeformerTaskSet : enki::ITaskSet
+	{
+		std::vector<RAS_Deformer *> m_deformers;
+
+		DeformerTaskSet(EXP_ListValue<KX_GameObject> *objects)
+		{
+			for (KX_GameObject *gameobj : objects) {
+				RAS_Deformer *deformer = gameobj->GetDeformer();
+				if (deformer && deformer->NeedUpdate()) {
+					m_deformers.push_back(deformer);
+				}
+			}
+			m_SetSize = m_deformers.size();
+		}
+
+		virtual void ExecuteRange(enki::TaskSetPartition range, uint32_t UNUSED(threadnum))
+		{
+			for (unsigned int i = range.start, end = range.end; i < end; ++i) {
+				m_deformers[i]->Update();
+			}
+		}
+	};
+
+	enki::TaskScheduler& taskScheduler = KX_GetActiveEngine()->GetTaskScheduler();*/
+
+	tbb::parallel_for(tbb::blocked_range<unsigned int>(0, m_animatedlist.size()), AnimationTaskSet(m_animatedlist, curtime));
+
+	/*AnimationTaskSet animationTask(m_animatedlist, curtime);
+	taskScheduler.AddTaskSetToPipe(&animationTask);
+	taskScheduler.WaitforTaskSet(&animationTask);
+
+	ArmatureTaskSet armatureTask(m_armatureList);
+	taskScheduler.AddTaskSetToPipe(&armatureTask);
+	taskScheduler.WaitforTaskSet(&armatureTask);
+
+	DeformerTaskSet deformerTask(m_objectlist);
+	taskScheduler.AddTaskSetToPipe(&deformerTask);
+	taskScheduler.WaitforTaskSet(&deformerTask);*/
 }
 
 void KX_Scene::LogicUpdateFrame(double curtime)

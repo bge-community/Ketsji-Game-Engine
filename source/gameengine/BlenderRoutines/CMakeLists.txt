@@ -25,6 +25,7 @@ set(INC
 	../../blender/makesdna
 	../../blender/makesrna
 	../../blender/windowmanager
+	../../../intern/enkiTS
 	../../../intern/guardedalloc
 	../../../intern/string
 	../../../intern/termcolor

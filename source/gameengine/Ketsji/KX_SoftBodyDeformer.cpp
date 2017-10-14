@@ -51,14 +51,15 @@
 
 KX_SoftBodyDeformer::KX_SoftBodyDeformer(RAS_MeshObject *pMeshObject, BL_DeformableGameObject *gameobj)
 	:RAS_Deformer(pMeshObject),
-	m_gameobj(gameobj),
-	m_needUpdateAabb(true)
+	m_gameobj(gameobj)
 {
 	KX_Scene *scene = m_gameobj->GetScene();
 	RAS_BoundingBoxManager *boundingBoxManager = scene->GetBoundingBoxManager();
 	m_boundingBox = boundingBoxManager->CreateBoundingBox();
 	// Set AABB default to mesh bounding box AABB.
 	m_boundingBox->CopyAabb(m_mesh->GetBoundingBox());
+
+	m_bDynamic = true;
 }
 
 KX_SoftBodyDeformer::~KX_SoftBodyDeformer()
@@ -79,7 +80,7 @@ void KX_SoftBodyDeformer::Relink(std::map<SCA_IObject *, SCA_IObject *>& map)
 	}
 }
 
-void KX_SoftBodyDeformer::Apply(RAS_IDisplayArray *array)
+void KX_SoftBodyDeformer::Update()
 {
 	CcdPhysicsController *ctrl = (CcdPhysicsController *)m_gameobj->GetPhysicsController();
 	if (!ctrl)
@@ -99,50 +100,49 @@ void KX_SoftBodyDeformer::Apply(RAS_IDisplayArray *array)
 	mt::vec3 aabbMin(FLT_MAX);
 	mt::vec3 aabbMax(-FLT_MAX);
 
-	if (m_needUpdateAabb) {
-		m_boundingBox->SetAabb(aabbMin, aabbMax);
-		m_needUpdateAabb = false;
-	}
-
 	const mt::mat3x4 invtrans = m_gameobj->NodeGetWorldTransform().Inverse();
 	const bool autoUpdate = m_gameobj->GetAutoUpdateBounds();
 
-	for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
-		RAS_Vertex v = array->GetVertex(i);
-		const RAS_VertexInfo& vinfo = array->GetVertexInfo(i);
+	for (DisplayArraySlot& slot : m_slots) {
+		RAS_IDisplayArray *array = slot.m_displayArray;
+		for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
+			RAS_Vertex v = array->GetVertex(i);
+			const RAS_VertexInfo& vinfo = array->GetVertexInfo(i);
 
-		const unsigned int index = indices[vinfo.GetOrigIndex()];
-		const mt::vec3 pt(ToMt(nodes[index].m_x));
-		v.SetXYZ(pt);
+			const unsigned int index = indices[vinfo.GetOrigIndex()];
+			const mt::vec3 pt(ToMt(nodes[index].m_x));
+			v.SetXYZ(pt);
 
-		const mt::vec3 normal(ToMt(nodes[index].m_n));
-		v.SetNormal(normal);
+			v.SetNormal(nodes[index].m_n.m_floats);
 
-		if (autoUpdate) {
+			if (!autoUpdate) {
+				continue;
+			}
+
 			// Extract object transform from the vertex position.
 			const mt::vec3 ptWorld = invtrans * pt;
+			// if the AABB need an update.
 			aabbMin = mt::vec3::Min(aabbMin, ptWorld);
 			aabbMax = mt::vec3::Max(aabbMax, ptWorld);
 		}
-	}
 
-	for (DisplayArraySlot& slot : m_slots) {
-		if (slot.m_displayArray == array) {
-			const short modifiedFlag = slot.m_arrayUpdateClient.GetInvalidAndClear();
-			if (modifiedFlag != RAS_IDisplayArray::NONE_MODIFIED) {
-				/// Update vertex data from the original mesh.
-				array->UpdateFrom(slot.m_origDisplayArray, modifiedFlag);
-			}
-
-			break;
+		const short modifiedFlag = slot.m_arrayUpdateClient.GetInvalidAndClear();
+		if (modifiedFlag != RAS_IDisplayArray::NONE_MODIFIED) {
+			/// Update vertex data from the original mesh.
+			array->UpdateFrom(slot.m_origDisplayArray, modifiedFlag);
 		}
-	}
 
-	array->NotifyUpdate(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);
+		array->NotifyUpdate(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);
+	}
 
 	if (autoUpdate) {
-		m_boundingBox->ExtendAabb(aabbMin, aabbMax);
+		m_boundingBox->SetAabb(aabbMin, aabbMax);
 	}
+}
+
+bool KX_SoftBodyDeformer::NeedUpdate() const
+{
+	return true;
 }
 
 #endif

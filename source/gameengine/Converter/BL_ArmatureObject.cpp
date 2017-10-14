@@ -505,7 +505,6 @@ double BL_ArmatureObject::GetLastFrame()
 
 bool BL_ArmatureObject::GetBoneTransform(Bone *bone, mt::mat3x4& trans)
 {
-	ApplyPose();
 	bPoseChannel *pchan = BKE_pose_channel_find_name(m_objArma->pose, bone->name);
 	if (pchan) {
 		trans = mt::mat3x4(mt::vec3(pchan->pose_mat[0]), mt::vec3(pchan->pose_mat[1]),

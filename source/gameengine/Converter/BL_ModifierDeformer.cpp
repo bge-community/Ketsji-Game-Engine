@@ -132,47 +132,45 @@ bool BL_ModifierDeformer::HasArmatureDeformer(Object *ob)
 	return false;
 }
 
-bool BL_ModifierDeformer::Update(void)
+void BL_ModifierDeformer::Update(void)
 {
-	bool bShapeUpdate = BL_ShapeDeformer::Update();
-
-	if (bShapeUpdate || m_lastModifierUpdate != m_gameobj->GetLastFrame()) {
-		// static derived mesh are not updated
-		if (m_dm == nullptr || m_bDynamic) {
-			/* execute the modifiers */
-			Object *blendobj = m_gameobj->GetBlenderObject();
-			/* hack: the modifiers require that the mesh is attached to the object
-			 * It may not be the case here because of replace mesh actuator */
-			Mesh *oldmesh = (Mesh *)blendobj->data;
-			blendobj->data = m_bmesh;
-			/* execute the modifiers */
-			DerivedMesh *dm = mesh_create_derived_no_virtual(m_scene, blendobj, (float (*)[3])m_transverts.data(), CD_MASK_MESH);
-			/* restore object data */
-			blendobj->data = oldmesh;
-			/* free the current derived mesh and replace, (dm should never be nullptr) */
-			if (m_dm != nullptr) {
-				// HACK! use deformedOnly as a user counter
-				if (--m_dm->deformedOnly == 0) {
-					m_dm->needsFree = 1;
-					m_dm->release(m_dm);
-				}
-			}
-			m_dm = dm;
-			// get rid of temporary data
-			m_dm->needsFree = 0;
+	BL_ShapeDeformer::Update();
+	/* execute the modifiers */
+	Object *blendobj = m_gameobj->GetBlenderObject();
+	/* hack: the modifiers require that the mesh is attached to the object
+	 * It may not be the case here because of replace mesh actuator */
+	Mesh *oldmesh = (Mesh *)blendobj->data;
+	blendobj->data = m_bmesh;
+	/* execute the modifiers */
+	DerivedMesh *dm = mesh_create_derived_no_virtual(m_scene, blendobj, (float (*)[3])m_transverts.data(), CD_MASK_MESH);
+	/* restore object data */
+	blendobj->data = oldmesh;
+	/* free the current derived mesh and replace, (dm should never be nullptr) */
+	if (m_dm != nullptr) {
+		// HACK! use deformedOnly as a user counter
+		if (--m_dm->deformedOnly == 0) {
+			m_dm->needsFree = 1;
 			m_dm->release(m_dm);
-			// HACK! use deformedOnly as a user counter
-			m_dm->deformedOnly = 1;
-			DM_update_materials(m_dm, blendobj);
-
-			UpdateBounds();
-			UpdateTransverts();
 		}
-		m_lastModifierUpdate = m_gameobj->GetLastFrame();
-		bShapeUpdate = true;
 	}
+	m_dm = dm;
+	// get rid of temporary data
+	m_dm->needsFree = 0;
+	m_dm->release(m_dm);
+	// HACK! use deformedOnly as a user counter
+	m_dm->deformedOnly = 1;
+	DM_update_materials(m_dm, blendobj);
 
-	return bShapeUpdate;
+	UpdateBounds();
+	UpdateTransverts();
+
+	m_lastModifierUpdate = m_gameobj->GetLastFrame();
+}
+
+bool BL_ModifierDeformer::NeedUpdate() const
+{
+	// static derived mesh are not updated
+	return (BL_ShapeDeformer::NeedUpdate() || m_lastModifierUpdate != m_gameobj->GetLastFrame() || m_bDynamic || !m_dm);
 }
 
 void BL_ModifierDeformer::UpdateBounds()
@@ -214,9 +212,4 @@ void BL_ModifierDeformer::UpdateTransverts()
 	if (m_gameobj->GetAutoUpdateBounds()) {
 		UpdateBounds();
 	}
-}
-
-void BL_ModifierDeformer::Apply(RAS_IDisplayArray *array)
-{
-	Update();
 }

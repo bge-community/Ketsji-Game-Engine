@@ -49,26 +49,28 @@
 #include <string>
 #include "BLI_math.h"
 
-void BL_MeshDeformer::Apply(RAS_IDisplayArray *UNUSED(array))
+void BL_MeshDeformer::Update()
 {
-	// only apply once per frame if the mesh is actually modified
-	if (m_lastDeformUpdate != m_gameobj->GetLastFrame()) {
-		// For each display array
-		for (const DisplayArraySlot& slot : m_slots) {
-			RAS_IDisplayArray *array = slot.m_displayArray;
+	// For each display array
+	for (const DisplayArraySlot& slot : m_slots) {
+		RAS_IDisplayArray *array = slot.m_displayArray;
 
-			//	For each vertex
-			for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
-				RAS_Vertex v = array->GetVertex(i);
-				const RAS_VertexInfo& vinfo = array->GetVertexInfo(i);
-				v.SetXYZ(m_bmesh->mvert[vinfo.GetOrigIndex()].co);
-			}
-
-			array->NotifyUpdate(RAS_IDisplayArray::POSITION_MODIFIED);
+		//	For each vertex
+		for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
+			RAS_Vertex v = array->GetVertex(i);
+			const RAS_VertexInfo& vinfo = array->GetVertexInfo(i);
+			v.SetXYZ(m_bmesh->mvert[vinfo.GetOrigIndex()].co);
 		}
-
-		m_lastDeformUpdate = m_gameobj->GetLastFrame();
+		array->NotifyUpdate(RAS_IDisplayArray::POSITION_MODIFIED);
 	}
+
+	m_lastDeformUpdate = m_gameobj->GetLastFrame();
+}
+
+bool BL_MeshDeformer::NeedUpdate() const
+{
+	// Only apply once per frame if the mesh is actually modified.
+	return (m_lastDeformUpdate != m_gameobj->GetLastFrame());
 }
 
 BL_MeshDeformer::BL_MeshDeformer(BL_DeformableGameObject *gameobj, Object *obj, RAS_MeshObject *meshobj)

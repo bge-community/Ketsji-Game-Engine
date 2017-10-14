@@ -42,7 +42,7 @@
 #  include "BL_BlenderScalarInterpolator.h"
 #endif
 
-#include "CM_Thread.h"
+#include <mutex>
 
 class EXP_StringValue;
 class BL_BlenderSceneConverter;
@@ -90,7 +90,7 @@ private:
 
 	struct ThreadInfo {
 		TaskPool *m_pool;
-		CM_ThreadMutex m_mutex;
+		std::mutex m_mutex;
 	} m_threadinfo;
 
 	// Saved KX_LibLoadStatus objects

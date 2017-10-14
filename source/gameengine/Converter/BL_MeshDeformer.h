@@ -56,14 +56,8 @@ public:
 
 	BL_MeshDeformer(BL_DeformableGameObject *gameobj, Object *obj, RAS_MeshObject *meshobj);
 	virtual ~BL_MeshDeformer();
-	virtual void Apply(RAS_IDisplayArray *array);
-	virtual bool Update()
-	{
-		return false;
-	}
-	virtual void UpdateBuckets()
-	{
-	}
+	virtual void Update();
+	virtual bool NeedUpdate() const;
 	virtual RAS_Deformer *GetReplica()
 	{
 		return nullptr;
