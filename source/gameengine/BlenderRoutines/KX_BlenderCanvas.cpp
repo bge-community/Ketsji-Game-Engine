@@ -157,14 +157,11 @@ int KX_BlenderCanvas::GetMaxY() const
 void KX_BlenderCanvas::ConvertMousePosition(int x, int y, int &r_x, int &r_y, bool screen)
 {
 	if (screen) {
-		int _x, _y;
-		((GHOST_IWindow *)m_win->ghostwin)->screenToClient(x, y, _x, _y);
-		x = _x;
-		y = _y;
+		wm_cursor_position_from_ghost(m_win, &x, &y);
 	}
 
-	r_x = x - m_area_rect.GetLeft() - 1;
-	r_y = -y + m_area_rect.GetTop() - 1;
+	r_x = x - m_area_rect.GetLeft();
+	r_y = -y + m_area_rect.GetTop();
 }
 
 float KX_BlenderCanvas::GetMouseNormalizedX(int x)
