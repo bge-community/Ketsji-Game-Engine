@@ -172,7 +172,7 @@ void GPG_Canvas::SetMousePosition(int x, int y)
 		GHOST_TInt32 cx;
 		GHOST_TInt32 cy;
 		m_window->clientToScreen(gx, gy, cx, cy);
-		system->setCursorPosition(cx + 1, cy);
+		system->setCursorPosition(cx, cy);
 	}
 }
 
@@ -273,8 +273,10 @@ void GPG_Canvas::ConvertMousePosition(int x, int y, int &r_x, int &r_y, bool UNU
 	int _y;
 	m_window->screenToClient(x, y, _x, _y);
 
-	r_x = _x - 1;
-	r_y = _y;
+	const float fac = m_window->getNativePixelSize();
+
+	r_x = _x * fac;
+	r_y = _y * fac;
 }
 
 float GPG_Canvas::GetMouseNormalizedX(int x)
