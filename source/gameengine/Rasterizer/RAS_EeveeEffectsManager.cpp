@@ -39,6 +39,7 @@
 #include "KX_Camera.h" // motion blur and AO
 
 extern "C" {
+#  include "BLI_rand.h"
 #  include "DRW_render.h"
 }
 
@@ -50,7 +51,8 @@ m_scene(scene),
 m_dofInitialized(false),
 m_bloomTarget(nullptr),
 m_blurTarget(nullptr),
-m_dofTarget(nullptr)
+m_dofTarget(nullptr),
+m_taaTarget(nullptr)
 {
 	m_stl = vedata->stl;
 	m_psl = vedata->psl;
@@ -80,6 +82,8 @@ m_dofTarget(nullptr)
 	// Volumetrics
 	World *world = m_scene->GetBlenderScene()->world;
 	m_useVolumetricNodes = (world && world->use_nodes && world->nodetree);
+
+	m_taaTarget = new RAS_FrameBuffer(m_width, m_height, RAS_Rasterizer::RAS_HDR_HALF_FLOAT, RAS_Rasterizer::RAS_FRAMEBUFFER_EYE_LEFT0);
 }
 
 RAS_EeveeEffectsManager::~RAS_EeveeEffectsManager()
@@ -87,6 +91,7 @@ RAS_EeveeEffectsManager::~RAS_EeveeEffectsManager()
 	delete m_bloomTarget;
 	delete m_blurTarget;
 	delete m_dofTarget;
+	delete m_taaTarget;
 }
 
 void RAS_EeveeEffectsManager::InitDof()
@@ -340,9 +345,92 @@ void RAS_EeveeEffectsManager::DoSSR(RAS_FrameBuffer *inputfb)
 	}
 }
 
+RAS_FrameBuffer *RAS_EeveeEffectsManager::DoTaa(RAS_FrameBuffer *inputfb)
+{
+	if ((m_effects->enabled_effects & EFFECT_TAA) != 0) {
+		float persmat[4][4], viewmat[4][4];
+
+		KX_Camera *cam = m_scene->GetActiveCamera();
+		MT_Matrix4x4 view(cam->GetModelviewMatrix());
+		MT_Matrix4x4 proj(cam->GetProjectionMatrix());
+		MT_Matrix4x4 pers(proj * view);
+		view.getValue(&viewmat[0][0]);
+		proj.getValue(&m_effects->overide_winmat[0][0]);
+		pers.getValue(&persmat[0][0]);
+		bool viewDidntChange = compare_m4m4(persmat, m_effects->prev_drw_persmat, FLT_MIN);
+		copy_m4_m4(m_effects->prev_drw_persmat, persmat);
+
+		if (!viewDidntChange) {
+			m_effects->taa_current_sample = 1;
+			return inputfb;
+		}
+
+		if (m_effects->taa_total_sample == 0 || m_effects->taa_current_sample < m_effects->taa_total_sample) {
+
+			m_effects->taa_current_sample += 1;
+
+			m_effects->taa_alpha = 1.0f / (float)(m_effects->taa_current_sample);
+
+			double ht_point[2];
+			double ht_offset[2] = { 0.0, 0.0 };
+			unsigned int ht_primes[2] = { 2, 3 };
+
+			BLI_halton_2D(ht_primes, ht_offset, m_effects->taa_current_sample - 1, ht_point);
+
+			window_translate_m4(
+				m_effects->overide_winmat, persmat,
+				((float)(ht_point[0]) * 2.0f - 1.0f) / m_width,
+				((float)(ht_point[1]) * 2.0f - 1.0f) / m_height);
+
+			mul_m4_m4m4(m_effects->overide_persmat, m_effects->overide_winmat, viewmat);
+			invert_m4_m4(m_effects->overide_persinv, m_effects->overide_persmat);
+			invert_m4_m4(m_effects->overide_wininv, m_effects->overide_winmat);
+
+			DRW_viewport_matrix_override_set(m_effects->overide_persmat, DRW_MAT_PERS);
+			DRW_viewport_matrix_override_set(m_effects->overide_persinv, DRW_MAT_PERSINV);
+			DRW_viewport_matrix_override_set(m_effects->overide_winmat, DRW_MAT_WIN);
+			DRW_viewport_matrix_override_set(m_effects->overide_wininv, DRW_MAT_WININV);
+		}
+		else {
+			m_effects->taa_current_sample = 1;
+		}
+		/* Temporal Anti-Aliasing */
+		/* MUST COME FIRST. */
+		
+		if (m_effects->taa_current_sample != 1) {
+			DRW_framebuffer_bind(m_fbl->effect_fb);
+			DRW_draw_pass(m_psl->taa_resolve);
+
+			/* Restore the depth from sample 1. */
+			DRW_framebuffer_blit(m_fbl->depth_double_buffer_fb, m_fbl->main, true);
+
+			/* Special Swap */
+			SWAP(struct GPUFrameBuffer *, m_fbl->effect_fb, m_fbl->double_buffer);
+			SWAP(GPUTexture *, m_txl->color_post, m_txl->color_double_buffer);
+
+			m_effects->source_buffer = m_txl->color_double_buffer;
+			m_effects->target_buffer = m_fbl->main;
+		}
+		else {
+			/* Save the depth buffer for the next frame.
+			* This saves us from doing anything special
+			* in the other mode engines. */
+			DRW_framebuffer_blit(m_fbl->main, m_fbl->depth_double_buffer_fb, true);
+		}
+
+		if (m_effects->taa_total_sample == 0 || m_effects->taa_current_sample < m_effects->taa_total_sample) {
+			DRW_viewport_request_redraw();
+		}
+		return inputfb;
+	}
+	return inputfb;
+}
+
 
 RAS_FrameBuffer *RAS_EeveeEffectsManager::RenderEeveeEffects(RAS_FrameBuffer *inputfb)
 {
+	DoTaa(inputfb);
+
 	m_rasterizer->Disable(RAS_Rasterizer::RAS_DEPTH_TEST);
 
 	CreateMinMaxDepth(inputfb); // Used for AO and SSR and...?
