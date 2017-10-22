@@ -85,6 +85,7 @@
 #endif
 
 extern "C" {
+#  include "BLI_rand.h"
 #  include "DRW_render.h"
 }
 
@@ -616,100 +617,144 @@ void KX_KetsjiEngine::Render()
 
 	BeginFrame();
 
-	for (KX_Scene *scene : m_scenes) {
-		// shadow buffers
-		RenderShadowBuffers(scene);
+	/* Number of iteration: needed for all temporal effect (SSR, TAA)
+	* when using opengl render. */
+	int loop_ct = DRW_state_is_image_render() ? 4 : 1;
+	EEVEE_Data *vedata = EEVEE_engine_data_get();
+	EEVEE_StorageList *stl = vedata->stl;
+
+	static float rand = 0.0f;
+
+	/* XXX temp for denoising render. TODO plug number of samples here */
+	if (DRW_state_is_image_render()) {
+		rand += 1.0f / 16.0f;
+		rand = rand - floorf(rand);
+
+		/* Set jitter offset */
+		EEVEE_update_util_texture(rand);
+	}
+	else if (((stl->effects->enabled_effects & EFFECT_TAA) != 0) && (stl->effects->taa_current_sample > 1)) {
+		double r;
+		BLI_halton_1D(2, 0.0, stl->effects->taa_current_sample - 1, &r);
+
+		/* Set jitter offset */
+		/* PERF This is killing perf ! */
+		EEVEE_update_util_texture((float)r);
 	}
 
-	std::vector<FrameRenderData> frameDataList;
-	const bool renderpereye = GetFrameRenderData(frameDataList);
+	while (loop_ct--) {
 
-	// Update all off screen to the current canvas size.
-	m_rasterizer->UpdateOffScreens(m_canvas);
-
-	const int width = m_canvas->GetWidth();
-	const int height = m_canvas->GetHeight();
-
-	// clear the entire game screen with the border color
-	// only once per frame
-	m_rasterizer->SetViewport(0, 0, width + 1, height + 1);
-	m_rasterizer->SetScissor(0, 0, width + 1, height + 1);
-
-	KX_Scene *firstscene = m_scenes->GetFront();
-	const RAS_FrameSettings &framesettings = firstscene->GetFramingType();
-	// Use the framing bar color set in the Blender scenes
-	m_rasterizer->SetClearColor(framesettings.BarRed(), framesettings.BarGreen(), framesettings.BarBlue(), 1.0f);
-
-	// Used to detect when a camera is the first rendered an then doesn't request a depth clear.
-	unsigned short pass = 0;
-
-	for (FrameRenderData& frameData : frameDataList) {
-		// Current bound off screen.
-		RAS_FrameBuffer *frameBuffer = m_rasterizer->GetFrameBuffer(frameData.m_fbType);
-		DRW_framebuffer_bind(frameBuffer->GetFrameBuffer());
-
-		// Clear off screen only before the first scene render.
-		m_rasterizer->Clear(RAS_Rasterizer::RAS_COLOR_BUFFER_BIT | RAS_Rasterizer::RAS_DEPTH_BUFFER_BIT);
-
-		// for each scene, call the proceed functions
-		for (unsigned short i = 0, size = frameData.m_sceneDataList.size(); i < size; ++i) {
-			const SceneRenderData& sceneFrameData = frameData.m_sceneDataList[i];
-			KX_Scene *scene = sceneFrameData.m_scene;
-
-			const bool isfirstscene = (i == 0);
-			const bool islastscene = (i == (size - 1));
-
-			// pass the scene's worldsettings to the rasterizer
-			scene->GetWorldInfo()->UpdateWorldSettings(m_rasterizer);
-
-			m_rasterizer->SetAuxilaryClientInfo(scene);
-
-			// Draw the scene once for each camera with an enabled viewport or an active camera.
-			for (const CameraRenderData& cameraFrameData : sceneFrameData.m_cameraDataList) {
-				// do the rendering
-				RenderCamera(scene, cameraFrameData, frameBuffer, pass++, isfirstscene);
-			}
-
-			// Choose final render off screen target.
-			RAS_Rasterizer::FrameBufferType target;
-			//if (frameBuffer->GetSamples() > 0) {
-			//	/* If the last scene is rendered it's useless to specify a multisamples off screen, we use then
-			//	 * a non-multisamples off screen and avoid an extra off screen blit. */
-			//	if (islastscene) {
-			//		target = RAS_Rasterizer::NextRenderFb(frameData.m_fbType);
-			//	}
-			//	/* If the current off screen is using multisamples we are sure that it will be copied to a
-			//	 * non-multisamples off screen before render the filters.
-			//	 * In this case the targeted off screen is the same as the current off screen. */
-			//	else {
-			//		target = frameData.m_fbType;
-			//	}
-			//}
-			/* In case of non-multisamples a ping pong per scene render is made between a potentially multisamples
-			 * off screen and a non-multisamples off screen as the both doesn't use multisamples. */
-			
-			target = RAS_Rasterizer::NextRenderFrameBuffer(frameData.m_fbType);
-			
-
-			// Render EEVEE effects before tonemapping and custom filters
-			scene->SetIsLastScene(scene == m_scenes->GetBack());
-			frameBuffer = PostRenderEevee(scene, frameBuffer);
-			target = RAS_Rasterizer::NextRenderFrameBuffer(frameBuffer->GetType());
-			// Render filters and get output off screen.
-			frameBuffer = PostRenderScene(scene, frameBuffer, m_rasterizer->GetFrameBuffer(target));
-			frameData.m_fbType = frameBuffer->GetType();
+		for (KX_Scene *scene : m_scenes) {
+			// shadow buffers
+			RenderShadowBuffers(scene);
 		}
-	}
 
-	// Compositing per eye off screens to screen.
-	if (renderpereye) {
-		RAS_FrameBuffer *leftfb = m_rasterizer->GetFrameBuffer(frameDataList[0].m_fbType);
-		RAS_FrameBuffer *rightfb = m_rasterizer->GetFrameBuffer(frameDataList[1].m_fbType);
-		m_rasterizer->DrawStereoFrameBuffer(m_canvas, leftfb, rightfb);
-	}
-	// Else simply draw the off screen to screen.
-	else {
-		m_rasterizer->DrawFrameBuffer(m_canvas, m_rasterizer->GetFrameBuffer(frameDataList[0].m_fbType));
+		std::vector<FrameRenderData> frameDataList;
+		const bool renderpereye = GetFrameRenderData(frameDataList);
+
+		// Update all off screen to the current canvas size.
+		m_rasterizer->UpdateOffScreens(m_canvas);
+
+		const int width = m_canvas->GetWidth();
+		const int height = m_canvas->GetHeight();
+
+		// clear the entire game screen with the border color
+		// only once per frame
+		m_rasterizer->SetViewport(0, 0, width + 1, height + 1);
+		m_rasterizer->SetScissor(0, 0, width + 1, height + 1);
+
+		KX_Scene *firstscene = m_scenes->GetFront();
+		const RAS_FrameSettings &framesettings = firstscene->GetFramingType();
+		// Use the framing bar color set in the Blender scenes
+		m_rasterizer->SetClearColor(framesettings.BarRed(), framesettings.BarGreen(), framesettings.BarBlue(), 1.0f);
+
+		// Used to detect when a camera is the first rendered an then doesn't request a depth clear.
+		unsigned short pass = 0;
+
+		for (FrameRenderData& frameData : frameDataList) {
+			// Current bound off screen.
+			RAS_FrameBuffer *frameBuffer = m_rasterizer->GetFrameBuffer(frameData.m_fbType);
+			DRW_framebuffer_bind(frameBuffer->GetFrameBuffer());
+
+			// Clear off screen only before the first scene render.
+			m_rasterizer->Clear(RAS_Rasterizer::RAS_COLOR_BUFFER_BIT | RAS_Rasterizer::RAS_DEPTH_BUFFER_BIT);
+
+			// for each scene, call the proceed functions
+			for (unsigned short i = 0, size = frameData.m_sceneDataList.size(); i < size; ++i) {
+				const SceneRenderData& sceneFrameData = frameData.m_sceneDataList[i];
+				KX_Scene *scene = sceneFrameData.m_scene;
+
+				const bool isfirstscene = (i == 0);
+				const bool islastscene = (i == (size - 1));
+
+				// TAA BEGIN
+				if (((stl->effects->enabled_effects & EFFECT_TAA) != 0) && stl->effects->taa_current_sample > 1) {
+					DRW_viewport_matrix_override_set(stl->effects->overide_persmat, DRW_MAT_PERS);
+					DRW_viewport_matrix_override_set(stl->effects->overide_persinv, DRW_MAT_PERSINV);
+					DRW_viewport_matrix_override_set(stl->effects->overide_winmat, DRW_MAT_WIN);
+					DRW_viewport_matrix_override_set(stl->effects->overide_wininv, DRW_MAT_WININV);
+				}
+
+				// pass the scene's worldsettings to the rasterizer
+				scene->GetWorldInfo()->UpdateWorldSettings(m_rasterizer);
+
+				m_rasterizer->SetAuxilaryClientInfo(scene);
+
+				// Draw the scene once for each camera with an enabled viewport or an active camera.
+				for (const CameraRenderData& cameraFrameData : sceneFrameData.m_cameraDataList) {
+					// do the rendering
+					RenderCamera(scene, cameraFrameData, frameBuffer, pass++, isfirstscene);
+				}
+
+				// Choose final render off screen target.
+				RAS_Rasterizer::FrameBufferType target;
+				//if (frameBuffer->GetSamples() > 0) {
+				//	/* If the last scene is rendered it's useless to specify a multisamples off screen, we use then
+				//	 * a non-multisamples off screen and avoid an extra off screen blit. */
+				//	if (islastscene) {
+				//		target = RAS_Rasterizer::NextRenderFb(frameData.m_fbType);
+				//	}
+				//	/* If the current off screen is using multisamples we are sure that it will be copied to a
+				//	 * non-multisamples off screen before render the filters.
+				//	 * In this case the targeted off screen is the same as the current off screen. */
+				//	else {
+				//		target = frameData.m_fbType;
+				//	}
+				//}
+				/* In case of non-multisamples a ping pong per scene render is made between a potentially multisamples
+				 * off screen and a non-multisamples off screen as the both doesn't use multisamples. */
+
+				target = RAS_Rasterizer::NextRenderFrameBuffer(frameData.m_fbType);
+
+
+				// Render EEVEE effects before tonemapping and custom filters
+				scene->SetIsLastScene(scene == m_scenes->GetBack());
+				frameBuffer = PostRenderEevee(scene, frameBuffer);
+				target = RAS_Rasterizer::NextRenderFrameBuffer(frameBuffer->GetType());
+				// Render filters and get output off screen.
+				frameBuffer = PostRenderScene(scene, frameBuffer, m_rasterizer->GetFrameBuffer(target));
+				frameData.m_fbType = frameBuffer->GetType();
+
+				// TAA end
+				if (stl->effects->taa_current_sample > 1) {
+					DRW_viewport_matrix_override_unset(DRW_MAT_PERS);
+					DRW_viewport_matrix_override_unset(DRW_MAT_PERSINV);
+					DRW_viewport_matrix_override_unset(DRW_MAT_WIN);
+					DRW_viewport_matrix_override_unset(DRW_MAT_WININV);
+				}
+			}
+		}
+
+		// Compositing per eye off screens to screen.
+		if (renderpereye) {
+			RAS_FrameBuffer *leftfb = m_rasterizer->GetFrameBuffer(frameDataList[0].m_fbType);
+			RAS_FrameBuffer *rightfb = m_rasterizer->GetFrameBuffer(frameDataList[1].m_fbType);
+			m_rasterizer->DrawStereoFrameBuffer(m_canvas, leftfb, rightfb);
+		}
+		// Else simply draw the off screen to screen.
+		else {
+			m_rasterizer->DrawFrameBuffer(m_canvas, m_rasterizer->GetFrameBuffer(frameDataList[0].m_fbType));
+		}
 	}
 
 // 	m_rasterizer->BindViewport(m_canvas);

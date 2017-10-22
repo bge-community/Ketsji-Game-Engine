@@ -59,7 +59,7 @@ public:
 	void CreateMinMaxDepth(RAS_FrameBuffer *inputfb);
 	void DoSSR(RAS_FrameBuffer *inputfb);
 
-	RAS_FrameBuffer *DoTaa(RAS_FrameBuffer *inputfb);
+	void DoTaa(RAS_FrameBuffer *inputfb);
 
 private:
 	EEVEE_StorageList *m_stl;
@@ -78,7 +78,6 @@ private:
 	RAS_FrameBuffer *m_bloomTarget;
 	RAS_FrameBuffer *m_blurTarget;
 	RAS_FrameBuffer *m_dofTarget;
-	RAS_FrameBuffer *m_taaTarget;
 
 	unsigned int m_width; // Canvas width
 	unsigned int m_height; // Canvas height

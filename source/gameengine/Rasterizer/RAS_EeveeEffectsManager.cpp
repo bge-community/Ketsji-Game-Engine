@@ -51,8 +51,7 @@ m_scene(scene),
 m_dofInitialized(false),
 m_bloomTarget(nullptr),
 m_blurTarget(nullptr),
-m_dofTarget(nullptr),
-m_taaTarget(nullptr)
+m_dofTarget(nullptr)
 {
 	m_stl = vedata->stl;
 	m_psl = vedata->psl;
@@ -82,8 +81,6 @@ m_taaTarget(nullptr)
 	// Volumetrics
 	World *world = m_scene->GetBlenderScene()->world;
 	m_useVolumetricNodes = (world && world->use_nodes && world->nodetree);
-
-	m_taaTarget = new RAS_FrameBuffer(m_width, m_height, RAS_Rasterizer::RAS_HDR_HALF_FLOAT, RAS_Rasterizer::RAS_FRAMEBUFFER_EYE_LEFT0);
 }
 
 RAS_EeveeEffectsManager::~RAS_EeveeEffectsManager()
@@ -91,7 +88,6 @@ RAS_EeveeEffectsManager::~RAS_EeveeEffectsManager()
 	delete m_bloomTarget;
 	delete m_blurTarget;
 	delete m_dofTarget;
-	delete m_taaTarget;
 }
 
 void RAS_EeveeEffectsManager::InitDof()
@@ -345,7 +341,7 @@ void RAS_EeveeEffectsManager::DoSSR(RAS_FrameBuffer *inputfb)
 	}
 }
 
-RAS_FrameBuffer *RAS_EeveeEffectsManager::DoTaa(RAS_FrameBuffer *inputfb)
+void RAS_EeveeEffectsManager::DoTaa(RAS_FrameBuffer *inputfb)
 {
 	if ((m_effects->enabled_effects & EFFECT_TAA) != 0) {
 		float persmat[4][4], viewmat[4][4];
@@ -357,16 +353,17 @@ RAS_FrameBuffer *RAS_EeveeEffectsManager::DoTaa(RAS_FrameBuffer *inputfb)
 		view.getValue(&viewmat[0][0]);
 		proj.getValue(&m_effects->overide_winmat[0][0]);
 		pers.getValue(&persmat[0][0]);
-		bool viewDidntChange = compare_m4m4(persmat, m_effects->prev_drw_persmat, FLT_MIN);
+		bool view_is_valid = compare_m4m4(persmat, m_effects->prev_drw_persmat, FLT_MIN);
 		copy_m4_m4(m_effects->prev_drw_persmat, persmat);
 
-		if (!viewDidntChange) {
-			m_effects->taa_current_sample = 1;
-			return inputfb;
-		}
+		/* Prevent ghosting from probe data. */
+		view_is_valid = view_is_valid && (m_effects->prev_drw_support == DRW_state_draw_support());
+		m_effects->prev_drw_support = DRW_state_draw_support();
 
-		if (m_effects->taa_total_sample == 0 || m_effects->taa_current_sample < m_effects->taa_total_sample) {
-
+		if (view_is_valid &&
+			((m_effects->taa_total_sample == 0) ||
+			(m_effects->taa_current_sample < m_effects->taa_total_sample)))
+		{
 			m_effects->taa_current_sample += 1;
 
 			m_effects->taa_alpha = 1.0f / (float)(m_effects->taa_current_sample);
@@ -402,28 +399,33 @@ RAS_FrameBuffer *RAS_EeveeEffectsManager::DoTaa(RAS_FrameBuffer *inputfb)
 			DRW_draw_pass(m_psl->taa_resolve);
 
 			/* Restore the depth from sample 1. */
-			DRW_framebuffer_blit(m_fbl->depth_double_buffer_fb, m_fbl->main, true);
+			GPUFrameBuffer *main = inputfb->GetFrameBuffer();
+			DRW_framebuffer_blit(m_fbl->depth_double_buffer_fb, main, true);
 
 			/* Special Swap */
 			SWAP(struct GPUFrameBuffer *, m_fbl->effect_fb, m_fbl->double_buffer);
 			SWAP(GPUTexture *, m_txl->color_post, m_txl->color_double_buffer);
 
 			m_effects->source_buffer = m_txl->color_double_buffer;
-			m_effects->target_buffer = m_fbl->main;
+			m_effects->target_buffer = main;
 		}
 		else {
 			/* Save the depth buffer for the next frame.
 			* This saves us from doing anything special
 			* in the other mode engines. */
-			DRW_framebuffer_blit(m_fbl->main, m_fbl->depth_double_buffer_fb, true);
+			GPUFrameBuffer *main = inputfb->GetFrameBuffer();
+			DRW_framebuffer_blit(main, m_fbl->depth_double_buffer_fb, true);
 		}
 
 		if (m_effects->taa_total_sample == 0 || m_effects->taa_current_sample < m_effects->taa_total_sample) {
-			DRW_viewport_request_redraw();
+			//DRW_viewport_request_redraw();
+			KX_CullingNodeList nodes;
+			MT_Transform trans;
+			m_scene->CalculateVisibleMeshes(nodes, cam, 0);
+			DRW_framebuffer_bind(inputfb->GetFrameBuffer());
+			m_scene->RenderBuckets(nodes, trans, m_rasterizer, nullptr);
 		}
-		return inputfb;
 	}
-	return inputfb;
 }
 
 
