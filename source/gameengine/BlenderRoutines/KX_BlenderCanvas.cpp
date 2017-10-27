@@ -234,14 +234,13 @@ void KX_BlenderCanvas::SetMouseState(RAS_MouseState mousestate)
 	}
 }
 
-//	(0,0) is top left, (width,height) is bottom right
 void KX_BlenderCanvas::SetMousePosition(int x, int y)
 {
 	int winX = m_area_rect.GetLeft();
 	int winY = m_area_rect.GetBottom();
 	int winMaxY = m_area_rect.GetMaxY();
 
-	WM_cursor_warp(m_win, winX + x + 1, winY + (winMaxY - y - 1));
+	WM_cursor_warp(m_win, winX + x, winY + (winMaxY - y));
 }
 
 void KX_BlenderCanvas::MakeScreenShot(const std::string& filename)
