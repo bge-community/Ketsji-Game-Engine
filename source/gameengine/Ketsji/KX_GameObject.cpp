@@ -730,7 +730,16 @@ void KX_GameObject::UpdateBuckets()
 	m_meshUser->SetColor(m_objectColor);
 	m_meshUser->SetFrontFace(!m_bIsNegativeScaling);
 	m_meshUser->ActivateMeshSlots();
+}
 
+/* UPDATE BUCKETS FOR EEVEE */
+void KX_GameObject::UpdateBucketsNew()
+{
+	// Update datas and add mesh slot to be rendered only if the object is not culled.
+	if (m_pSGNode->IsDirty(SG_Node::DIRTY_RENDER)) {
+		NodeGetWorldTransform().getValue(m_meshUser->GetMatrix());
+		m_pSGNode->ClearDirty(SG_Node::DIRTY_RENDER);
+	}
 	std::vector<DRWShadingGroup *>shgroups = GetScene()->GetMaterialShadingGroups();
 	if (shgroups.size() > 0) {
 		for (DRWShadingGroup *sh : shgroups) {

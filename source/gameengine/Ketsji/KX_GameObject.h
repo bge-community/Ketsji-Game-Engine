@@ -719,6 +719,7 @@ public:
 	 * creating or duplicating the object, changing
 	 * visibility, object color, .. .
 	 */
+	virtual void UpdateBucketsNew();
 	virtual void UpdateBuckets();
 
 	/**
