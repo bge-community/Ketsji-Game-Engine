@@ -924,10 +924,6 @@ void KX_KetsjiEngine::RenderShadowBuffers(KX_Scene *scene)
 				/* update scene */
 				scene->CalculateVisibleMeshes(nodes, frustum, raslight->GetShadowLayer());
 
-				m_logger.StartLog(tc_animations, m_kxsystem->GetTimeInSeconds());
-				UpdateAnimations(scene);
-				m_logger.StartLog(tc_rasterizer, m_kxsystem->GetTimeInSeconds());
-
 				// Send a nullptr off screen because the viewport is binding it's using its own private one.
 				scene->RenderBuckets(nodes, camtrans, m_rasterizer, nullptr);
 
@@ -1006,10 +1002,6 @@ void KX_KetsjiEngine::RenderShadowBuffers(KX_Scene *scene)
 				//const SG_Frustum frustum(light->GetShadowFrustumMatrix().inverse());
 				/* update scene */
 				scene->CalculateVisibleMeshes(nodes, scene->GetActiveCamera(), raslight->GetShadowLayer());
-
-				m_logger.StartLog(tc_animations, m_kxsystem->GetTimeInSeconds());
-				UpdateAnimations(scene);
-				m_logger.StartLog(tc_rasterizer, m_kxsystem->GetTimeInSeconds());
 
 				// Send a nullptr off screen because the viewport is binding it's using its own private one.
 				scene->RenderBuckets(nodes, camtrans, m_rasterizer, nullptr);
