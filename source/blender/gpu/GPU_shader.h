@@ -96,15 +96,17 @@ void GPU_shader_unbind_instancing_attrib(GPUShader *shader);
 typedef enum GPUBuiltinShader {
 	GPU_SHADER_VSM_STORE            = 0,
 	GPU_SHADER_VSM_STORE_INSTANCING = 1,
-	GPU_SHADER_SEP_GAUSSIAN_BLUR    = 2,
-	GPU_SHADER_SMOKE                = 3,
-	GPU_SHADER_SMOKE_FIRE           = 4,
-	GPU_SHADER_SMOKE_COBA           = 5,
-	GPU_SHADER_BLACK                = 6,
-	GPU_SHADER_BLACK_INSTANCING     = 7,
-	GPU_SHADER_DRAW_FRAME_BUFFER	= 8,
-	GPU_SHADER_STEREO_STIPPLE       = 9,
-	GPU_SHADER_STEREO_ANAGLYPH      = 10,
+	GPU_SHADER_VSM_BLUR             = 2,
+	GPU_SHADER_VSM_BLUR_DEPTH       = 3,
+	GPU_SHADER_SEP_GAUSSIAN_BLUR    = 4,
+	GPU_SHADER_SMOKE                = 5,
+	GPU_SHADER_SMOKE_FIRE           = 6,
+	GPU_SHADER_SMOKE_COBA           = 7,
+	GPU_SHADER_BLACK                = 8,
+	GPU_SHADER_BLACK_INSTANCING     = 9,
+	GPU_SHADER_DRAW_FRAME_BUFFER	= 10,
+	GPU_SHADER_STEREO_STIPPLE       = 11,
+	GPU_SHADER_STEREO_ANAGLYPH      = 12,
 } GPUBuiltinShader;
 
 GPUShader *GPU_shader_get_builtin_shader(GPUBuiltinShader shader);

@@ -54,6 +54,7 @@ extern char datatoc_gpu_shader_frame_buffer_vert_glsl[];
 extern char datatoc_gpu_shader_fire_frag_glsl[];
 extern char datatoc_gpu_shader_smoke_vert_glsl[];
 extern char datatoc_gpu_shader_smoke_frag_glsl[];
+extern char datatoc_gpu_shader_vsm_blur_frag_glsl[];
 extern char datatoc_gpu_shader_vsm_store_vert_glsl[];
 extern char datatoc_gpu_shader_vsm_store_frag_glsl[];
 extern char datatoc_gpu_shader_sep_gaussian_blur_vert_glsl[];
@@ -73,6 +74,8 @@ static struct GPUShadersGlobal {
 	struct {
 		GPUShader *vsm_store;
 		GPUShader *vsm_store_instancing;
+		GPUShader *vsm_blur;
+		GPUShader *vsm_blur_depth;
 		GPUShader *sep_gaussian_blur;
 		GPUShader *smoke;
 		GPUShader *smoke_fire;
@@ -719,6 +722,20 @@ GPUShader *GPU_shader_get_builtin_shader(GPUBuiltinShader shader)
 					NULL, NULL, "#define USE_INSTANCING;\n", 0, 0, 0);
 			retval = GG.shaders.vsm_store_instancing;
 			break;
+		case GPU_SHADER_VSM_BLUR:
+			if (!GG.shaders.vsm_blur)
+				GG.shaders.vsm_blur = GPU_shader_create(
+					datatoc_gpu_shader_sep_gaussian_blur_vert_glsl, datatoc_gpu_shader_vsm_blur_frag_glsl,
+					NULL, NULL, NULL, 0, 0, 0);
+			retval = GG.shaders.vsm_blur;
+			break;
+		case GPU_SHADER_VSM_BLUR_DEPTH:
+			if (!GG.shaders.vsm_blur_depth)
+				GG.shaders.vsm_blur_depth = GPU_shader_create(
+					datatoc_gpu_shader_sep_gaussian_blur_vert_glsl, datatoc_gpu_shader_vsm_blur_frag_glsl,
+					NULL, NULL, "#define USE_DEPTH;\n", 0, 0, 0);
+			retval = GG.shaders.vsm_blur_depth;
+			break;
 		case GPU_SHADER_SEP_GAUSSIAN_BLUR:
 			if (!GG.shaders.sep_gaussian_blur)
 				GG.shaders.sep_gaussian_blur = GPU_shader_create(
@@ -877,6 +894,16 @@ void GPU_shader_free_builtin_shaders(void)
 	if (GG.shaders.vsm_store) {
 		GPU_shader_free(GG.shaders.vsm_store);
 		GG.shaders.vsm_store = NULL;
+	}
+
+	if (GG.shaders.vsm_blur) {
+		GPU_shader_free(GG.shaders.vsm_blur);
+		GG.shaders.vsm_blur = NULL;
+	}
+
+	if (GG.shaders.vsm_blur_depth) {
+		GPU_shader_free(GG.shaders.vsm_blur_depth);
+		GG.shaders.vsm_blur_depth = NULL;
 	}
 
 	if (GG.shaders.sep_gaussian_blur) {

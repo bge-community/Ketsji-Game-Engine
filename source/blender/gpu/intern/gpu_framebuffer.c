@@ -497,19 +497,15 @@ void GPU_framebuffer_restore(void)
 
 void GPU_framebuffer_blur(
         GPUFrameBuffer *fb, GPUTexture *tex,
-        GPUFrameBuffer *blurfb, GPUTexture *blurtex, float sharpness)
+        GPUFrameBuffer *blurfb, GPUTexture *blurtex, GPUShader *blurshader, float sharpness)
 {
 	const float scaleh[2] = {(1.0f - sharpness) / GPU_texture_width(blurtex), 0.0f};
 	const float scalev[2] = {0.0f, (1.0f - sharpness) / GPU_texture_height(tex)};
 
-	GPUShader *blur_shader = GPU_shader_get_builtin_shader(GPU_SHADER_SEP_GAUSSIAN_BLUR);
 	int scale_uniform, texture_source_uniform;
 
-	if (!blur_shader)
-		return;
-
-	scale_uniform = GPU_shader_get_uniform(blur_shader, "ScaleU");
-	texture_source_uniform = GPU_shader_get_uniform(blur_shader, "textureSource");
+	scale_uniform = GPU_shader_get_uniform(blurshader, "ScaleU");
+	texture_source_uniform = GPU_shader_get_uniform(blurshader, "textureSource");
 		
 	/* Blurring horizontally */
 
@@ -521,9 +517,9 @@ void GPU_framebuffer_blur(
 	/* avoid warnings from texture binding */
 	GG.currentfb = blurfb->object;
 
-	GPU_shader_bind(blur_shader);
-	GPU_shader_uniform_vector(blur_shader, scale_uniform, 2, 1, scaleh);
-	GPU_shader_uniform_texture(blur_shader, texture_source_uniform, tex);
+	GPU_shader_bind(blurshader);
+	GPU_shader_uniform_vector(blurshader, scale_uniform, 2, 1, scaleh);
+	GPU_shader_uniform_texture(blurshader, texture_source_uniform, tex);
 	glViewport(0, 0, GPU_texture_width(blurtex), GPU_texture_height(blurtex));
 
 	/* Preparing to draw quad */
@@ -554,8 +550,8 @@ void GPU_framebuffer_blur(
 	GG.currentfb = fb->object;
 	
 	glViewport(0, 0, GPU_texture_width(tex), GPU_texture_height(tex));
-	GPU_shader_uniform_vector(blur_shader, scale_uniform, 2, 1, scalev);
-	GPU_shader_uniform_texture(blur_shader, texture_source_uniform, blurtex);
+	GPU_shader_uniform_vector(blurshader, scale_uniform, 2, 1, scalev);
+	GPU_shader_uniform_texture(blurshader, texture_source_uniform, blurtex);
 	GPU_texture_bind(blurtex, 0);
 
 	glBegin(GL_QUADS);

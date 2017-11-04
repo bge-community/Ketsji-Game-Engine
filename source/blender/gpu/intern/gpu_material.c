@@ -2860,7 +2860,8 @@ void GPU_lamp_shadow_buffer_unbind(GPULamp *lamp)
 {
 	if (lamp->la->shadowmap_type == LA_SHADMAP_VARIANCE) {
 		GPU_shader_unbind();
-		GPU_framebuffer_blur(lamp->fb, lamp->tex, lamp->blurfb, lamp->blurtex, lamp->la->bufsharp);
+		GPUShader *blurshader = GPU_shader_get_builtin_shader(GPU_SHADER_VSM_BLUR_DEPTH);
+		GPU_framebuffer_blur(lamp->fb, lamp->tex, lamp->blurfb, lamp->blurtex, blurshader, lamp->la->bufsharp);
 	}
 
 	GPU_framebuffer_texture_unbind(lamp->fb, lamp->tex);

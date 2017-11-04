@@ -37,6 +37,7 @@ extern "C" {
 #endif
 
 #include "GPU_texture.h"
+#include "GPU_shader.h"
 
 typedef struct GPUFrameBuffer GPUFrameBuffer;
 typedef struct GPURenderBuffer GPURenderBuffer;
@@ -73,7 +74,7 @@ bool GPU_framebuffer_bound(GPUFrameBuffer *fb);
 void GPU_framebuffer_restore(void);
 void GPU_framebuffer_blur(
         GPUFrameBuffer *fb, struct GPUTexture *tex,
-        GPUFrameBuffer *blurfb, struct GPUTexture *blurtex, float sharpness);
+        GPUFrameBuffer *blurfb, struct GPUTexture *blurtex, struct GPUShader *blurshader, float sharpness);
 
 typedef enum GPURenderBufferType {
 	GPU_RENDERBUFFER_COLOR = 0,
