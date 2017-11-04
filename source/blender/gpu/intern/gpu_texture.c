@@ -537,7 +537,7 @@ GPUTexture *GPU_texture_create_depth_multisample(int w, int h, int samples, bool
  */
 GPUTexture *GPU_texture_create_vsm_shadow_map(int size, char err_out[256])
 {
-	GPUTexture *tex = GPU_texture_create_nD(size, size, 2, NULL, GPU_TEXTURE_MODE_NONE, GPU_HDR_FULL_FLOAT, 2, 0, err_out);
+	GPUTexture *tex = GPU_texture_create_nD(size, size, 2, NULL, GPU_TEXTURE_MODE_NONE, GPU_HDR_FULL_FLOAT, 4, 0, err_out);
 
 	if (tex) {
 		/* Now we tweak some of the settings */

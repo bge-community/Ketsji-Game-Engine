@@ -11,6 +11,8 @@ void main()
 	vec2 scale = ScaleU;
 #endif
 
+
+
 	vec2 color = vec2(0.0);
 	color += texture2D(textureSource, uv + vec2(-3.0, -3.0) * scale).xy * 0.015625;
 	color += texture2D(textureSource, uv + vec2(-2.0, -2.0) * scale).xy * 0.09375;
@@ -20,5 +22,6 @@ void main()
 	color += texture2D(textureSource, uv + vec2(2.0,  2.0) * scale).xy * 0.09375;
 	color += texture2D(textureSource, uv + vec2(3.0,  3.0) * scale).xy * 0.015625;
 
-	gl_FragColor.xy = color;
+
+	gl_FragColor = vec4(color, texture2D(textureSource, uv).z, 1.0);
 }

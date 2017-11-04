@@ -1011,11 +1011,21 @@ static void shade_one_light(GPUShadeInput *shi, GPUShadeResult *shr, GPULamp *la
 			mat->dynproperty |= DYN_LAMP_PERSMAT;
 			
 			if (lamp->la->shadowmap_type == LA_SHADMAP_VARIANCE) {
-				GPU_link(mat, "shadow_vsm",
-				         GPU_builtin(GPU_VIEW_POSITION),
-				         GPU_dynamic_texture(lamp->tex, GPU_DYNAMIC_SAMPLER_2DSHADOW, lamp->ob),
-				         GPU_dynamic_uniform((float *)lamp->dynpersmat, GPU_DYNAMIC_LAMP_DYNPERSMAT, lamp->ob),
-				         GPU_uniform(&lamp->bias), GPU_uniform(&lamp->la->bleedbias), inp, &shadfac);
+				if (lamp->la->shadow_variance_filter == LA_SHADOW_FILTER_PENUMBRA && lamp->la->penumbra_blur >= 0.01f) {
+					GPU_link(mat, "shadow_vsm_penumbra",
+							GPU_builtin(GPU_VIEW_POSITION),
+							GPU_dynamic_texture(lamp->tex, GPU_DYNAMIC_SAMPLER_2DSHADOW, lamp->ob),
+							GPU_dynamic_uniform((float *)lamp->dynpersmat, GPU_DYNAMIC_LAMP_DYNPERSMAT, lamp->ob),
+							GPU_uniform(&lamp->bias), GPU_uniform(&lamp->la->bleedbias), GPU_uniform(&lamp->la->soft), 
+							GPU_uniform(&lamp->la->penumbra_blur), inp, &shadfac);
+				}
+				else {
+					GPU_link(mat, "shadow_vsm",
+							GPU_builtin(GPU_VIEW_POSITION),
+							GPU_dynamic_texture(lamp->tex, GPU_DYNAMIC_SAMPLER_2DSHADOW, lamp->ob),
+							GPU_dynamic_uniform((float *)lamp->dynpersmat, GPU_DYNAMIC_LAMP_DYNPERSMAT, lamp->ob),
+							GPU_uniform(&lamp->bias), GPU_uniform(&lamp->la->bleedbias), inp, &shadfac);
+				}
 			}
 			else {
 				if (lamp->la->samp > 1 && lamp->la->soft >= 0.01f && lamp->la->shadow_filter != LA_SHADOW_FILTER_NONE) {
@@ -2860,7 +2870,7 @@ void GPU_lamp_shadow_buffer_unbind(GPULamp *lamp)
 {
 	if (lamp->la->shadowmap_type == LA_SHADMAP_VARIANCE) {
 		GPU_shader_unbind();
-		GPUShader *blurshader = GPU_shader_get_builtin_shader(GPU_SHADER_VSM_BLUR_DEPTH);
+		GPUShader *blurshader = GPU_shader_get_builtin_shader(GPU_SHADER_VSM_BLUR);
 		GPU_framebuffer_blur(lamp->fb, lamp->tex, lamp->blurfb, lamp->blurtex, blurshader, lamp->la->bufsharp);
 	}
 
@@ -2929,11 +2939,21 @@ GPUNodeLink *GPU_lamp_get_data(
 		mat->dynproperty |= DYN_LAMP_PERSMAT;
 
 		if (lamp->la->shadowmap_type == LA_SHADMAP_VARIANCE) {
-			GPU_link(mat, "shadow_vsm",
-			         GPU_builtin(GPU_VIEW_POSITION),
-			         GPU_dynamic_texture(lamp->tex, GPU_DYNAMIC_SAMPLER_2DSHADOW, lamp->ob),
-			         GPU_dynamic_uniform((float *)lamp->dynpersmat, GPU_DYNAMIC_LAMP_DYNPERSMAT, lamp->ob),
-			         GPU_uniform(&lamp->bias), GPU_uniform(&lamp->la->bleedbias), inp, &shadowfac);
+			if (lamp->la->shadow_variance_filter == LA_SHADOW_FILTER_PENUMBRA && lamp->la->penumbra_blur >= 0.01f) {
+				GPU_link(mat, "shadow_vsm_penumbra",
+						GPU_builtin(GPU_VIEW_POSITION),
+						GPU_dynamic_texture(lamp->tex, GPU_DYNAMIC_SAMPLER_2DSHADOW, lamp->ob),
+						GPU_dynamic_uniform((float *)lamp->dynpersmat, GPU_DYNAMIC_LAMP_DYNPERSMAT, lamp->ob),
+						GPU_uniform(&lamp->bias), GPU_uniform(&lamp->la->bleedbias), GPU_uniform(&lamp->la->soft), 
+						GPU_uniform(&lamp->la->penumbra_blur), inp, &shadowfac);
+			}
+			else {
+				GPU_link(mat, "shadow_vsm",
+						GPU_builtin(GPU_VIEW_POSITION),
+						GPU_dynamic_texture(lamp->tex, GPU_DYNAMIC_SAMPLER_2DSHADOW, lamp->ob),
+						GPU_dynamic_uniform((float *)lamp->dynpersmat, GPU_DYNAMIC_LAMP_DYNPERSMAT, lamp->ob),
+						GPU_uniform(&lamp->bias), GPU_uniform(&lamp->la->bleedbias), inp, &shadowfac);
+			}
 		}
 		else {
 			if (lamp->la->samp > 1 && lamp->la->soft >= 0.01f && lamp->la->shadow_filter != LA_SHADOW_FILTER_NONE) {

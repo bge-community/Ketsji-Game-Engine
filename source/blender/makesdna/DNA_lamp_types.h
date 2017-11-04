@@ -80,7 +80,9 @@ typedef struct Lamp {
 	float adapt_thresh;
 	short ray_samp_method;
 	short shadowmap_type;
-	short shadow_filter, pad3[3];
+	short shadow_filter;
+	short shadow_variance_filter;
+	float penumbra_blur;
 	
 	/* texact is for buttons */
 	short texact, shadhalostep;
@@ -161,6 +163,7 @@ typedef struct Lamp {
 #define LA_SHADOW_FILTER_PCF		1
 #define LA_SHADOW_FILTER_PCF_BAIL	2
 #define LA_SHADOW_FILTER_PCF_JITTER	3
+#define LA_SHADOW_FILTER_PENUMBRA	4
 
 /* layer_shadow */
 #define LA_LAYER_SHADOW_BOTH	0
