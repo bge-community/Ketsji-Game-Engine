@@ -1823,6 +1823,7 @@ void KX_Scene::RenderBucketsNew(const KX_CullingNodeList& nodes, RAS_Rasterizer 
 	EEVEE_Data *vedata = EEVEE_engine_data_get();
 	EEVEE_SceneLayerData *sldata = EEVEE_scene_layer_data_get();
 
+
 	m_probesManager->EEVEE_lightprobes_refresh_bge(sldata, vedata, this);
 	m_probesManager->UpdateProbes(this);
 
@@ -1841,6 +1842,9 @@ void KX_Scene::RenderBucketsNew(const KX_CullingNodeList& nodes, RAS_Rasterizer 
 
 	EEVEE_draw_default_passes(psl);
 	DRW_draw_pass(psl->material_pass);
+
+	DRW_draw_pass(psl->probe_display);
+
 	DRW_draw_pass(psl->transparent_pass);
 
 	KX_BlenderMaterial::EndFrame(rasty);
