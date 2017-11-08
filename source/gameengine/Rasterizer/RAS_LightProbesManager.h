@@ -45,8 +45,8 @@ public:
 		RAS_Rasterizer *rasty, KX_Scene *scene);
 	virtual ~RAS_LightProbesManager();
 
-	void EEVEE_lightprobes_refresh_bge(EEVEE_SceneLayerData *sldata, EEVEE_Data *vedata);
-	void UpdateProbes();
+	void EEVEE_lightprobes_refresh_bge(EEVEE_SceneLayerData *sldata, EEVEE_Data *vedata, KX_Scene *scene);
+	void UpdateProbes(KX_Scene *scene);
 
 private:
 	EEVEE_StorageList *m_stl;

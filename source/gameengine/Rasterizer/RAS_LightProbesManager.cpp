@@ -72,6 +72,16 @@ static void scale_m4_v3(float R[4][4], float v[3])
 		mul_v3_v3(R[i], v);
 }
 
+static KX_GameObject *find_probe(KX_Scene *scene, Object *ob)
+{
+	for (KX_GameObject *gameobj : scene->GetProbeList()) {
+		if (gameobj->GetBlenderObject() == ob) {
+			return gameobj;
+		}
+	}
+	return nullptr;
+}
+
 static void planar_pool_ensure_alloc(EEVEE_Data *vedata, int num_planar_ref)
 {
 	/* XXX TODO OPTIMISATION : This is a complete waist of texture memory.
@@ -122,15 +132,19 @@ static void planar_pool_ensure_alloc(EEVEE_Data *vedata, int num_planar_ref)
 	}
 }
 
-static void EEVEE_planar_reflections_updates(EEVEE_SceneLayerData *sldata, EEVEE_StorageList *stl)
+static void EEVEE_planar_reflections_updates(EEVEE_SceneLayerData *sldata, EEVEE_StorageList *stl, KX_Scene *scene)
 {
 	EEVEE_LightProbesInfo *pinfo = sldata->probes;
 	Object *ob;
 	float mtx[4][4], normat[4][4], imat[4][4], rangemat[4][4];
 
 	float viewmat[4][4], winmat[4][4];
-	DRW_viewport_matrix_get(viewmat, DRW_MAT_VIEW);
-	DRW_viewport_matrix_get(winmat, DRW_MAT_WIN);
+	/*DRW_viewport_matrix_get(viewmat, DRW_MAT_VIEW);
+	DRW_viewport_matrix_get(winmat, DRW_MAT_WIN);*/
+
+	KX_Camera *cam = scene->GetActiveCamera();
+	cam->GetModelviewMatrix().getValue(&viewmat[0][0]);
+	cam->GetProjectionMatrix().getValue(&winmat[0][0]);
 
 	zero_m4(rangemat);
 	rangemat[0][0] = rangemat[1][1] = rangemat[2][2] = 0.5f;
@@ -143,8 +157,15 @@ static void EEVEE_planar_reflections_updates(EEVEE_SceneLayerData *sldata, EEVEE
 		EEVEE_PlanarReflection *eplanar = &pinfo->planar_data[i];
 		EEVEE_LightProbeEngineData *ped = EEVEE_lightprobe_data_get(ob);
 
+
+
+		KX_GameObject *kxprobe = find_probe(scene, ob);
+		float obmat[4][4];
+		kxprobe->NodeGetWorldTransform().getValue(&obmat[0][0]);
+
+
 		/* Computing mtx : matrix that mirror position around object's XY plane. */
-		normalize_m4_m4(normat, ob->obmat);  /* object > world */
+		normalize_m4_m4(normat, obmat);  /* object > world */
 		invert_m4_m4(imat, normat); /* world > object */
 
 		float reflect[3] = { 1.0f, 1.0f, -1.0f }; /* XY reflection plane */
@@ -174,35 +195,35 @@ static void EEVEE_planar_reflections_updates(EEVEE_SceneLayerData *sldata, EEVEE
 
 		/* Compute clip plane equation / normal. */
 		float refpoint[3];
-		copy_v3_v3(eplanar->plane_equation, ob->obmat[2]);
+		copy_v3_v3(eplanar->plane_equation, obmat[2]);
 		normalize_v3(eplanar->plane_equation); /* plane normal */
-		eplanar->plane_equation[3] = -dot_v3v3(eplanar->plane_equation, ob->obmat[3]);
+		eplanar->plane_equation[3] = -dot_v3v3(eplanar->plane_equation, obmat[3]);
 
 		/* Compute offset plane equation (fix missing texels near reflection plane). */
 		copy_v3_v3(ped->planer_eq_offset, eplanar->plane_equation);
 		mul_v3_v3fl(refpoint, eplanar->plane_equation, -probe->clipsta);
-		add_v3_v3(refpoint, ob->obmat[3]);
+		add_v3_v3(refpoint, obmat[3]);
 		ped->planer_eq_offset[3] = -dot_v3v3(eplanar->plane_equation, refpoint);
 
 		/* Compute XY clip planes. */
-		normalize_v3_v3(eplanar->clip_vec_x, ob->obmat[0]);
-		normalize_v3_v3(eplanar->clip_vec_y, ob->obmat[1]);
+		normalize_v3_v3(eplanar->clip_vec_x, obmat[0]);
+		normalize_v3_v3(eplanar->clip_vec_y, obmat[1]);
 
 		float vec[3] = { 0.0f, 0.0f, 0.0f };
 		vec[0] = 1.0f; vec[1] = 0.0f; vec[2] = 0.0f;
-		mul_m4_v3(ob->obmat, vec); /* Point on the edge */
+		mul_m4_v3(obmat, vec); /* Point on the edge */
 		eplanar->clip_edge_x_pos = dot_v3v3(eplanar->clip_vec_x, vec);
 
 		vec[0] = 0.0f; vec[1] = 1.0f; vec[2] = 0.0f;
-		mul_m4_v3(ob->obmat, vec); /* Point on the edge */
+		mul_m4_v3(obmat, vec); /* Point on the edge */
 		eplanar->clip_edge_y_pos = dot_v3v3(eplanar->clip_vec_y, vec);
 
 		vec[0] = -1.0f; vec[1] = 0.0f; vec[2] = 0.0f;
-		mul_m4_v3(ob->obmat, vec); /* Point on the edge */
+		mul_m4_v3(obmat, vec); /* Point on the edge */
 		eplanar->clip_edge_x_neg = dot_v3v3(eplanar->clip_vec_x, vec);
 
 		vec[0] = 0.0f; vec[1] = -1.0f; vec[2] = 0.0f;
-		mul_m4_v3(ob->obmat, vec); /* Point on the edge */
+		mul_m4_v3(obmat, vec); /* Point on the edge */
 		eplanar->clip_edge_y_neg = dot_v3v3(eplanar->clip_vec_y, vec);
 
 		/* Facing factors */
@@ -222,12 +243,12 @@ static void EEVEE_planar_reflections_updates(EEVEE_SceneLayerData *sldata, EEVEE
 			DRW_state_draw_support() &&
 			(probe->flag & LIGHTPROBE_FLAG_SHOW_DATA))
 		{
-			DRW_shgroup_call_dynamic_add(stl->g_data->planar_display_shgrp, &ped->probe_id, ob->obmat);
+			DRW_shgroup_call_dynamic_add(stl->g_data->planar_display_shgrp, &ped->probe_id, obmat);
 		}
 	}
 }
 
-static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassList *psl, EEVEE_StorageList *stl)
+static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassList *psl, EEVEE_StorageList *stl, KX_Scene *scene)
 {
 	EEVEE_LightProbesInfo *pinfo = sldata->probes;
 	Object *ob;
@@ -243,8 +264,15 @@ static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassLi
 		EEVEE_LightProbe *eprobe = &pinfo->probe_data[i];
 		EEVEE_LightProbeEngineData *ped = EEVEE_lightprobe_data_get(ob);
 
+
+
+		KX_GameObject *kxprobe = find_probe(scene, ob);
+		float obmat[4][4];
+		kxprobe->NodeGetWorldTransform().getValue(&obmat[0][0]);
+
+
 		/* Update transforms */
-		copy_v3_v3(eprobe->position, ob->obmat[3]);
+		copy_v3_v3(eprobe->position, obmat[3]);
 
 		/* Attenuation */
 		eprobe->attenuation_type = probe->attenuation_type;
@@ -252,7 +280,7 @@ static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassLi
 
 		unit_m4(eprobe->attenuationmat);
 		scale_m4_fl(eprobe->attenuationmat, probe->distinf);
-		mul_m4_m4m4(eprobe->attenuationmat, ob->obmat, eprobe->attenuationmat);
+		mul_m4_m4m4(eprobe->attenuationmat, obmat, eprobe->attenuationmat);
 		invert_m4(eprobe->attenuationmat);
 
 		/* Parallax */
@@ -268,7 +296,7 @@ static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassLi
 
 		unit_m4(eprobe->parallaxmat);
 		scale_m4_fl(eprobe->parallaxmat, dist);
-		mul_m4_m4m4(eprobe->parallaxmat, ob->obmat, eprobe->parallaxmat);
+		mul_m4_m4m4(eprobe->parallaxmat, obmat, eprobe->parallaxmat);
 		invert_m4(eprobe->parallaxmat);
 
 		/* Debug Display */
@@ -278,7 +306,7 @@ static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassLi
 		{
 			ped->probe_size = probe->data_draw_size * 0.1f;
 			DRW_shgroup_call_dynamic_add(
-				stl->g_data->cube_display_shgrp, &ped->probe_id, ob->obmat[3], &ped->probe_size);
+				stl->g_data->cube_display_shgrp, &ped->probe_id, obmat[3], &ped->probe_size);
 		}
 	}
 
@@ -288,6 +316,13 @@ static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassLi
 		LightProbe *probe = (LightProbe *)ob->data;
 		EEVEE_LightGrid *egrid = &pinfo->grid_data[i];
 		EEVEE_LightProbeEngineData *ped = EEVEE_lightprobe_data_get(ob);
+
+
+
+		KX_GameObject *kxprobe = find_probe(scene, ob);
+		float obmat[4][4];
+		kxprobe->NodeGetWorldTransform().getValue(&obmat[0][0]);
+
 
 		/* Add one for level 0 */
 		ped->max_lvl = 1.0f + floorf(log2f((float)MAX3(probe->grid_resolution_x,
@@ -311,30 +346,30 @@ static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassLi
 		mul_v3_v3fl(half_cell_dim, cell_dim, 0.5f);
 
 		/* Matrix converting world space to cell ranges. */
-		invert_m4_m4(egrid->mat, ob->obmat);
+		invert_m4_m4(egrid->mat, obmat);
 
 		/* First cell. */
 		copy_v3_fl(egrid->corner, -1.0f);
 		add_v3_v3(egrid->corner, half_cell_dim);
-		mul_m4_v3(ob->obmat, egrid->corner);
+		mul_m4_v3(obmat, egrid->corner);
 
 		/* Opposite neighbor cell. */
 		copy_v3_fl3(egrid->increment_x, cell_dim[0], 0.0f, 0.0f);
 		add_v3_v3(egrid->increment_x, half_cell_dim);
 		add_v3_fl(egrid->increment_x, -1.0f);
-		mul_m4_v3(ob->obmat, egrid->increment_x);
+		mul_m4_v3(obmat, egrid->increment_x);
 		sub_v3_v3(egrid->increment_x, egrid->corner);
 
 		copy_v3_fl3(egrid->increment_y, 0.0f, cell_dim[1], 0.0f);
 		add_v3_v3(egrid->increment_y, half_cell_dim);
 		add_v3_fl(egrid->increment_y, -1.0f);
-		mul_m4_v3(ob->obmat, egrid->increment_y);
+		mul_m4_v3(obmat, egrid->increment_y);
 		sub_v3_v3(egrid->increment_y, egrid->corner);
 
 		copy_v3_fl3(egrid->increment_z, 0.0f, 0.0f, cell_dim[2]);
 		add_v3_v3(egrid->increment_z, half_cell_dim);
 		add_v3_fl(egrid->increment_z, -1.0f);
-		mul_m4_v3(ob->obmat, egrid->increment_z);
+		mul_m4_v3(obmat, egrid->increment_z);
 		sub_v3_v3(egrid->increment_z, egrid->corner);
 
 		copy_v3_v3_int(egrid->resolution, &probe->grid_resolution_x);
@@ -357,101 +392,6 @@ static void EEVEE_lightprobes_updates(EEVEE_SceneLayerData *sldata, EEVEE_PassLi
 			DRW_shgroup_uniform_float(grp, "sphere_size", &probe->data_draw_size, 1);
 		}
 	}
-}
-
-void EEVEE_lightprobes_cache_finish(EEVEE_SceneLayerData *sldata, EEVEE_Data *vedata)
-{
-	EEVEE_StorageList *stl = vedata->stl;
-	EEVEE_LightProbesInfo *pinfo = sldata->probes;
-	Object *ob;
-
-
-
-	EEVEE_LightProbeStaticData *e_data = EEVEE_lightprobes_static_data_get();
-
-
-	/* Setup enough layers. */
-	/* Free textures if number mismatch. */
-	if (pinfo->num_cube != pinfo->cache_num_cube) {
-		DRW_TEXTURE_FREE_SAFE(sldata->probe_pool);
-	}
-
-	if (pinfo->num_planar != pinfo->cache_num_planar) {
-		DRW_TEXTURE_FREE_SAFE(vedata->txl->planar_pool);
-		DRW_TEXTURE_FREE_SAFE(vedata->txl->planar_depth);
-		pinfo->cache_num_planar = pinfo->num_planar;
-	}
-
-	/* XXX this should be run each frame as it ensure planar_depth is set */
-	planar_pool_ensure_alloc(vedata, pinfo->num_planar);
-
-	/* Setup planar filtering pass */
-	DRW_shgroup_set_instance_count(stl->g_data->planar_downsample, pinfo->num_planar);
-
-	if (!sldata->probe_pool) {
-		sldata->probe_pool = DRW_texture_create_2D_array(pinfo->cubemap_res, pinfo->cubemap_res, max_ff(1, pinfo->num_cube),
-			DRW_TEX_RGB_11_11_10, DRWTextureFlag(DRW_TEX_FILTER | DRW_TEX_MIPMAP), NULL);
-		if (sldata->probe_filter_fb) {
-			DRW_framebuffer_texture_attach(sldata->probe_filter_fb, sldata->probe_pool, 0, 0);
-		}
-
-		/* Tag probes to refresh */
-		e_data->update_world |= PROBE_UPDATE_CUBE;
-		e_data->world_ready_to_shade = false;
-		pinfo->num_render_cube = 0;
-		pinfo->cache_num_cube = pinfo->num_cube;
-
-		for (int i = 1; (ob = pinfo->probes_cube_ref[i]) && (i < MAX_PROBE); i++) {
-			EEVEE_LightProbeEngineData *ped = EEVEE_lightprobe_data_get(ob);
-			ped->need_update = true;
-			ped->ready_to_shade = false;
-			ped->probe_id = 0;
-		}
-	}
-
-	DRWFboTexture tex_filter = { &sldata->probe_pool, DRW_TEX_RGBA_16, DRWTextureFlag(DRW_TEX_FILTER | DRW_TEX_MIPMAP) };
-
-	DRW_framebuffer_init(&sldata->probe_filter_fb, &draw_engine_eevee_type, pinfo->cubemap_res, pinfo->cubemap_res, &tex_filter, 1);
-
-
-#ifdef IRRADIANCE_SH_L2
-	/* we need a signed format for Spherical Harmonics */
-	int irradiance_format = DRW_TEX_RGBA_16;
-#else
-	int irradiance_format = DRW_TEX_RGB_11_11_10;
-#endif
-
-	/* TODO Allocate bigger storage if needed. */
-	if (!sldata->irradiance_pool || !sldata->irradiance_rt) {
-		if (!sldata->irradiance_pool) {
-			sldata->irradiance_pool = DRW_texture_create_2D(IRRADIANCE_POOL_SIZE, IRRADIANCE_POOL_SIZE, DRWTextureFormat(irradiance_format), DRW_TEX_FILTER, NULL);
-		}
-		if (!sldata->irradiance_rt) {
-			sldata->irradiance_rt = DRW_texture_create_2D(IRRADIANCE_POOL_SIZE, IRRADIANCE_POOL_SIZE, DRWTextureFormat(irradiance_format), DRW_TEX_FILTER, NULL);
-		}
-		pinfo->num_render_grid = 0;
-		pinfo->updated_bounce = 0;
-		pinfo->grid_initialized = false;
-		e_data->update_world |= PROBE_UPDATE_GRID;
-
-		for (int i = 1; (ob = pinfo->probes_grid_ref[i]) && (i < MAX_PROBE); i++) {
-			EEVEE_LightProbeEngineData *ped = EEVEE_lightprobe_data_get(ob);
-			ped->need_update = true;
-			ped->updated_cells = 0;
-		}
-	}
-
-	if (pinfo->num_render_grid > pinfo->num_grid) {
-		/* This can happen when deleting a probe. */
-		pinfo->num_render_grid = pinfo->num_grid;
-	}
-
-	EEVEE_lightprobes_updates(sldata, vedata->psl, vedata->stl);
-	EEVEE_planar_reflections_updates(sldata, vedata->stl);
-
-	DRW_uniformbuffer_update(sldata->probe_ubo, &sldata->probes->probe_data);
-	DRW_uniformbuffer_update(sldata->grid_ubo, &sldata->probes->grid_data);
-	DRW_uniformbuffer_update(sldata->planar_ubo, &sldata->probes->planar_data);
 }
 
 static void downsample_planar(void *vedata, int level)
@@ -861,7 +801,7 @@ static void lightprobe_cell_world_location_get(EEVEE_LightGrid *egrid, float loc
 	add_v3_v3(r_pos, tmp);
 }
 
-void EEVEE_lightprobes_refresh_bge(EEVEE_SceneLayerData *sldata, EEVEE_Data *vedata)
+void EEVEE_lightprobes_refresh_bge(EEVEE_SceneLayerData *sldata, EEVEE_Data *vedata, KX_Scene *scene)
 {
 	EEVEE_TextureList *txl = vedata->txl;
 	EEVEE_PassList *psl = vedata->psl;
@@ -1062,7 +1002,11 @@ void EEVEE_lightprobes_refresh_bge(EEVEE_SceneLayerData *sldata, EEVEE_Data *ved
 			if (ped->need_update) {
 				LightProbe *prb = (LightProbe *)ob->data;
 
-				render_scene_to_probe(sldata, vedata, ob->obmat[3], prb->clipsta, prb->clipend);
+				KX_GameObject *kxprobe = find_probe(scene, ob);
+				float obmat[4][4];
+				kxprobe->NodeGetWorldTransform().getValue(&obmat[0][0]);
+
+				render_scene_to_probe(sldata, vedata, obmat[3], prb->clipsta, prb->clipend);
 				glossy_filter_probe(sldata, vedata, psl, i);
 
 				ped->need_update = false;
@@ -1118,7 +1062,20 @@ update_planar:
 
 
 
-void RAS_LightProbesManager::UpdateProbes()
+void RAS_LightProbesManager::UpdateProbes(KX_Scene *scene)
 {
+	EEVEE_Data *vedata = EEVEE_engine_data_get();
+	EEVEE_SceneLayerData *sldata = EEVEE_scene_layer_data_get();
+	EEVEE_StorageList *stl = vedata->stl;
+	EEVEE_LightProbesInfo *pinfo = sldata->probes;
+	Object *ob;
 
+	EEVEE_LightProbeStaticData *e_data = EEVEE_lightprobes_static_data_get();
+
+	EEVEE_lightprobes_updates(sldata, vedata->psl, vedata->stl, scene);
+	EEVEE_planar_reflections_updates(sldata, vedata->stl, scene);
+
+	DRW_uniformbuffer_update(sldata->probe_ubo, &sldata->probes->probe_data);
+	DRW_uniformbuffer_update(sldata->grid_ubo, &sldata->probes->grid_data);
+	DRW_uniformbuffer_update(sldata->planar_ubo, &sldata->probes->planar_data);
 }
