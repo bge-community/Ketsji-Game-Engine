@@ -1820,6 +1820,12 @@ void KX_Scene::RenderBucketsNew(const KX_CullingNodeList& nodes, RAS_Rasterizer 
 		copy_m4_m4(ob->obmat, obmat);
 	}
 
+	EEVEE_Data *vedata = EEVEE_engine_data_get();
+	EEVEE_SceneLayerData *sldata = EEVEE_scene_layer_data_get();
+
+	m_probesManager->EEVEE_lightprobes_refresh_bge(sldata, vedata, this);
+	m_probesManager->UpdateProbes(this);
+
 	KX_GetActiveEngine()->UpdateShadows(this);
 	EEVEE_draw_shadows_bge(EEVEE_scene_layer_data_get(), EEVEE_engine_data_get()->psl);
 
