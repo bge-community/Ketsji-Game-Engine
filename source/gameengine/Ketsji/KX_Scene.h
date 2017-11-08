@@ -90,6 +90,9 @@ class RAS_2DFilter;
 class RAS_2DFilterManager;
 class KX_2DFilterManager;
 class RAS_EeveeEffectsManager;
+
+class RAS_LightProbesManager;
+
 class SCA_JoystickManager;
 class btCollisionShape;
 class KX_BlenderSceneConverter;
@@ -318,6 +321,7 @@ protected:
 
 	KX_2DFilterManager *m_filterManager;
 	RAS_EeveeEffectsManager *m_effectsManager;
+	RAS_LightProbesManager *m_probesManager;
 
 	KX_ObstacleSimulation* m_obstacleSimulation;
 

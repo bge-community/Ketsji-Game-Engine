@@ -67,6 +67,9 @@
 #include "RAS_2DFilter.h"
 #include "KX_2DFilterManager.h"
 #include "RAS_EeveeEffectsManager.h"
+
+#include "RAS_LightProbesManager.h"
+
 #include "RAS_BoundingBoxManager.h"
 #include "RAS_BucketManager.h"
 #include "RAS_SceneLayerData.h"
@@ -204,6 +207,7 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_isActivedHysteresis(false),
 	m_lodHysteresisValue(0),
 	m_effectsManager(nullptr),
+	m_probesManager(nullptr),
 	m_eeveeData(nullptr),
 	m_isLastScene(false)
 {
@@ -287,6 +291,9 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_eeveeData = EEVEE_engine_data_get();
 
 	m_effectsManager = new RAS_EeveeEffectsManager(m_eeveeData, canvas, m_props, KX_GetActiveEngine()->GetRasterizer(), this);
+
+
+	m_probesManager = new RAS_LightProbesManager(m_eeveeData, canvas, m_props, KX_GetActiveEngine()->GetRasterizer(), this);
 
 
 	EEVEE_PassList *psl = m_eeveeData->psl;
@@ -387,6 +394,10 @@ KX_Scene::~KX_Scene()
 
 	if (m_effectsManager) {
 		delete m_effectsManager;
+	}
+
+	if (m_probesManager) {
+		delete m_probesManager;
 	}
 
 	if (m_logicmgr)
