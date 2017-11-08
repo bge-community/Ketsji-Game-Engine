@@ -1069,6 +1069,10 @@ void RAS_LightProbesManager::UpdateProbes(KX_Scene *scene)
 	EEVEE_StorageList *stl = vedata->stl;
 	EEVEE_LightProbesInfo *pinfo = sldata->probes;
 	Object *ob;
+	for (int i = 0; (ob = pinfo->probes_planar_ref[i]) && (i < MAX_PLANAR); i++) {
+		EEVEE_LightProbeEngineData *ped = EEVEE_lightprobe_data_get(ob);
+		ped->need_update = true;
+	}
 
 	EEVEE_LightProbeStaticData *e_data = EEVEE_lightprobes_static_data_get();
 
