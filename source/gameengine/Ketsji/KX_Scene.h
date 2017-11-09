@@ -354,6 +354,7 @@ public:
 	bool GetIsLastScene();
 	void AppendProbeList(KX_GameObject *probe);
 	std::vector<KX_GameObject *>GetProbeList();
+	RAS_LightProbesManager *GetProbesManager();
 	std::vector<DRWShadingGroup *>GetMaterialShadingGroups();
 	std::vector<DRWShadingGroup *>GetShadowShadingGroups();
 	/***************************************************/

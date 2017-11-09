@@ -453,6 +453,11 @@ std::vector<KX_GameObject *>KX_Scene::GetProbeList()
 	return m_lightProbes;
 }
 
+RAS_LightProbesManager *KX_Scene::GetProbesManager()
+{
+	return m_probesManager;
+}
+
 std::vector<DRWShadingGroup *>KX_Scene::GetMaterialShadingGroups()
 {
 	return m_materialShGroups;
