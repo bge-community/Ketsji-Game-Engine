@@ -48,9 +48,9 @@ protected:
 
 public:
 	RAS_BatchDisplayArray(RAS_IDisplayArray::PrimitiveType type, const RAS_VertexFormat& format)
-		:RAS_IDisplayArray(type, format),
+		:RAS_IDisplayArray(type, format, VertexData::GetMemoryFormat()),
 		RAS_DisplayArray<VertexData>(type, format),
-		RAS_IBatchDisplayArray(type, format)
+		RAS_IBatchDisplayArray(type, format, VertexData::GetMemoryFormat())
 	{
 	}
 

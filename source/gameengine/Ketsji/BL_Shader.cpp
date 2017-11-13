@@ -67,7 +67,7 @@ bool BL_Shader::LinkProgram()
 {
 	// Can be null in case of filter shaders.
 	if (m_materialUpdateServer) {
-		// Notify all client tracking this shader that shader is recompiled.
+		// Notify all clients tracking this shader that shader is recompiled.
 		m_materialUpdateServer->NotifyUpdate(RAS_IPolyMaterial::SHADER_MODIFIED);
 	}
 
@@ -102,8 +102,7 @@ void BL_Shader::SetCallbacks(BL_Shader::CallbacksType type, PyObject *callbacks)
 
 #endif  // WITH_PYTHON
 
-RAS_AttributeArray::AttribList BL_Shader::GetAttribs(const RAS_MeshObject::LayersInfo& layersInfo,
-		RAS_Texture *textures[RAS_Texture::MaxUnits]) const
+RAS_AttributeArray::AttribList BL_Shader::GetAttribs(RAS_Texture * const textures[RAS_Texture::MaxUnits]) const
 {
 	RAS_AttributeArray::AttribList attribs;
 	// Initialize textures attributes.
@@ -921,7 +920,7 @@ EXP_PYMETHODDEF_DOC(BL_Shader, setAttrib, "setAttrib(enum)")
 
 	// Can be null in case of filter shaders.
 	if (m_materialUpdateServer) {
-		// Notify all client tracking this shader that attributes are modified.
+		// Notify all clients tracking this shader that attributes are modified.
 		m_materialUpdateServer->NotifyUpdate(RAS_IPolyMaterial::ATTRIBUTES_MODIFIED);
 	}
 

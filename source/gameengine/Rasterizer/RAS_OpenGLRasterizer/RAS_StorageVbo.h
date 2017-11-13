@@ -37,13 +37,13 @@ class RAS_IDisplayArray;
 class RAS_StorageVbo
 {
 private:
-	RAS_IDisplayArray *m_data;
+	RAS_IDisplayArray *m_array;
 	GLuint m_size;
 	GLuint m_stride;
 	GLuint m_indices;
 	GLenum m_mode;
 	GLuint m_ibo;
-	GLuint m_vbo_id;
+	GLuint m_vbo;
 
 public:
 	RAS_StorageVbo(RAS_IDisplayArray *array);

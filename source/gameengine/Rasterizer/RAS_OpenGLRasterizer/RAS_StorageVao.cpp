@@ -50,16 +50,18 @@ RAS_StorageVao::RAS_StorageVao(RAS_IDisplayArray *array, RAS_DisplayArrayStorage
 	vbo->BindVertexBuffer();
 	vbo->BindIndexBuffer();
 
-	const unsigned int stride = array->GetVertexMemorySize();
+	const RAS_VertexDataMemoryFormat& memoryFormat = array->GetMemoryFormat();
+
+	const unsigned int stride = memoryFormat.size;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, stride, (const void *)array->GetVertexXYZOffset());
+	glVertexPointer(3, GL_FLOAT, stride, (const void *)memoryFormat.position);
 
 	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(GL_FLOAT, stride, (const void *)array->GetVertexNormalOffset());
+	glNormalPointer(GL_FLOAT, stride, (const void *)memoryFormat.normal);
 
 	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(4, GL_UNSIGNED_BYTE, stride, (const void *)array->GetVertexColorOffset());
+	glColorPointer(4, GL_UNSIGNED_BYTE, stride, (const void *)memoryFormat.colors);
 
 	for (const RAS_AttributeArray::Attrib& attrib : attribList) {
 		const RAS_AttributeArray::AttribType type = attrib.m_type;
@@ -67,27 +69,27 @@ RAS_StorageVao::RAS_StorageVao(RAS_IDisplayArray *array, RAS_DisplayArrayStorage
 		switch (type) {
 			case RAS_AttributeArray::RAS_ATTRIB_POS:
 			{
-				offset = array->GetVertexXYZOffset();
+				offset = memoryFormat.position;
 				break;
 			}
 			case RAS_AttributeArray::RAS_ATTRIB_UV:
 			{
-				offset = array->GetVertexUVOffset() + (attrib.m_layer * sizeof(float[2]));
+				offset = memoryFormat.uvs + (attrib.m_layer * sizeof(float[2]));
 				break;
 			}
 			case RAS_AttributeArray::RAS_ATTRIB_NORM:
 			{
-				offset = array->GetVertexNormalOffset();
+				offset = memoryFormat.normal;
 				break;
 			}
 			case RAS_AttributeArray::RAS_ATTRIB_TANGENT:
 			{
-				offset = array->GetVertexTangentOffset();
+				offset = memoryFormat.tangent;
 				break;
 			}
 			case RAS_AttributeArray::RAS_ATTRIB_COLOR:
 			{
-				offset = array->GetVertexColorOffset() + (attrib.m_layer * sizeof(int));
+				offset = memoryFormat.colors + (attrib.m_layer * sizeof(int));
 				break;
 			}
 			default:
@@ -111,7 +113,7 @@ RAS_StorageVao::RAS_StorageVao(RAS_IDisplayArray *array, RAS_DisplayArrayStorage
 		}
 	}
 
-	// VBO are not racked by the VAO excepted for IBO.
+	// VBO are not tracked by the VAO excepted for IBO.
 	vbo->UnbindVertexBuffer();
 
 	glBindVertexArray(0);

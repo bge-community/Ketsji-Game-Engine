@@ -38,7 +38,6 @@ class RAS_AttributeArray
 {
 public:
 	enum AttribType {
-		RAS_ATTRIB_INVALID = -1,
 		RAS_ATTRIB_POS, // Vertex coordinates.
 		RAS_ATTRIB_UV, // UV coordinates.
 		RAS_ATTRIB_NORM, // Normal coordinates.
@@ -59,25 +58,20 @@ public:
 	 * hashed name: (attrib type, layer(optional)).
 	 */
 	using AttribList = std::vector<Attrib>;
-	static const AttribList InvalidAttribList;
 
 private:
-	std::unique_ptr<RAS_AttributeArrayStorage> m_storages[RAS_Rasterizer::RAS_DRAW_MAX];
+	std::array<std::unique_ptr<RAS_AttributeArrayStorage>, RAS_Rasterizer::RAS_DRAW_MAX> m_storages;
 	AttribList m_attribs;
 	RAS_IDisplayArray *m_array;
 
 public:
+	RAS_AttributeArray(RAS_IDisplayArray *array);
 	RAS_AttributeArray(const AttribList& attribs, RAS_IDisplayArray *array);
 	~RAS_AttributeArray();
 
-	RAS_AttributeArrayStorage *GetStorage(RAS_Rasterizer::DrawType drawingMode);
-	void DestructStorages();
-};
+	RAS_AttributeArray& operator=(RAS_AttributeArray&& other);
 
-inline bool operator==(const RAS_AttributeArray::Attrib& first, const RAS_AttributeArray::Attrib& second)
-{
-	return first.m_loc == second.m_loc && first.m_type == second.m_type &&
-			first.m_texco == second.m_texco && first.m_layer == second.m_layer;
-}
+	RAS_AttributeArrayStorage *GetStorage(RAS_Rasterizer::DrawType drawingMode);
+};
 
 #endif  // __RAS_ATTRIBUTE_ARRAY_H__

@@ -28,7 +28,10 @@
 #include "RAS_AttributeArrayStorage.h"
 #include "RAS_IDisplayArray.h"
 
-const RAS_AttributeArray::AttribList RAS_AttributeArray::InvalidAttribList = {{0, RAS_ATTRIB_INVALID, false, 0}};
+RAS_AttributeArray::RAS_AttributeArray(RAS_IDisplayArray *array)
+	:m_array(array)
+{
+}
 
 RAS_AttributeArray::RAS_AttributeArray(const AttribList& attribs, RAS_IDisplayArray *array)
 	:m_attribs(attribs),
@@ -40,20 +43,24 @@ RAS_AttributeArray::~RAS_AttributeArray()
 {
 }
 
-RAS_AttributeArrayStorage *RAS_AttributeArray::GetStorage(RAS_Rasterizer::DrawType drawingMode)
+RAS_AttributeArray& RAS_AttributeArray::operator=(RAS_AttributeArray&& other)
 {
-	RAS_AttributeArrayStorage *storage = m_storages[drawingMode].get();
-	if (!storage) {
-		storage = new RAS_AttributeArrayStorage(m_array, m_array->GetStorage(), m_attribs);
-		m_storages[drawingMode].reset(storage);
+	m_array = other.m_array;
+	m_attribs = std::move(other.m_attribs);
+
+	for (std::unique_ptr<RAS_AttributeArrayStorage>& storage : m_storages) {
+		storage.reset(nullptr);
 	}
 
-	return storage;
+	return *this;
 }
 
-void RAS_AttributeArray::DestructStorages()
+RAS_AttributeArrayStorage *RAS_AttributeArray::GetStorage(RAS_Rasterizer::DrawType drawingMode)
 {
-	for (unsigned short i = 0; i < RAS_Rasterizer::RAS_DRAW_MAX; ++i) {
-		m_storages[i].reset(nullptr);
+	std::unique_ptr<RAS_AttributeArrayStorage>& storage = m_storages[drawingMode];
+	if (!storage) {
+		storage.reset(new RAS_AttributeArrayStorage(m_array, m_array->GetStorage(), m_attribs));
 	}
+
+	return storage.get();
 }

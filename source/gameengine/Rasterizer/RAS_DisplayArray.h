@@ -51,14 +51,12 @@ protected:
 		:RAS_IDisplayArray(other),
 		m_vertexes(other.m_vertexes)
 	{
-		m_storage.reset(new RAS_DisplayArrayStorage(this));
 	}
 
 public:
 	RAS_DisplayArray(PrimitiveType type, const RAS_VertexFormat& format)
-		:RAS_IDisplayArray(type, format)
+		:RAS_IDisplayArray(type, format, VertexData::GetMemoryFormat())
 	{
-		m_storage.reset(new RAS_DisplayArrayStorage(this));
 	}
 
 
@@ -73,46 +71,6 @@ public:
 		replica->UpdateStorage();
 
 		return replica;
-	}
-
-	virtual unsigned int GetVertexMemorySize() const
-	{
-		return sizeof(VertexData);
-	}
-
-	virtual intptr_t GetVertexXYZOffset() const
-	{
-		return offsetof(VertexData, position);
-	}
-
-	virtual intptr_t GetVertexNormalOffset() const
-	{
-		return offsetof(VertexData, normal);
-	}
-
-	virtual intptr_t GetVertexTangentOffset() const
-	{
-		return offsetof(VertexData, tangent);
-	}
-
-	virtual intptr_t GetVertexUVOffset() const
-	{
-		return offsetof(VertexData, uvs);
-	}
-
-	virtual intptr_t GetVertexColorOffset() const
-	{
-		return offsetof(VertexData, colors);
-	}
-
-	virtual unsigned short GetVertexUvSize() const
-	{
-		return VertexData::UvSize;
-	}
-
-	virtual unsigned short GetVertexColorSize() const
-	{
-		return VertexData::ColorSize;
 	}
 
 	virtual RAS_Vertex GetVertexNoCache(const unsigned int index)

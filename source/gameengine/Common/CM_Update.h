@@ -27,9 +27,7 @@ public:
 	}
 
 	CM_UpdateClient(unsigned int filter)
-		:m_invalid(false),
-		m_filter(filter),
-		m_server(nullptr)
+		:CM_UpdateClient(filter, false)
 	{
 	}
 

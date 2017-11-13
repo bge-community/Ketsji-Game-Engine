@@ -29,26 +29,25 @@
 #include "RAS_DisplayArray.h"
 
 RAS_StorageVbo::RAS_StorageVbo(RAS_IDisplayArray *array)
-	:m_data(array),
+	:m_array(array),
 	m_size(0),
-	m_stride(m_data->GetVertexMemorySize()),
+	m_stride(m_array->GetMemoryFormat().size),
 	m_indices(0),
-	m_mode(m_data->GetOpenGLPrimitiveType())
+	m_mode(m_array->GetOpenGLPrimitiveType())
 {
-	// Generate Buffers
 	glGenBuffersARB(1, &m_ibo);
-	glGenBuffersARB(1, &m_vbo_id);
+	glGenBuffersARB(1, &m_vbo);
 }
 
 RAS_StorageVbo::~RAS_StorageVbo()
 {
 	glDeleteBuffersARB(1, &m_ibo);
-	glDeleteBuffersARB(1, &m_vbo_id);
+	glDeleteBuffersARB(1, &m_vbo);
 }
 
 void RAS_StorageVbo::BindVertexBuffer()
 {
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo_id);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo);
 }
 
 void RAS_StorageVbo::UnbindVertexBuffer()
@@ -68,22 +67,22 @@ void RAS_StorageVbo::UnbindIndexBuffer()
 
 void RAS_StorageVbo::UpdateVertexData()
 {
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo_id);
-	glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, m_stride * m_size, m_data->GetVertexPointer());
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo);
+	glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, m_stride * m_size, m_array->GetVertexPointer());
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 }
 
 void RAS_StorageVbo::UpdateSize()
 {
-	m_size = m_data->GetVertexCount();
-	m_indices = m_data->GetPrimitiveIndexCount();
+	m_size = m_array->GetVertexCount();
+	m_indices = m_array->GetPrimitiveIndexCount();
 
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo_id);
-	glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_stride * m_size, m_data->GetVertexPointer(), GL_DYNAMIC_DRAW_ARB);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vbo);
+	glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_stride * m_size, m_array->GetVertexPointer(), GL_DYNAMIC_DRAW_ARB);
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_ibo);
-	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices * sizeof(GLuint), m_data->GetPrimitiveIndexPointer(), GL_DYNAMIC_DRAW_ARB);
+	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indices * sizeof(GLuint), m_array->GetPrimitiveIndexPointer(), GL_DYNAMIC_DRAW_ARB);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 }
 

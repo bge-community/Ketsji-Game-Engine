@@ -67,7 +67,7 @@ private:
 
 	RAS_DisplayArrayStorage *m_arrayStorage;
 	/// Attribute array used for each different render categories.
-	std::unique_ptr<RAS_AttributeArray> m_attribArray;
+	RAS_AttributeArray m_attribArray;
 
 	/// The vertex buffer object containing all the data used for the instancing rendering.
 	std::unique_ptr<RAS_InstancingBuffer> m_instancingBuffer;

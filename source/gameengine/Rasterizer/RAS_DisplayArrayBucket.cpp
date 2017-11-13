@@ -59,7 +59,7 @@ RAS_DisplayArrayBucket::RAS_DisplayArrayBucket(RAS_MaterialBucket *bucket, RAS_I
 	m_meshMaterial(meshmat),
 	m_deformer(deformer),
 	m_arrayStorage(nullptr),
-	m_attribArray(nullptr),
+	m_attribArray(m_displayArray),
 	m_instancingBuffer(nullptr),
 	m_materialUpdateClient(RAS_IPolyMaterial::ATTRIBUTES_MODIFIED, true),
 	m_instancingNode(this, &m_nodeData, &RAS_DisplayArrayBucket::RunInstancingNode, nullptr),
@@ -162,10 +162,10 @@ void RAS_DisplayArrayBucket::UpdateActiveMeshSlots(RAS_Rasterizer::DrawType draw
 			const RAS_MeshObject::LayersInfo& layersInfo = m_mesh->GetLayersInfo();
 			const RAS_AttributeArray::AttribList attribList = polymat->GetAttribs(layersInfo);
 
-			m_attribArray.reset(new RAS_AttributeArray(attribList, m_displayArray));
+			m_attribArray = RAS_AttributeArray(attribList, m_displayArray);
 		}
 
-		m_nodeData.m_attribStorage = m_attribArray->GetStorage(drawingMode);
+		m_nodeData.m_attribStorage = m_attribArray.GetStorage(drawingMode);
 	}
 }
 
