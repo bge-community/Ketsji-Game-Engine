@@ -25,6 +25,8 @@
 #include "RAS_StorageVao.h"
 #include "RAS_StorageVbo.h"
 
+#include "CM_Message.h"
+
 struct AttribData
 {
 	int size;
@@ -43,6 +45,7 @@ static const AttribData attribData[RAS_AttributeArray::RAS_ATTRIB_MAX] = {
 RAS_StorageVao::RAS_StorageVao(RAS_IDisplayArray *array, RAS_DisplayArrayStorage *arrayStorage,
 							   const RAS_AttributeArray::AttribList& attribList)
 {
+	CM_Debug("new VAO");
 	glGenVertexArrays(1, &m_id);
 	glBindVertexArray(m_id);
 
@@ -101,6 +104,8 @@ RAS_StorageVao::RAS_StorageVao(RAS_IDisplayArray *array, RAS_DisplayArrayStorage
 
 		const unsigned short loc = attrib.m_loc;
 		const AttribData& data = attribData[type];
+
+		CM_Debug("attribute loc: " << loc);
 
 		if (attrib.m_texco) {
 			glClientActiveTexture(GL_TEXTURE0 + loc);

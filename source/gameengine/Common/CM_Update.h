@@ -100,7 +100,7 @@ public:
 	void NotifyUpdate(unsigned int flag)
 	{
 		for (ClientType *client : m_clients) {
-			client->m_invalid |= (flag & client->m_filter);
+			client->m_invalid |= (bool)(flag & client->m_filter);
 		}
 	}
 };
