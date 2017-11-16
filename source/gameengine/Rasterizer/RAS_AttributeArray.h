@@ -55,7 +55,7 @@ public:
 	};
 
 	/* Attribute list of the following format:
-	 * hashed name: (attrib type, layer(optional)).
+	 * hashed name: (attrib type, texco, layer(optional)).
 	 */
 	using AttribList = std::vector<Attrib>;
 

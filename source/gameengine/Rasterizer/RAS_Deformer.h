@@ -53,7 +53,7 @@ class SCA_IObject;
 class RAS_Deformer
 {
 public:
-	RAS_Deformer(RAS_MeshObject *mesh, bool skipTransform);
+	RAS_Deformer(RAS_MeshObject *mesh);
 	virtual ~RAS_Deformer();
 
 	void InitializeDisplayArrays();
@@ -89,7 +89,6 @@ public:
 protected:
 	RAS_MeshObject *m_mesh;
 	bool m_bDynamic;
-	bool m_skipTransform;
 
 	RAS_IDisplayArrayList m_displayArrayList;
 	RAS_DisplayArrayBucketList m_displayArrayBucketList;

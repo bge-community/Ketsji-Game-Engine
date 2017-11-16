@@ -23,10 +23,9 @@
 #include "RAS_Deformer.h"
 #include "RAS_MeshObject.h"
 
-RAS_Deformer::RAS_Deformer(RAS_MeshObject *mesh, bool skipTransform)
+RAS_Deformer::RAS_Deformer(RAS_MeshObject *mesh)
 	:m_mesh(mesh),
 	m_bDynamic(false),
-	m_skipTransform(skipTransform),
 	m_boundingBox(nullptr)
 {
 }

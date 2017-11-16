@@ -83,7 +83,7 @@ struct RAS_VertexDataMemoryFormat
 	intptr_t uvs;
 	intptr_t colors;
 	/// Size of vertex class.
-	unsigned short size;
+	uint8_t size;
 };
 
 template <unsigned short uvSize, unsigned short colorSize>

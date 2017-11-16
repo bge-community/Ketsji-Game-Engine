@@ -61,7 +61,7 @@ RAS_DisplayArrayBucket::RAS_DisplayArrayBucket(RAS_MaterialBucket *bucket, RAS_I
 	m_arrayStorage(nullptr),
 	m_attribArray(m_displayArray),
 	m_instancingBuffer(nullptr),
-	m_materialUpdateClient(RAS_IPolyMaterial::ATTRIBUTES_MODIFIED, true),
+	m_materialUpdateClient(RAS_IPolyMaterial::ATTRIBUTES_MODIFIED | RAS_IPolyMaterial::SHADER_MODIFIED, true),
 	m_instancingNode(this, &m_nodeData, &RAS_DisplayArrayBucket::RunInstancingNode, nullptr),
 	m_batchingNode(this, &m_nodeData, &RAS_DisplayArrayBucket::RunBatchingNode, nullptr)
 {
