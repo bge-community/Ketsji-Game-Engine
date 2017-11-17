@@ -38,6 +38,8 @@
 
 #include "RAS_Vertex.h"
 
+#include "CM_Update.h"
+
 class RAS_IDisplayArray;
 
 class KX_VertexProxy : public EXP_Value
@@ -46,14 +48,15 @@ class KX_VertexProxy : public EXP_Value
 
 protected:
 	RAS_Vertex m_vertex;
-	RAS_IDisplayArray *m_array;
+	CM_UpdateServer<RAS_IDisplayArray> *m_updateServer;
 
 public:
-	KX_VertexProxy(RAS_IDisplayArray *array, RAS_Vertex vertex);
+	KX_VertexProxy(CM_UpdateServer<RAS_IDisplayArray> *updateServer, RAS_Vertex vertex);
 	virtual ~KX_VertexProxy();
 
 	RAS_Vertex& GetVertex();
-	RAS_IDisplayArray *GetDisplayArray();
+
+	void NotifyUpdate(unsigned int flag);
 
 	// stuff for cvalue related things
 	std::string GetName();

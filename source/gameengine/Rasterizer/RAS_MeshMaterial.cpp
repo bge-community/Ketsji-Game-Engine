@@ -30,8 +30,16 @@ RAS_MeshMaterial::RAS_MeshMaterial(RAS_Mesh *mesh, RAS_MaterialBucket *bucket, u
 	m_index(index)
 {
 	RAS_IDisplayArray::PrimitiveType type = (bucket->IsWire()) ? RAS_IDisplayArray::LINES : RAS_IDisplayArray::TRIANGLES;
-	m_displayArray = RAS_IDisplayArray::ConstructArray(type, format);
+	m_displayArray = RAS_IDisplayArray::Construct(type, format);
 
+	m_displayArrayBucket = new RAS_DisplayArrayBucket(bucket, m_displayArray, mesh, this, nullptr);
+}
+
+RAS_MeshMaterial::RAS_MeshMaterial(RAS_Mesh *mesh, RAS_MaterialBucket *bucket, unsigned int index, RAS_IDisplayArray *array)
+	:m_bucket(bucket),
+	m_index(index),
+	m_displayArray(array)
+{
 	m_displayArrayBucket = new RAS_DisplayArrayBucket(bucket, m_displayArray, mesh, this, nullptr);
 }
 

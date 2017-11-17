@@ -55,6 +55,7 @@ private:
 
 public:
 	KX_Mesh(KX_Scene *scene, Mesh *mesh, const LayersInfo& layersInfo);
+	KX_Mesh(KX_Scene *scene, const std::string& name, const LayersInfo& layersInfo);
 	KX_Mesh(const KX_Mesh& other);
 	virtual ~KX_Mesh();
 

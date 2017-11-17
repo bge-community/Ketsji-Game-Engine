@@ -191,7 +191,7 @@ static PyObject *kx_poly_proxy_get_vertices_item_cb(void *self_v, int index)
 	RAS_IDisplayArray *array = polygon.array;
 	KX_VertexProxy *vert = new KX_VertexProxy(array, array->GetVertex(polygon.indices[index]));
 
-	return vert->GetProxy();
+	return vert->NewProxy(true);
 }
 
 PyObject *KX_PolyProxy::pyattr_get_vertices(EXP_PyObjectPlus *self_v, const EXP_PYATTRIBUTE_DEF *attrdef)

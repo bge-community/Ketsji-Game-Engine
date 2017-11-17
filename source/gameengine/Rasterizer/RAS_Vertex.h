@@ -28,6 +28,7 @@
 #define __RAS_TEXVERT_H__
 
 #include "RAS_VertexData.h"
+#include "RAS_VertexFormat.h"
 
 #include "mathfu.h"
 
@@ -85,16 +86,6 @@ public:
 private:
 	RAS_IVertexData *m_data;
 	RAS_VertexFormat m_format;
-
-	inline float *GetUvInternal(const unsigned short index) const
-	{
-		return (float *)(intptr_t(m_data) + (sizeof(RAS_VertexDataBasic) + sizeof(float[2]) * index));
-	}
-
-	inline unsigned int *GetColorInternal(const unsigned short index) const
-	{
-		return (unsigned int *)(intptr_t(m_data) + (sizeof(RAS_VertexDataBasic) + sizeof(float[2]) * m_format.uvSize + sizeof(unsigned int) * index));
-	}
 
 public:
 	RAS_Vertex(RAS_IVertexData *data, const RAS_VertexFormat& format)
@@ -167,70 +158,43 @@ public:
 		copy_v4_v4(m_data->tangent, tangent);
 	}
 
-	inline const float (&GetUv(const int index) const)[2]
+	inline const float (&GetUv(const unsigned short index) const)[2]
 	{
-		return reinterpret_cast<float (&)[2]>(*GetUvInternal(index));
+		return m_data->GetUv(index, m_format);
 	}
 
-	inline void SetUV(const int index, const mt::vec2& uv)
+	inline void SetUV(const unsigned short index, const mt::vec2& uv)
 	{
-		uv.Pack(GetUvInternal(index));
+		uv.Pack(m_data->GetUv(index, m_format));
 	}
 
-	inline void SetUV(const int index, const float uv[2])
+	inline void SetUV(const unsigned short index, const float uv[2])
 	{
-		copy_v2_v2(GetUvInternal(index), uv);
+		copy_v2_v2(m_data->GetUv(index, m_format), uv);
 	}
 
-	inline const unsigned char (&GetColor(const int index) const)[4]
+	inline const unsigned char (&GetColor(const unsigned short index) const)[4]
 	{
-		return reinterpret_cast<const unsigned char (&)[4]>(*GetColorInternal(index));
+		return reinterpret_cast<const unsigned char (&)[4]>(m_data->GetColor(index, m_format));
 	}
 
-	inline const unsigned int GetRawColor(const int index) const
+	inline const unsigned int GetRawColor(const unsigned short index) const
 	{
-		return *GetColorInternal(index);
+		return m_data->GetColor(index, m_format);
 	}
 
-	inline void SetColor(const int index, const unsigned int color)
+	inline void SetColor(const unsigned short index, const unsigned int color)
 	{
-		*GetColorInternal(index) = color;
+		m_data->GetColor(index, m_format) = color;
 	}
 
-	inline void SetColor(const int index, const mt::vec4& color)
+	inline void SetColor(const unsigned short index, const mt::vec4& color)
 	{
-		unsigned char *colp = (unsigned char *)GetColorInternal(index);
+		unsigned char (&colp)[4] = reinterpret_cast<unsigned char (&)[4]>(m_data->GetColor(index, m_format));
 		colp[0] = (unsigned char)(color[0] * 255.0f);
 		colp[1] = (unsigned char)(color[1] * 255.0f);
 		colp[2] = (unsigned char)(color[2] * 255.0f);
 		colp[3] = (unsigned char)(color[3] * 255.0f);
-	}
-
-	// compare two vertices, to test if they can be shared, used for
-	// splitting up based on uv's, colors, etc
-	inline const bool CloseTo(const RAS_Vertex& other)
-	{
-		BLI_assert(m_format == other.GetFormat());
-		static const float eps = FLT_EPSILON;
-		for (int i = 0, size = m_format.uvSize; i < size; ++i) {
-			if (!compare_v2v2(GetUv(i), other.GetUv(i), eps)) {
-				return false;
-			}
-		}
-
-		for (int i = 0, size = m_format.colorSize; i < size; ++i) {
-			if (GetRawColor(i) != other.GetRawColor(i)) {
-				return false;
-			}
-		}
-
-		return (/* m_flag == other->m_flag && */
-				/* at the moment the face only stores the smooth/flat setting so don't bother comparing it */
-				compare_v3v3(m_data->normal, other.m_data->normal, eps) &&
-				compare_v3v3(m_data->tangent, other.m_data->tangent, eps)
-				/* don't bother comparing m_data->position since we know there from the same vert */
-				/* && compare_v3v3(m_data->position, other->m_data->position, eps))*/
-				);
 	}
 
 	inline void Transform(const mt::mat4& mat, const mt::mat4& nmat)

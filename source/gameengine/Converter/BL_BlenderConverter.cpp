@@ -292,6 +292,7 @@ BL_InterpolatorList *BL_BlenderConverter::FindInterpolatorList(KX_Scene *scene, 
 
 void BL_BlenderConverter::RegisterMesh(KX_Scene *scene, KX_Mesh *mesh)
 {
+	scene->GetLogicManager()->RegisterMeshName(mesh->GetName(), mesh);
 	m_sceneSlots[scene].m_meshobjects.emplace_back(mesh);
 }
 

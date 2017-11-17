@@ -66,6 +66,7 @@
 
 #include "RAS_ICanvas.h"
 #include "RAS_Vertex.h"
+#include "RAS_VertexFactory.h"
 #include "RAS_BucketManager.h"
 #include "RAS_BoundingBoxManager.h"
 #include "RAS_IPolygonMaterial.h"
@@ -177,6 +178,18 @@ extern Material defmaterial;
 
 #include "wm_event_types.h"
 
+BL_MeshMaterial::BL_MeshMaterial(RAS_IDisplayArray *_array, RAS_IVertexFactory *_factory, RAS_MaterialBucket *_bucket,
+		bool _visible, bool _twoside, bool _collider, bool _wire)
+	:array(_array),
+	vertexFactory(_factory),
+	bucket(_bucket),
+	visible(_visible),
+	twoside(_twoside),
+	collider(_collider),
+	wire(_wire)
+{
+}
+
 // For construction to find shared vertices.
 struct BL_SharedVertex {
 	RAS_IDisplayArray *array;
@@ -189,11 +202,11 @@ using BL_SharedVertexMap = std::vector<BL_SharedVertexList>;
 class BL_SharedVertexPredicate
 {
 private:
-	RAS_Vertex m_vertex;
+	RAS_IVertexData *m_vertex;
 	RAS_IDisplayArray *m_array;
 
 public:
-	BL_SharedVertexPredicate(RAS_Vertex vertex, RAS_IDisplayArray *array)
+	BL_SharedVertexPredicate(RAS_IVertexData *vertex, RAS_IDisplayArray *array)
 		:m_vertex(vertex),
 		m_array(array)
 	{
@@ -202,7 +215,7 @@ public:
 	bool operator()(const BL_SharedVertex& sharedVert) const
 	{
 		RAS_IDisplayArray *otherArray = sharedVert.array;
-		return (m_array == otherArray) && (otherArray->GetVertexNoCache(sharedVert.offset).CloseTo(m_vertex));
+		return (m_array == otherArray) && (otherArray->GetVertexData(sharedVert.offset)->Equal(m_vertex, m_array->GetFormat()));
 	}
 };
 
@@ -449,9 +462,7 @@ KX_Mesh *BL_ConvertMesh(Mesh *me, Object *blenderobj, KX_Scene *scene, BL_Blende
 	}
 
 	// Initialize vertex format with used uv and color layers.
-	RAS_VertexFormat vertformat;
-	vertformat.uvSize = max_ii(1, uvCount);
-	vertformat.colorSize = max_ii(1, colorCount);
+	RAS_VertexFormat vertformat{(uint8_t)max_ii(1, uvCount), (uint8_t)max_ii(1, colorCount)};
 
 	meshobj = new KX_Mesh(scene, me, layersInfo);
 
@@ -474,8 +485,10 @@ KX_Mesh *BL_ConvertMesh(Mesh *me, Object *blenderobj, KX_Scene *scene, BL_Blende
 		RAS_MaterialBucket *bucket = BL_ConvertMaterial(ma, lightlayer, scene, converter);
 		RAS_MeshMaterial *meshmat = meshobj->AddMaterial(bucket, i, vertformat);
 		RAS_IPolyMaterial *mat = meshmat->GetBucket()->GetPolyMaterial();
+		RAS_IVertexFactory *factory = RAS_IVertexFactory::Construct(vertformat);
 
-		mats[i] = {meshmat->GetDisplayArray(), bucket, mat->IsVisible(), mat->IsTwoSided(), mat->IsCollider(), mat->IsWire()};
+		mats[i] = BL_MeshMaterial(meshmat->GetDisplayArray(), factory, bucket,
+				mat->IsVisible(), mat->IsTwoSided(), mat->IsCollider(), mat->IsWire());
 	}
 
 	BL_ConvertDerivedMeshToArray(dm, me, mats, layersInfo);
@@ -536,6 +549,7 @@ void BL_ConvertDerivedMeshToArray(DerivedMesh *dm, Mesh *me, const std::vector<B
 
 		const BL_MeshMaterial& mat = mats[mpoly.mat_nr];
 		RAS_IDisplayArray *array = mat.array;
+		RAS_IVertexFactory *factory = mat.vertexFactory.get();
 
 		// Mark face as flat, so vertices are split.
 		const bool flat = (mpoly.flag & ME_SMOOTH) == 0;
@@ -555,7 +569,7 @@ void BL_ConvertDerivedMeshToArray(DerivedMesh *dm, Mesh *me, const std::vector<B
 
 			BL_GetUvRgba(layersInfo, uvLayers, colorLayers, j, uvs, rgba);
 
-			RAS_Vertex vertex = array->CreateVertex(mvert.co, uvs, tan, rgba, normals[j]);
+			RAS_IVertexData *vertex = factory->CreateVertex(mvert.co, uvs, tan, rgba, normals[j]);
 
 			BL_SharedVertexList& sharedList = sharedMap[vertid];
 			BL_SharedVertexList::iterator it = std::find_if(sharedList.begin(), sharedList.end(),
@@ -566,14 +580,14 @@ void BL_ConvertDerivedMeshToArray(DerivedMesh *dm, Mesh *me, const std::vector<B
 				offset = it->offset;
 			}
 			else {
-				offset = array->AddVertex(vertex);
+				offset = array->AddVertexData(vertex);
 				const RAS_VertexInfo info(vertid, flat);
 				array->AddVertexInfo(info);
 				sharedList.push_back({array, offset});
 			}
 
 			// Destruct the vertex data as it is copied or unused.
-			array->DeleteVertexData(vertex);
+			factory->DeleteVertex(vertex);
 
 			// Add tracked vertices by the mpoly.
 			vertices[vertid] = offset;

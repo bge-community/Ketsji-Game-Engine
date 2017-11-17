@@ -66,6 +66,10 @@ public:
 		ANY_MODIFIED = MESH_MODIFIED | SIZE_MODIFIED | STORAGE_INVALID
 	};
 
+	using IndexList = std::vector<unsigned int>;
+	using IVertexDataList = std::vector<RAS_IVertexData *>;
+	using VertexInfoList = std::vector<RAS_VertexInfo>;
+
 protected:
 	/// The display array primitive type.
 	PrimitiveType m_type;
@@ -75,13 +79,13 @@ protected:
 	RAS_VertexDataMemoryFormat m_memoryFormat;
 
 	/// The vertex infos unused for rendering, e.g original or soft body index, flag.
-	std::vector<RAS_VertexInfo> m_vertexInfos;
+	VertexInfoList m_vertexInfos;
 	/// Cached vertex data pointers. This list is constructed with the function UpdateCache.
-	std::vector<RAS_IVertexData *> m_vertexDataPtrs;
+	IVertexDataList m_vertexDataPtrs;
 	/// The indices used for rendering.
-	std::vector<unsigned int> m_primitiveIndices;
+	IndexList m_primitiveIndices;
 	/// The indices of the original triangle independently of the primitive type.
-	std::vector<unsigned int> m_triangleIndices;
+	IndexList m_triangleIndices;
 
 	/// Maximum original vertex index.
 	unsigned int m_maxOrigIndex;
@@ -99,6 +103,8 @@ protected:
 public:
 	RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format,
 			const RAS_VertexDataMemoryFormat& memoryFormat);
+	RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format, const RAS_VertexDataMemoryFormat& memoryFormat,
+			const IndexList& primitiveIndices, const IndexList& triangleIndices);
 	virtual ~RAS_IDisplayArray();
 
 	virtual RAS_IDisplayArray *GetReplica() = 0;
@@ -107,12 +113,18 @@ public:
 	 * \param type The type of primitives, one of the enumeration PrimitiveType.
 	 * \param format The format of vertex to use.
 	 */
-	static RAS_IDisplayArray *ConstructArray(PrimitiveType type, const RAS_VertexFormat &format);
+	static RAS_IDisplayArray *Construct(PrimitiveType type, const RAS_VertexFormat &format);
+
+	static RAS_IDisplayArray *Construct(PrimitiveType type, const RAS_VertexFormat &format,
+			const IVertexDataList& vertices, const IndexList& primitiveIndices, const IndexList& triangleIndices);
 
 	/** Return a vertex pointer without using the cache. Used to get
 	 * a vertex pointer during contruction.
 	 */
 	virtual RAS_Vertex GetVertexNoCache(const unsigned int index) = 0;
+
+	/// Return vertex data without using pointer cache.
+	virtual RAS_IVertexData *GetVertexData(const unsigned int index) = 0;
 
 	inline RAS_Vertex GetVertex(const unsigned int index)
 	{
@@ -139,9 +151,7 @@ public:
 		return m_vertexInfos[index];
 	}
 
-	virtual unsigned int AddVertex(const RAS_Vertex& vert) = 0;
-
-	virtual void DeleteVertexData(const RAS_Vertex& vert) = 0;
+	virtual unsigned int AddVertexData(RAS_IVertexData *data) = 0;
 
 	inline void AddPrimitiveIndex(const unsigned int index)
 	{
@@ -187,20 +197,6 @@ public:
 
 	void SortPolygons(const mt::mat3x4& transform, unsigned int *indexmap);
 	void InvalidatePolygonCenters();
-
-	virtual RAS_Vertex CreateVertex(
-				const mt::vec3& xyz,
-				const mt::vec2 * const uvs,
-				const mt::vec4& tangent,
-				const unsigned int *rgba,
-				const mt::vec3& normal) = 0;
-
-	virtual RAS_Vertex CreateVertex(
-				const float xyz[3],
-				const float (*uvs)[2],
-				const float tangent[4],
-				const unsigned int *rgba,
-				const float normal[3]) = 0;
 
 	/** Copy vertex data from an other display array. Different vertex type is allowed.
 	 * \param other The other display array to copy from.

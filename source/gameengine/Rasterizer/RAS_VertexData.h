@@ -1,6 +1,8 @@
 #ifndef __RAS_VERTEX_DATA_H__
 #define __RAS_VERTEX_DATA_H__
 
+#include "RAS_VertexFormat.h"
+
 #include "mathfu.h"
 
 #include "RAS_VertexFormat.h"
@@ -73,6 +75,47 @@ struct RAS_IVertexData : RAS_VertexDataBasic
 	inline RAS_IVertexData(const float _position[3], const float _normal[3], const float _tangent[4])
 		:RAS_VertexDataBasic(_position, _normal, _tangent)
 	{
+	}
+
+	inline float (&GetUv(const unsigned short index, const RAS_VertexFormat& UNUSED(format)))[2]
+	{
+		intptr_t uv = intptr_t(this) + (sizeof(RAS_IVertexData) + sizeof(float[2]) * index);
+		return *reinterpret_cast<float (*)[2]>(uv);
+	}
+
+	inline const float (&GetUv(const unsigned short index, const RAS_VertexFormat& UNUSED(format)) const)[2]
+	{
+		const intptr_t uv = intptr_t(this) + (sizeof(RAS_IVertexData) + sizeof(float[2]) * index);
+		return *reinterpret_cast<const float (*)[2]>(uv);
+	}
+
+	inline unsigned int& GetColor(const unsigned short index, const RAS_VertexFormat& format)
+	{
+		intptr_t color = intptr_t(this) + (sizeof(RAS_IVertexData) + sizeof(float[2]) * format.uvSize + sizeof(unsigned int) * index);
+		return *reinterpret_cast<unsigned int *>(color);
+	}
+
+	inline const unsigned int& GetColor(const unsigned short index, const RAS_VertexFormat& format) const
+	{
+		const intptr_t color = intptr_t(this) + (sizeof(RAS_IVertexData) + sizeof(float[2]) * format.uvSize + sizeof(unsigned int) * index);
+		return *reinterpret_cast<const unsigned int *>(color);
+	}
+
+	inline const bool Equal(RAS_IVertexData *other, const RAS_VertexFormat& format) const
+	{
+		for (unsigned short i = 0, size = format.uvSize; i < size; ++i) {
+			if (!compare_v2v2(GetUv(i, format), other->GetUv(i, format), FLT_EPSILON)) {
+				return false;
+			}
+		}
+
+		for (unsigned short i = 0, size = format.colorSize; i < size; ++i) {
+			if (GetColor(i, format) != other->GetColor(i, format)) {
+				return false;
+			}
+		}
+
+		return (compare_v3v3(normal, other->normal, FLT_EPSILON) && compare_v4v4(tangent, other->tangent, FLT_EPSILON));
 	}
 };
 

@@ -31,8 +31,6 @@
 #include "RAS_DisplayArrayStorage.h"
 #include "RAS_VertexData.h"
 
-#include "boost/pool/object_pool.hpp"
-
 template <class FormatType>
 class RAS_BatchDisplayArray;
 
@@ -47,9 +45,6 @@ protected:
 
 	std::vector<VertexData> m_vertexes;
 
-	// Temporary vertex data storage.
-	boost::object_pool<VertexData> m_vertexPool;
-
 	RAS_DisplayArray(const RAS_DisplayArray& other)
 		:RAS_IDisplayArray(other),
 		m_vertexes(other.m_vertexes)
@@ -62,6 +57,17 @@ public:
 	{
 	}
 
+	RAS_DisplayArray(PrimitiveType type, const RAS_VertexFormat& format,
+		const IVertexDataList& vertices, const IndexList& primitiveIndices, const IndexList& triangleIndices)
+		:RAS_IDisplayArray(type, format, VertexData::GetMemoryFormat(), primitiveIndices, triangleIndices)
+	{
+		const unsigned int size = vertices.size();
+		m_vertexes.resize(size);
+		for (unsigned int i = 0; i < size; ++i) {
+			VertexData *data = static_cast<VertexData *>(vertices[i]);
+			m_vertexes[i] = *data;
+		}
+	}
 
 	virtual ~RAS_DisplayArray()
 	{
@@ -80,21 +86,20 @@ public:
 		return RAS_Vertex(&m_vertexes[index], m_format);
 	}
 
+	virtual RAS_IVertexData *GetVertexData(const unsigned int index)
+	{
+		return &m_vertexes[index];
+	}
+
 	virtual const RAS_IVertexData *GetVertexPointer() const
 	{
 		return m_vertexes.data();
 	}
 
-	virtual unsigned int AddVertex(const RAS_Vertex& vert)
+	virtual unsigned int AddVertexData(RAS_IVertexData *data)
 	{
-		VertexData *data = static_cast<VertexData *>(vert.GetData());
-		m_vertexes.push_back(*data);
+		m_vertexes.push_back(*static_cast<VertexData *>(data));
 		return m_vertexes.size() - 1;
-	}
-
-	virtual void DeleteVertexData(const RAS_Vertex& vert)
-	{
-		m_vertexPool.destroy(static_cast<VertexData *>(vert.GetData()));
 	}
 
 	virtual void Clear()
@@ -110,28 +115,6 @@ public:
 	virtual unsigned int GetVertexCount() const
 	{
 		return m_vertexes.size();
-	}
-
-	virtual RAS_Vertex CreateVertex(
-				const mt::vec3& xyz,
-				const mt::vec2 * const uvs,
-				const mt::vec4& tangent,
-				const unsigned int *rgba,
-				const mt::vec3& normal)
-	{
-		VertexData *data = new (m_vertexPool.malloc()) VertexData(xyz, uvs, tangent, rgba, normal);
-		return RAS_Vertex(data, m_format);
-	}
-
-	virtual RAS_Vertex CreateVertex(
-				const float xyz[3],
-				const float (*uvs)[2],
-				const float tangent[4],
-				const unsigned int *rgba,
-				const float normal[3])
-	{
-		VertexData *data = new (m_vertexPool.malloc()) VertexData(xyz, uvs, tangent, rgba, normal);
-		return RAS_Vertex(data, m_format);
 	}
 
 	virtual void UpdateCache()

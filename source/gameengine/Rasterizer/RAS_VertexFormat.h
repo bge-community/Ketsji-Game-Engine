@@ -1,6 +1,8 @@
 #ifndef __RAS_VERTEX_FORMAT_H__
 #define __RAS_VERTEX_FORMAT_H__
 
+#include <tuple>
+
 /// Struct used to pass the vertex format to functions.
 struct RAS_VertexFormat
 {
@@ -8,13 +10,6 @@ struct RAS_VertexFormat
 	uint8_t colorSize;
 
 	RAS_VertexFormat() = default;
-
-	/*template <class FormatType>
-	RAS_VertexFormat(const FormatType& formatType)
-		:uvSize(FormatType::UvSize),
-		colorSize(FormatType::ColorSize)
-	{
-	}*/
 
 	/// Operators used to compare the contents (uv size, color size, ...) of two vertex formats.
 	inline bool operator== (const RAS_VertexFormat& other) const

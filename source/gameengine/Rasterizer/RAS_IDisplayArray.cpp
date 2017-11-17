@@ -80,13 +80,31 @@ RAS_IDisplayArray::RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat&
 {
 }
 
+RAS_IDisplayArray::RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format,
+		const RAS_VertexDataMemoryFormat& memoryFormat, const IndexList& primitiveIndices, const IndexList& triangleIndices)
+	:m_type(type),
+	m_format(format),
+	m_memoryFormat(memoryFormat),
+	m_primitiveIndices(primitiveIndices),
+	m_triangleIndices(triangleIndices),
+	m_maxOrigIndex(0)
+{
+}
+
 RAS_IDisplayArray::~RAS_IDisplayArray()
 {
 }
 
-RAS_IDisplayArray *RAS_IDisplayArray::ConstructArray(RAS_IDisplayArray::PrimitiveType type, const RAS_VertexFormat &format)
+RAS_IDisplayArray *RAS_IDisplayArray::Construct(RAS_IDisplayArray::PrimitiveType type, const RAS_VertexFormat &format)
 {
 	return CM_InstantiateTemplateSwitch<RAS_IDisplayArray, RAS_DisplayArray, RAS_VertexFormatTuple>(format, type, format);
+}
+
+RAS_IDisplayArray *RAS_IDisplayArray::Construct(RAS_IDisplayArray::PrimitiveType type, const RAS_VertexFormat &format,
+		const IVertexDataList& vertices, const IndexList& primitiveIndices, const IndexList& triangleIndices)
+{
+	return CM_InstantiateTemplateSwitch<RAS_IDisplayArray, RAS_DisplayArray, RAS_VertexFormatTuple>(format,
+			type, format, vertices, primitiveIndices, triangleIndices);
 }
 
 void RAS_IDisplayArray::SortPolygons(const mt::mat3x4& transform, unsigned int *indexmap)

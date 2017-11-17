@@ -101,6 +101,7 @@ set(SRC
 	KX_LodLevel.cpp
 	KX_LodManager.cpp
 	KX_MaterialIpoController.cpp
+	KX_MeshBuilder.cpp
 	KX_Mesh.cpp
 	KX_MotionState.cpp
 	KX_MouseActuator.cpp
@@ -191,6 +192,7 @@ set(SRC
 	KX_LodLevel.h
 	KX_LodManager.h
 	KX_MaterialIpoController.h
+	KX_MeshBuilder.h
 	KX_Mesh.h
 	KX_MotionState.h
 	KX_MouseActuator.h
