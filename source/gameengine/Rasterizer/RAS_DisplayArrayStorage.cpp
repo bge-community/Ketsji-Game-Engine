@@ -1,13 +1,17 @@
 #include "RAS_DisplayArrayStorage.h"
 #include "RAS_StorageVbo.h"
 
-RAS_DisplayArrayStorage::RAS_DisplayArrayStorage(RAS_IDisplayArray *array)
-	:m_vbo(new RAS_StorageVbo(array))
+RAS_DisplayArrayStorage::RAS_DisplayArrayStorage()
 {
 }
 
 RAS_DisplayArrayStorage::~RAS_DisplayArrayStorage()
 {
+}
+
+void RAS_DisplayArrayStorage::Construct(RAS_IDisplayArray *array)
+{
+	m_vbo.reset(new RAS_StorageVbo(array));
 }
 
 RAS_StorageVbo *RAS_DisplayArrayStorage::GetVbo() const

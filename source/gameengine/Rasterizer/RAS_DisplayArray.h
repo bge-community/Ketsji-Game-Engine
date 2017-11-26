@@ -68,7 +68,6 @@ public:
 	{
 		RAS_DisplayArray<VertexData> *replica = new RAS_DisplayArray<VertexData>(*this);
 		replica->UpdateCache();
-		replica->UpdateStorage();
 
 		return replica;
 	}

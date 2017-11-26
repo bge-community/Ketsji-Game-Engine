@@ -58,7 +58,7 @@ struct PolygonSort
 
 RAS_IDisplayArray::RAS_IDisplayArray(const RAS_IDisplayArray& other)
 	:m_type(other.m_type),
-	m_modifiedFlag(NONE_MODIFIED),
+	m_modifiedFlag(STORAGE_INVALID),
 	m_format(other.m_format),
 	m_memoryFormat(other.m_memoryFormat),
 	m_vertexInfos(other.m_vertexInfos),
@@ -66,19 +66,17 @@ RAS_IDisplayArray::RAS_IDisplayArray(const RAS_IDisplayArray& other)
 	m_primitiveIndices(other.m_primitiveIndices),
 	m_triangleIndices(other.m_triangleIndices),
 	m_maxOrigIndex(other.m_maxOrigIndex),
-	m_polygonCenters(other.m_polygonCenters),
-	m_storage(this)
+	m_polygonCenters(other.m_polygonCenters)
 {
 }
 
 RAS_IDisplayArray::RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format,
 		const RAS_VertexDataMemoryFormat& memoryFormat)
 	:m_type(type),
-	m_modifiedFlag(NONE_MODIFIED),
+	m_modifiedFlag(STORAGE_INVALID),
 	m_format(format),
 	m_memoryFormat(memoryFormat),
-	m_maxOrigIndex(0),
-	m_storage(this)
+	m_maxOrigIndex(0)
 {
 }
 
@@ -255,7 +253,8 @@ RAS_DisplayArrayStorage *RAS_IDisplayArray::GetStorage()
 	return &m_storage;
 }
 
-void RAS_IDisplayArray::UpdateStorage()
+void RAS_IDisplayArray::ConstructStorage()
 {
+	m_storage.Construct(this);
 	m_storage.UpdateSize();
 }

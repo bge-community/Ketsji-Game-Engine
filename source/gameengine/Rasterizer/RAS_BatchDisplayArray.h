@@ -120,8 +120,8 @@ public:
 
 		// Update the cache to avoid accessing dangling vertex pointer from GetVertex().
 		UpdateCache();
-		// Update OpenGl storage.
-		UpdateStorage();
+		// Request storage update.
+		m_modifiedFlag |= SIZE_MODIFIED;
 
 		return (m_parts.size() - 1);
 	}
@@ -170,8 +170,8 @@ public:
 
 		// Update the cache to avoid accessing dangling vertex pointer from GetVertex().
 		UpdateCache();
-		// Update OpenGl storage.
-		UpdateStorage();
+		// Request storage update.
+		m_modifiedFlag |= SIZE_MODIFIED;
 	}
 };
 

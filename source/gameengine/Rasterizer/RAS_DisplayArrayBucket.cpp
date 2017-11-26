@@ -142,18 +142,20 @@ void RAS_DisplayArrayBucket::UpdateActiveMeshSlots(RAS_Rasterizer::DrawType draw
 		if (modifiedFlag != RAS_IDisplayArray::NONE_MODIFIED) {
 			m_displayArray->SetModifiedFlag(RAS_IDisplayArray::NONE_MODIFIED);
 
-			// Set the display array storage modified if the mesh is modified.
-			if (modifiedFlag & RAS_IDisplayArray::SIZE_MODIFIED) {
+			if (modifiedFlag & RAS_IDisplayArray::STORAGE_INVALID) {
+				m_displayArray->ConstructStorage();
+			}
+			else if (modifiedFlag & RAS_IDisplayArray::SIZE_MODIFIED) {
 				m_arrayStorage->UpdateSize();
 			}
-			else {
-				if (modifiedFlag & RAS_IDisplayArray::POSITION_MODIFIED) {
-					// Reset polygons center cache to ask update.
-					m_displayArray->InvalidatePolygonCenters();
-				}
-				if (modifiedFlag & RAS_IDisplayArray::MESH_MODIFIED) {
-					m_arrayStorage->UpdateVertexData();
-				}
+			// Set the display array storage modified if the mesh is modified.
+			else if (modifiedFlag & RAS_IDisplayArray::MESH_MODIFIED) {
+				m_arrayStorage->UpdateVertexData();
+			}
+
+			if (modifiedFlag & RAS_IDisplayArray::POSITION_MODIFIED) {
+				// Reset polygons center cache to ask update.
+				m_displayArray->InvalidatePolygonCenters();
 			}
 		}
 

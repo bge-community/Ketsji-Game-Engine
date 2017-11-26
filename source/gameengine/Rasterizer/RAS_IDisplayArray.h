@@ -209,6 +209,7 @@ public:
 		COLORS_MODIFIED = 1 << 3, // Vertex colors modified.
 		TANGENT_MODIFIED = 1 << 4, // Vertex tangent modified.
 		SIZE_MODIFIED = 1 << 5, // Vertex and index array changed of size.
+		STORAGE_INVALID = 1 << 6, // Storage not yet created.
 		AABB_MODIFIED = POSITION_MODIFIED,
 		MESH_MODIFIED = POSITION_MODIFIED | NORMAL_MODIFIED | UVS_MODIFIED |
 						COLORS_MODIFIED | TANGENT_MODIFIED
@@ -233,7 +234,7 @@ public:
 	virtual Type GetType() const;
 
 	RAS_DisplayArrayStorage *GetStorage();
-	void UpdateStorage();
+	void ConstructStorage();
 };
 
 typedef std::vector<RAS_IDisplayArray *> RAS_IDisplayArrayList;

@@ -18,8 +18,11 @@ private:
 	RAS_StorageVbo *GetVbo() const;
 
 public:
-	RAS_DisplayArrayStorage(RAS_IDisplayArray *array);
+	RAS_DisplayArrayStorage();
 	~RAS_DisplayArrayStorage();
+
+	// Construct manually to take care that the OpenGL context is current (case of asynchronous libloading).
+	void Construct(RAS_IDisplayArray *array);
 
 	void UpdateVertexData();
 	void UpdateSize();
