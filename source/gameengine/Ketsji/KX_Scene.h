@@ -97,6 +97,7 @@ struct TaskPool;
 
 /*********EEVEE INTEGRATION************/
 struct DRWPass;
+struct DRWShadingGroup;
 struct EEVEE_PassList;
 struct IDProperty;
 /**************************************/
@@ -155,6 +156,10 @@ protected:
 	std::vector<KX_GameObject *>m_staticObjectsInsideFrustum;
 
 	std::vector<DRWPass *>m_materialPasses;
+
+	DRWPass *m_customShadersPass;
+	std::vector<DRWShadingGroup *>m_customShgroupsToAdd;
+
 	IDProperty *m_idProperty;
 	std::vector<KX_GameObject *>m_lightProbes;
 	/*************************************************/
@@ -347,6 +352,13 @@ public:
 	/******************EEVEE INTEGRATION************************/
 	void InitScenePasses(EEVEE_PassList *psl);
 	std::vector<DRWPass *>GetMaterialPasses();
+
+	DRWPass *GetCustomShadersPass();
+	std::vector<DRWShadingGroup *>GetDefaultShadingGroups();
+	std::vector<DRWShadingGroup *>GetCustomShadingGroups();
+	std::vector<DRWShadingGroup *>GetCustomShadingGroupsToAdd();
+	void AppendToCustomShadingGroupsToAdd(DRWShadingGroup *shgroup);
+	void ClearCustomShadingGroupsToAdd();
 
 	void AppendToStaticObjects(KX_GameObject *gameobj);
 	void AppendToStaticObjectsInsideFrustum(KX_GameObject *gameobj);

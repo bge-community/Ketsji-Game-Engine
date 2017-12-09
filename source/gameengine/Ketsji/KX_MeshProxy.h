@@ -39,6 +39,8 @@
 class RAS_MeshObject;
 class SCA_LogicManager;
 
+struct Gwn_Batch;
+
 // utility conversion function
 bool ConvertPythonToMesh(SCA_LogicManager *logicmgr, PyObject *value, RAS_MeshObject **object, bool py_none_ok, const char *error_prefix);
 
@@ -56,6 +58,8 @@ public:
 	{
 		return m_meshobj;
 	}
+
+	Gwn_Batch *GetBatchFromMesh(int matIndex);
 
 	// stuff for cvalue related things
 	virtual std::string GetName();

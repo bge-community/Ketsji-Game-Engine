@@ -181,7 +181,8 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_dofInitialized(false),
 	m_doingProbeUpdate(false),
 	m_doingTAA(false),
-	m_taaInitialized(false)
+	m_taaInitialized(false),
+	m_customShadersPass(nullptr)
 {
 
 	m_dbvt_culling = false;
@@ -245,6 +246,8 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 
 	InitScenePasses(psl);
 
+	m_customShgroupsToAdd = {};
+
 	m_staticObjects = {};
 	m_staticObjectsInsideFrustum = {};
 	/******************************************************************************************************************************/
@@ -271,6 +274,10 @@ KX_Scene::~KX_Scene()
 	{
 		KX_GameObject* parentobj = GetRootParentList()->GetValue(0);
 		this->RemoveObject(parentobj);
+	}
+
+	if (m_customShadersPass) {
+		DRW_pass_free(m_customShadersPass);
 	}
 
 	if (m_obstacleSimulation)
@@ -361,7 +368,58 @@ void KX_Scene::InitScenePasses(EEVEE_PassList *psl)
 	m_materialPasses.push_back(psl->refract_depth_pass_cull);
 	m_materialPasses.push_back(psl->refract_depth_pass_clip_cull);
 	m_materialPasses.push_back(psl->sss_pass);
+
+	/* Custom Shaders */
+	DRWState state = DRWState(DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_EQUAL | DRW_STATE_CLIP_PLANES | DRW_STATE_WIRE);
+	m_customShadersPass = DRW_pass_create("Custom Shaders", state);
+	m_materialPasses.push_back(m_customShadersPass);
+
 	/* END OF MATERIALS PASSES */
+}
+
+std::vector<DRWShadingGroup *>KX_Scene::GetDefaultShadingGroups()
+{
+	std::vector<DRWPass *>scenePasses = GetMaterialPasses();
+	DRWPass *customShadersPass = GetCustomShadersPass();
+	std::vector<DRWShadingGroup *>defaultShGroups = {};
+	for (DRWPass *pass : scenePasses) {
+		if (pass != customShadersPass) {
+			for (DRWShadingGroup *shgroup = DRW_shgroups_from_pass_get(pass); shgroup; shgroup = DRW_shgroup_next(shgroup)) {
+				defaultShGroups.push_back(shgroup);
+			}
+		}
+	}
+	return defaultShGroups;
+}
+
+std::vector<DRWShadingGroup *>KX_Scene::GetCustomShadingGroups()
+{
+	DRWPass *customShadersPass = GetCustomShadersPass();
+	std::vector<DRWShadingGroup *>customShGroups = {};
+	for (DRWShadingGroup *shgroup = DRW_shgroups_from_pass_get(customShadersPass); shgroup; shgroup = DRW_shgroup_next(shgroup)) {
+		customShGroups.push_back(shgroup);
+	}
+	return customShGroups;
+}
+
+std::vector<DRWShadingGroup *>KX_Scene::GetCustomShadingGroupsToAdd()
+{
+	return m_customShgroupsToAdd;
+}
+
+void KX_Scene::AppendToCustomShadingGroupsToAdd(DRWShadingGroup *shgroup)
+{
+	m_customShgroupsToAdd.push_back(shgroup);
+}
+
+void KX_Scene::ClearCustomShadingGroupsToAdd()
+{
+	m_customShgroupsToAdd.clear();
+}
+
+DRWPass *KX_Scene::GetCustomShadersPass()
+{
+	return m_customShadersPass;
 }
 
 std::vector<DRWPass *>KX_Scene::GetMaterialPasses()
@@ -1794,6 +1852,9 @@ void KX_Scene::EEVEE_draw_scene()
 		DRW_draw_pass(psl->background_pass);
 		EEVEE_draw_default_passes(psl);
 		DRW_draw_pass(psl->material_pass);
+
+		DRW_draw_pass(m_customShadersPass);
+
 		EEVEE_subsurface_data_render(sldata, vedata);
 		DRW_stats_group_end();
 

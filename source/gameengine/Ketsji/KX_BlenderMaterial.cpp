@@ -244,14 +244,11 @@ void KX_BlenderMaterial::OnExit()
 
 void KX_BlenderMaterial::SetShaderData(RAS_Rasterizer *ras)
 {
-#if 0
 	BLI_assert(m_shader);
 
 	int i;
 
-	m_shader->SetProg(true);
-
-	m_shader->ApplyShader();
+	m_shader->Activate(ras);
 
 	/** We make sure that all gpu textures are the same in material textures here
 	 * than in gpu material. This is dones in a separated loop because the texture
@@ -288,7 +285,6 @@ void KX_BlenderMaterial::SetShaderData(RAS_Rasterizer *ras)
 			m_textures[i]->DisableTexture();
 		}
 	}
-#endif
 }
 
 bool KX_BlenderMaterial::UsesLighting() const
@@ -306,16 +302,6 @@ bool KX_BlenderMaterial::UsesLighting() const
 
 void KX_BlenderMaterial::ActivateGLMaterials(RAS_Rasterizer *rasty) const
 {
-	/*if (m_shader || !m_blenderShader) {
-		rasty->SetSpecularity(m_material->specr * m_material->spec, m_material->specg * m_material->spec,
-							  m_material->specb * m_material->spec, m_material->spec);
-		rasty->SetShinyness(((float)m_material->har) / 4.0f);
-		rasty->SetDiffuse(m_material->r * m_material->ref + m_material->emit, m_material->g * m_material->ref + m_material->emit,
-						  m_material->b * m_material->ref + m_material->emit, 1.0f);
-		rasty->SetEmissive(m_material->r * m_material->emit, m_material->g * m_material->emit,
-						   m_material->b * m_material->emit, 1.0f);
-		rasty->SetAmbient(m_material->amb);
-	}*/
 }
 
 void KX_BlenderMaterial::UpdateIPO(
@@ -784,8 +770,6 @@ KX_PYMETHODDEF_DOC(KX_BlenderMaterial, getShader, "getShader()")
 {
 	if (!m_shader) {
 		m_shader.reset(new KX_MaterialShader());
-		// Set the material to use custom shader.
-		m_flag &= ~RAS_BLENDERGLSL;
 		m_scene->GetBucketManager()->UpdateShaders(this);
 	}
 

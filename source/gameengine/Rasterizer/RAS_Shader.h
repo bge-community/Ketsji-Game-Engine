@@ -115,6 +115,7 @@ protected:
 	typedef std::vector<RAS_DefUniform *> RAS_UniformVecDef;
 
 	GPUShader *m_shader;
+	DRWShadingGroup *m_shGroup;
 	bool m_use;
 	std::string m_progs[MAX_PROGRAM];
 	bool m_error;

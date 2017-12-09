@@ -52,6 +52,14 @@
 #include "EXP_PyObjectPlus.h"
 #include "EXP_ListWrapper.h"
 
+/*EEVEE INTEGRATION */
+extern "C" {
+#  include "BLI_alloca.h"
+#  include "draw/intern/draw_cache_impl.h"
+#  include "DRW_render.h"
+}
+/********************/
+
 PyTypeObject KX_MeshProxy::Type = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
 	"KX_MeshProxy",
@@ -350,16 +358,12 @@ PyObject *KX_MeshProxy::PyReplaceMaterial(PyObject *args, PyObject *kwds)
 		return nullptr;
 	}
 
-
 	RAS_MeshMaterial *meshmat = m_meshobj->GetMeshMaterial(matindex);
-	if (!meshmat) {
-		PyErr_Format(PyExc_ValueError, "Invalid material index %d", matindex);
-		return nullptr;
-	}
-
 	KX_Scene *scene = (KX_Scene *)meshmat->GetBucket()->GetPolyMaterial()->GetScene();
-	if (scene != mat->GetScene()) {
-		PyErr_Format(PyExc_ValueError, "Mesh successor scene doesn't match current mesh scene");
+
+	std::vector<DRWShadingGroup *>customShadingGroupsToAdd = scene->GetCustomShadingGroupsToAdd();
+
+	if (customShadingGroupsToAdd.size() == 0) {
 		return nullptr;
 	}
 
@@ -371,6 +375,22 @@ PyObject *KX_MeshProxy::PyReplaceMaterial(PyObject *args, PyObject *kwds)
 	BLI_assert(created == false);
 
 	meshmat->ReplaceMaterial(bucket);
+
+	Gwn_Batch *batch = GetBatchFromMesh(matindex);
+
+	std::vector<DRWShadingGroup *>defaultShadingGroups = scene->GetDefaultShadingGroups();
+
+	for (DRWShadingGroup *shgroup : defaultShadingGroups) {
+		DRW_call_discard_geometry(shgroup, batch);
+	}
+
+	float dummyObmat[4][4];
+	unit_m4(dummyObmat);
+	for (DRWShadingGroup *shgroup : customShadingGroupsToAdd) {
+		DRW_shgroup_call_add(shgroup, batch, dummyObmat);
+	}
+
+	scene->ClearCustomShadingGroupsToAdd();
 
 	Py_RETURN_NONE;
 }
@@ -485,6 +505,20 @@ bool ConvertPythonToMesh(SCA_LogicManager *logicmgr, PyObject *value, RAS_MeshOb
 	}
 
 	return false;
+}
+
+Gwn_Batch *KX_MeshProxy::GetBatchFromMesh(int matIndex)
+{
+	int materials_len = 8;
+	Mesh *me = m_meshobj->GetMesh();
+	struct GPUMaterial **gpumat_array = (GPUMaterial **)BLI_array_alloca(gpumat_array, materials_len);
+	struct Gwn_Batch **mat_geom = DRW_mesh_batch_cache_get_surface_shaded(me, gpumat_array, materials_len);
+	if (mat_geom) {
+		if (mat_geom[matIndex]) {
+			return mat_geom[matIndex];
+		}
+	}
+	return nullptr;
 }
 
 #endif // WITH_PYTHON

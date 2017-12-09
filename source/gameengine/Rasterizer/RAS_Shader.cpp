@@ -37,6 +37,15 @@
 
 #include "CM_Message.h"
 
+/* EEVEE INTEGRATION */
+extern "C" {
+#  include "DRW_render.h"
+}
+
+#include "KX_Globals.h"
+#include "KX_Scene.h"
+/*********************/
+
 RAS_Shader::RAS_Uniform::RAS_Uniform(int data_size)
 	:m_loc(-1),
 	m_count(1),
@@ -177,6 +186,10 @@ RAS_Shader::~RAS_Shader()
 	ClearUniforms();
 
 	DeleteShader();
+
+	if (m_shGroup) {
+		DRW_shgroup_free(m_shGroup);
+	}
 }
 
 void RAS_Shader::ClearUniforms()
@@ -321,6 +334,10 @@ bool RAS_Shader::LinkProgram(bool isCustomShader)
 	if (!m_shader) {
 		goto program_error;
 	}
+
+	KX_Scene *scene = KX_GetActiveScene();
+	m_shGroup = DRW_shgroup_create(m_shader, scene->GetCustomShadersPass());
+	scene->AppendToCustomShadingGroupsToAdd(m_shGroup);
 
 	m_error = 0;
 	return true;
