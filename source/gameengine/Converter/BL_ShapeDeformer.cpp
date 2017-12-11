@@ -151,7 +151,6 @@ bool BL_ShapeDeformer::ExecuteShapeDrivers()
 void BL_ShapeDeformer::Update()
 {
 	bool bShapeUpdate = false;
-	bool bSkinUpdate = false;
 
 	ExecuteShapeDrivers();
 
@@ -192,13 +191,6 @@ void BL_ShapeDeformer::Update()
 	if (NeedSkinUpdate()) {
 		BL_SkinDeformer::UpdateInternal(bShapeUpdate && m_bDynamic);
 	}
-
-	/*// non dynamic deformer = Modifer without armature and shape keys, no need to create storage
-	if (!bSkinUpdate && bShapeUpdate && m_bDynamic) {*/
-		// We also need to handle transverts now.
-		UpdateTransverts();
-		bSkinUpdate = true;
-	/*} TODO */
 }
 
 bool BL_ShapeDeformer::NeedShapeUpdate() const

@@ -1332,15 +1332,20 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 		m_previousAnimTime = curtime;
 	}
 
-	struct AnimationTaskSet
+	struct AnimationTask
 	{
 		const std::vector<KX_GameObject *>& m_animatedObjects;
 		double m_curtime;
 
-		AnimationTaskSet(const std::vector<KX_GameObject *>& animatedObjects, double curtime)
+		AnimationTask(const std::vector<KX_GameObject *>& animatedObjects, double curtime)
 			:m_animatedObjects(animatedObjects),
 			m_curtime(curtime)
 		{
+		}
+
+		unsigned int Size() const
+		{
+			return m_animatedObjects.size();
 		}
 
 		void operator()(const tbb::blocked_range<unsigned int>& range) const
@@ -1352,21 +1357,33 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 	};
 
 
-	/*struct ArmatureTask
+	struct ArmatureTask
 	{
-		virtual void ExecuteRange(enki::TaskSetPartition range, uint32_t UNUSED(threadnum))
+		const std::vector<BL_ArmatureObject *>& m_armatures;
+
+		ArmatureTask(const std::vector<BL_ArmatureObject *>& armatures)
+			:m_armatures(armatures)
 		{
-			for (unsigned int i = range.start, end = range.end; i < end; ++i) {
-				m_armatures[i]->ApplyPose(); ? tester update nécessaire
+		}
+
+		unsigned int Size() const
+		{
+			return m_armatures.size();
+		}
+
+		void operator()(const tbb::blocked_range<unsigned int>& range) const
+		{
+			for (unsigned int i = range.begin(), end = range.end(); i < end; ++i) {
+				m_armatures[i]->ApplyPose();// TODO ? tester update nécessaire
 			}
 		}
 	};
 
-	struct DeformerTaskSet : enki::ITaskSet
+	struct DeformerTask
 	{
 		std::vector<RAS_Deformer *> m_deformers;
 
-		DeformerTaskSet(EXP_ListValue<KX_GameObject> *objects)
+		DeformerTask(EXP_ListValue<KX_GameObject> *objects)
 		{
 			for (KX_GameObject *gameobj : objects) {
 				RAS_Deformer *deformer = gameobj->GetDeformer();
@@ -1374,32 +1391,35 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 					m_deformers.push_back(deformer);
 				}
 			}
-			m_SetSize = m_deformers.size();
 		}
 
-		virtual void ExecuteRange(enki::TaskSetPartition range, uint32_t UNUSED(threadnum))
+		unsigned int Size() const
 		{
-			for (unsigned int i = range.start, end = range.end; i < end; ++i) {
+			return m_deformers.size();
+		}
+
+		void operator()(const tbb::blocked_range<unsigned int>& range) const
+		{
+			for (unsigned int i = range.begin(), end = range.end(); i < end; ++i) {
 				m_deformers[i]->Update();
 			}
 		}
 	};
 
-	enki::TaskScheduler& taskScheduler = KX_GetActiveEngine()->GetTaskScheduler();*/
+	{
+		AnimationTask task(m_animatedlist, curtime);
+		tbb::parallel_for(tbb::blocked_range<unsigned int>(0, task.Size()), task);
+	}
 
-	tbb::parallel_for(tbb::blocked_range<unsigned int>(0, m_animatedlist.size()), AnimationTaskSet(m_animatedlist, curtime));
+	{
+		ArmatureTask task(m_armatureList);
+		tbb::parallel_for(tbb::blocked_range<unsigned int>(0, task.Size()), task);
+	}
 
-	/*AnimationTaskSet animationTask(m_animatedlist, curtime);
-	taskScheduler.AddTaskSetToPipe(&animationTask);
-	taskScheduler.WaitforTaskSet(&animationTask);
-
-	ArmatureTaskSet armatureTask(m_armatureList);
-	taskScheduler.AddTaskSetToPipe(&armatureTask);
-	taskScheduler.WaitforTaskSet(&armatureTask);
-
-	DeformerTaskSet deformerTask(m_objectlist);
-	taskScheduler.AddTaskSetToPipe(&deformerTask);
-	taskScheduler.WaitforTaskSet(&deformerTask);*/
+	{
+		DeformerTask task(m_objectlist);
+		tbb::parallel_for(tbb::blocked_range<unsigned int>(0, task.Size()), task);
+	}
 }
 
 void KX_Scene::LogicUpdateFrame(double curtime)

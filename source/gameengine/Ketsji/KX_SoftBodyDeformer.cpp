@@ -90,9 +90,6 @@ void KX_SoftBodyDeformer::Update()
 	if (!softBody)
 		return;
 
-	// update the vertex in m_transverts
-	Update();
-
 	btSoftBody::tNodeArray&   nodes(softBody->m_nodes);
 	const std::vector<unsigned int>& indices = ctrl->GetSoftBodyIndices();
 
