@@ -150,7 +150,7 @@ bool BL_ShapeDeformer::ExecuteShapeDrivers()
 
 void BL_ShapeDeformer::Update()
 {
-	bool bShapeUpdate = false;
+	bool shapeUpdate = false;
 
 	ExecuteShapeDrivers();
 
@@ -185,11 +185,14 @@ void BL_ShapeDeformer::Update()
 		// As we have changed, the mesh, the skin deformer must update as well.
 		// This will force the update
 		BL_SkinDeformer::ForceUpdate();
-		bShapeUpdate = true;
+		shapeUpdate = true;
 	}
 	// check for armature deform
 	if (NeedSkinUpdate()) {
-		BL_SkinDeformer::UpdateInternal(bShapeUpdate && m_bDynamic);
+		BL_SkinDeformer::UpdateInternal(shapeUpdate && m_bDynamic);
+	}
+	else if (shapeUpdate && m_bDynamic) {
+		UpdateTransverts();
 	}
 }
 

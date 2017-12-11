@@ -1277,69 +1277,35 @@ void KX_Scene::AddArmatureObject(BL_ArmatureObject *armature)
 	m_armatureList.push_back(armature);
 }
 
-static void task_func(KX_GameObject *gameobj, double curtime)
-{
-	// Non-armature updates are fast enough, so just update them
-	bool needs_update = gameobj->GetGameObjectType() != SCA_IObject::OBJ_ARMATURE;
-
-	if (!needs_update) {
-		// If we got here, we're looking to update an armature, so check its children meshes
-		// to see if we need to bother with a more expensive pose update
-		const std::vector<KX_GameObject *> children = gameobj->GetChildren();
-
-		bool has_mesh = false, has_non_mesh = false;
-
-		// Check for meshes that haven't been culled
-		for (KX_GameObject *child : children) {
-			if (!child->GetCulled()) {
-				needs_update = true;
-				break;
-			}
-
-			if (child->GetMeshList().empty()) {
-				has_non_mesh = true;
-			}
-			else {
-				has_mesh = true;
-			}
-		}
-
-		// If we didn't find a non-culled mesh, check to see
-		// if we even have any meshes, and update if this
-		// armature has only non-mesh children.
-		if (!needs_update && !has_mesh && has_non_mesh) {
-			needs_update = true;
-		}
-	}
-
-	// If the object is a culled armature, then we manage only the animation time and end of its animations.
-	gameobj->UpdateActionManager(curtime, needs_update);
-}
-
 void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 {
-	if (restrict) {
+	const bool redundant = (curtime == m_previousAnimTime);
+
+	// Don't restrict redundant updates.
+	if (!redundant && restrict) {
 		const double animTimeStep = 1.0 / m_blenderScene->r.frs_sec;
 
-		/* Don't update if the time step is too small and if we are not asking for redundant
-		 * updates like for different culling passes. */
-		if ((curtime - m_previousAnimTime) < animTimeStep && curtime != m_previousAnimTime) {
+		// Don't update if the time step is too small.
+		if ((curtime - m_previousAnimTime) < animTimeStep) {
 			return;
 		}
 
 		// Sanity/debug print to make sure we're actually going at the fps we want (should be close to animTimeStep)
 		// CM_Debug("Anim fps: " << 1.0 / (curtime - m_previousAnimTime));
-		m_previousAnimTime = curtime;
 	}
+
+	m_previousAnimTime = curtime;
 
 	struct AnimationTask
 	{
 		const std::vector<KX_GameObject *>& m_animatedObjects;
 		double m_curtime;
+		bool m_redundant;
 
-		AnimationTask(const std::vector<KX_GameObject *>& animatedObjects, double curtime)
+		AnimationTask(const std::vector<KX_GameObject *>& animatedObjects, double curtime, bool redundant)
 			:m_animatedObjects(animatedObjects),
-			m_curtime(curtime)
+			m_curtime(curtime),
+			m_redundant(redundant)
 		{
 		}
 
@@ -1351,7 +1317,42 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 		void operator()(const tbb::blocked_range<unsigned int>& range) const
 		{
 			for (unsigned int i = range.begin(), end = range.end(); i < end; ++i) {
-				task_func(m_animatedObjects[i], m_curtime);
+				KX_GameObject *gameobj = m_animatedObjects[i];
+				// Non-armature updates are fast enough, so just update them
+				bool needs_update = gameobj->GetGameObjectType() != SCA_IObject::OBJ_ARMATURE;
+
+				if (!needs_update) {
+					/* If we got here, we're looking to update an armature, so check its children meshes
+					 * to see if we need to bother with a more expensive pose update. */
+					const std::vector<KX_GameObject *> children = gameobj->GetChildren();
+
+					bool has_mesh = false, has_non_mesh = false;
+
+					// Check for meshes that haven't been culled
+					for (KX_GameObject *child : children) {
+						if (!child->GetCulled()) {
+							needs_update = true;
+							break;
+						}
+
+						if (child->GetMeshList().empty()) {
+							has_non_mesh = true;
+						}
+						else {
+							has_mesh = true;
+						}
+					}
+
+					/* If we didn't find a non-culled mesh, check to see
+					 * if we even have any meshes, and update if this
+					 * armature has only non-mesh children. */
+					if (!needs_update && !has_mesh && has_non_mesh) {
+						needs_update = true;
+					}
+				}
+
+				// If the object is a culled armature, then we manage only the animation time and end of its animations.
+				gameobj->UpdateActionManager(m_curtime, needs_update, m_redundant);
 			}
 		}
 	};
@@ -1359,11 +1360,15 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 
 	struct ArmatureTask
 	{
-		const std::vector<BL_ArmatureObject *>& m_armatures;
+		std::vector<BL_ArmatureObject *> m_armatures;
 
 		ArmatureTask(const std::vector<BL_ArmatureObject *>& armatures)
-			:m_armatures(armatures)
 		{
+			for (BL_ArmatureObject *armature : armatures) {
+				if (armature->NeedApplyPose()) {
+					m_armatures.push_back(armature);
+				}
+			}
 		}
 
 		unsigned int Size() const
@@ -1374,7 +1379,7 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 		void operator()(const tbb::blocked_range<unsigned int>& range) const
 		{
 			for (unsigned int i = range.begin(), end = range.end(); i < end; ++i) {
-				m_armatures[i]->ApplyPose();// TODO ? tester update nécessaire
+				m_armatures[i]->ApplyPose();
 			}
 		}
 	};
@@ -1407,7 +1412,7 @@ void KX_Scene::UpdateAnimations(double curtime, bool restrict)
 	};
 
 	{
-		AnimationTask task(m_animatedlist, curtime);
+		AnimationTask task(m_animatedlist, curtime, redundant);
 		tbb::parallel_for(tbb::blocked_range<unsigned int>(0, task.Size()), task);
 	}
 
