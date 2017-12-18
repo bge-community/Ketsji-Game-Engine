@@ -34,6 +34,7 @@
 
 #include <map>
 #include <vector>
+#include <mutex>
 
 #ifdef _MSC_VER // MSVC doesn't support incomplete type in std::unique_ptr.
 #  include "KX_BlenderMaterial.h"
@@ -42,7 +43,7 @@
 #  include "BL_BlenderScalarInterpolator.h"
 #endif
 
-#include <mutex>
+#include "tbb/task_group.h"
 
 class EXP_StringValue;
 class BL_BlenderSceneConverter;
@@ -62,7 +63,6 @@ struct Material;
 struct bAction;
 struct bActuator;
 struct bController;
-struct TaskPool;
 
 template<class Value>
 using UniquePtrList = std::vector<std::unique_ptr<Value> >;
@@ -91,9 +91,9 @@ private:
 	std::map<KX_Scene *, SceneSlot> m_sceneSlots;
 
 	struct ThreadInfo {
-		TaskPool *m_pool;
+		tbb::task_group m_group;
 		std::mutex m_mutex;
-	} m_threadinfo;
+	} m_threadInfo;
 
 	// Saved KX_LibLoadStatus objects
 	std::map<std::string, KX_LibLoadStatus *> m_status_map;
