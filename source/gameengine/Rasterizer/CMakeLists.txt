@@ -39,7 +39,6 @@ set(INC
 	../../blender/blenkernel
 	../../blender/gpu
 	../../blender/imbuf
-	../../../intern/enkiTS
 	../../../intern/glew-mx
 	../../../intern/guardedalloc
 	../../../intern/termcolor
