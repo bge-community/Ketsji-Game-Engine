@@ -114,6 +114,7 @@ PyMethodDef KX_Mesh::Methods[] = {
 	{"transformUV", (PyCFunction) KX_Mesh::sPyTransformUV, METH_VARARGS},
 	{"replaceMaterial", (PyCFunction) KX_Mesh::sPyReplaceMaterial, METH_VARARGS},
 	{"copy", (PyCFunction) KX_Mesh::sPyCopy, METH_NOARGS},
+	{"destruct", (PyCFunction) KX_Mesh::sPyDestruct, METH_NOARGS},
 	{nullptr, nullptr} //Sentinel
 };
 
@@ -393,6 +394,16 @@ PyObject *KX_Mesh::PyCopy()
 	KX_GetActiveEngine()->GetConverter()->RegisterMesh(m_scene, dupli);
 
 	return dupli->GetProxy();
+}
+
+PyObject *KX_Mesh::PyDestruct()
+{
+	// Transfer ownership to converter.
+	KX_GetActiveEngine()->GetConverter()->UnregisterMesh(m_scene, this);
+
+	// Here the mesh is freed.
+
+	Py_RETURN_NONE;
 }
 
 PyObject *KX_Mesh::pyattr_get_materials(EXP_PyObjectPlus *self_v, const EXP_PYATTRIBUTE_DEF *attrdef)

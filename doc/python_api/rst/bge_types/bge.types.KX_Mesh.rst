@@ -157,3 +157,7 @@ base class --- :class:`EXP_Value`
 
       :return: a duplicated mesh of the current used.
       :rtype: :class:`KX_Mesh`.
+
+   .. method:: destruct()
+
+      Destruct the mesh.
