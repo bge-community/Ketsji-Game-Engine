@@ -58,8 +58,9 @@ public:
 	}
 
 	RAS_DisplayArray(PrimitiveType type, const RAS_VertexFormat& format,
-		const IVertexDataList& vertices, const IndexList& primitiveIndices, const IndexList& triangleIndices)
-		:RAS_IDisplayArray(type, format, VertexData::GetMemoryFormat(), primitiveIndices, triangleIndices)
+		const IVertexDataList& vertices, const VertexInfoList& vertexInfos,
+		const IndexList& primitiveIndices, const IndexList& triangleIndices)
+		:RAS_IDisplayArray(type, format, VertexData::GetMemoryFormat(), vertexInfos, primitiveIndices, triangleIndices)
 	{
 		const unsigned int size = vertices.size();
 		m_vertexes.resize(size);

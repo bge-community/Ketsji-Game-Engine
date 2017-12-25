@@ -13,11 +13,12 @@
 #include "RAS_BucketManager.h"
 
 KX_MeshBuilderSlot::KX_MeshBuilderSlot(KX_BlenderMaterial *material, RAS_IDisplayArray::PrimitiveType primitiveType,
-		const RAS_VertexFormat& format)
+		const RAS_VertexFormat& format, unsigned int& origIndexCounter)
 	:m_material(material),
 	m_primitive(primitiveType),
 	m_format(format),
-	m_factory(RAS_IVertexFactory::Construct(m_format))
+	m_factory(RAS_IVertexFactory::Construct(m_format)),
+	m_origIndexCounter(origIndexCounter)
 {
 }
 
@@ -55,7 +56,7 @@ bool KX_MeshBuilderSlot::Invalid() const
 
 RAS_IDisplayArray *KX_MeshBuilderSlot::GetDisplayArray() const
 {
-	return RAS_IDisplayArray::Construct(m_primitive, m_format, m_vertices, m_primitiveIndices, m_triangleIndices);
+	return RAS_IDisplayArray::Construct(m_primitive, m_format, m_vertices, m_vertexInfos, m_primitiveIndices, m_triangleIndices);
 }
 
 PyTypeObject KX_MeshBuilderSlot::Type = {
@@ -258,6 +259,7 @@ PyObject *KX_MeshBuilderSlot::PyAddVertex(PyObject *args, PyObject *kwds)
 
 	RAS_IVertexData *vert = m_factory->CreateVertex(pos, uvs, tangent, colors, normal);
 	m_vertices.push_back(vert);
+	m_vertexInfos.emplace_back(m_origIndexCounter++, false);
 
 	return PyLong_FromLong(m_vertices.size() - 1);
 }
@@ -390,7 +392,8 @@ KX_MeshBuilder::KX_MeshBuilder(const std::string& name, KX_Scene *scene, const R
 	:m_name(name),
 	m_layersInfo(layersInfo),
 	m_format(format),
-	m_scene(scene)
+	m_scene(scene),
+	m_origIndexCounter(0)
 {
 }
 
@@ -529,7 +532,7 @@ PyObject *KX_MeshBuilder::PyAddMaterial(PyObject *args, PyObject *kwds)
 		return nullptr;
 	}
 
-	KX_MeshBuilderSlot *slot = new KX_MeshBuilderSlot(material, (RAS_IDisplayArray::PrimitiveType)primitive, m_format);
+	KX_MeshBuilderSlot *slot = new KX_MeshBuilderSlot(material, (RAS_IDisplayArray::PrimitiveType)primitive, m_format, m_origIndexCounter);
 	m_slots.Add(slot);
 
 	return slot->GetProxy();

@@ -20,11 +20,15 @@ private:
 	std::unique_ptr<RAS_IVertexFactory> m_factory;
 
 	RAS_IDisplayArray::IVertexDataList m_vertices;
+	RAS_IDisplayArray::VertexInfoList m_vertexInfos;
 	RAS_IDisplayArray::IndexList m_primitiveIndices;
 	RAS_IDisplayArray::IndexList m_triangleIndices;
 
+	unsigned int& m_origIndexCounter;
+
 public:
-	KX_MeshBuilderSlot(KX_BlenderMaterial *material, RAS_IDisplayArray::PrimitiveType primitiveType, const RAS_VertexFormat& format);
+	KX_MeshBuilderSlot(KX_BlenderMaterial *material, RAS_IDisplayArray::PrimitiveType primitiveType, const RAS_VertexFormat& format,
+			unsigned int& origIndexCounter);
 	~KX_MeshBuilderSlot();
 
 	virtual std::string GetName();
@@ -78,6 +82,9 @@ private:
 	RAS_VertexFormat m_format;
 
 	KX_Scene *m_scene;
+
+	/// Counter shared by all the slots to compute the original index of a new added vertex.
+	unsigned int m_origIndexCounter;
 
 public:
 	KX_MeshBuilder(const std::string& name, KX_Scene *scene, const RAS_Mesh::LayersInfo& layersInfo,

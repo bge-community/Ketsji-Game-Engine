@@ -81,14 +81,19 @@ RAS_IDisplayArray::RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat&
 }
 
 RAS_IDisplayArray::RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format,
-		const RAS_VertexDataMemoryFormat& memoryFormat, const IndexList& primitiveIndices, const IndexList& triangleIndices)
+		const RAS_VertexDataMemoryFormat& memoryFormat, const VertexInfoList& vertexInfos,
+		const IndexList& primitiveIndices, const IndexList& triangleIndices)
 	:m_type(type),
 	m_format(format),
 	m_memoryFormat(memoryFormat),
+	m_vertexInfos(vertexInfos),
 	m_primitiveIndices(primitiveIndices),
 	m_triangleIndices(triangleIndices),
 	m_maxOrigIndex(0)
 {
+	for (const RAS_VertexInfo& info : m_vertexInfos) {
+		m_maxOrigIndex = std::max(m_maxOrigIndex, info.GetOrigIndex());
+	}
 }
 
 RAS_IDisplayArray::~RAS_IDisplayArray()
@@ -101,10 +106,11 @@ RAS_IDisplayArray *RAS_IDisplayArray::Construct(RAS_IDisplayArray::PrimitiveType
 }
 
 RAS_IDisplayArray *RAS_IDisplayArray::Construct(RAS_IDisplayArray::PrimitiveType type, const RAS_VertexFormat &format,
-		const IVertexDataList& vertices, const IndexList& primitiveIndices, const IndexList& triangleIndices)
+		const IVertexDataList& vertices, const VertexInfoList& vertexInfos,
+		const IndexList& primitiveIndices, const IndexList& triangleIndices)
 {
 	return CM_InstantiateTemplateSwitch<RAS_IDisplayArray, RAS_DisplayArray, RAS_VertexFormatTuple>(format,
-			type, format, vertices, primitiveIndices, triangleIndices);
+			type, format, vertices, vertexInfos, primitiveIndices, triangleIndices);
 }
 
 void RAS_IDisplayArray::SortPolygons(const mt::mat3x4& transform, unsigned int *indexmap)

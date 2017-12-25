@@ -104,7 +104,7 @@ public:
 	RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format,
 			const RAS_VertexDataMemoryFormat& memoryFormat);
 	RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format, const RAS_VertexDataMemoryFormat& memoryFormat,
-			const IndexList& primitiveIndices, const IndexList& triangleIndices);
+			const VertexInfoList& vertexInfos, const IndexList& primitiveIndices, const IndexList& triangleIndices);
 	virtual ~RAS_IDisplayArray();
 
 	virtual RAS_IDisplayArray *GetReplica() = 0;
@@ -116,7 +116,8 @@ public:
 	static RAS_IDisplayArray *Construct(PrimitiveType type, const RAS_VertexFormat &format);
 
 	static RAS_IDisplayArray *Construct(PrimitiveType type, const RAS_VertexFormat &format,
-			const IVertexDataList& vertices, const IndexList& primitiveIndices, const IndexList& triangleIndices);
+			const IVertexDataList& vertices, const VertexInfoList& vertexInfos,
+			const IndexList& primitiveIndices, const IndexList& triangleIndices);
 
 	/** Return a vertex pointer without using the cache. Used to get
 	 * a vertex pointer during contruction.
