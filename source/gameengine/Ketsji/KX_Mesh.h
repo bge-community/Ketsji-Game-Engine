@@ -62,6 +62,7 @@ public:
 	// stuff for cvalue related things
 	virtual std::string GetName();
 
+	KX_Scene *GetScene() const;
 	void ReplaceScene(KX_Scene *scene);
 
 #ifdef WITH_PYTHON

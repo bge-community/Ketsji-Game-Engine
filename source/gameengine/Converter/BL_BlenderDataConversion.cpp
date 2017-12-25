@@ -215,7 +215,7 @@ public:
 	bool operator()(const BL_SharedVertex& sharedVert) const
 	{
 		RAS_IDisplayArray *otherArray = sharedVert.array;
-		return (m_array == otherArray) && (otherArray->GetVertexData(sharedVert.offset)->Equal(m_vertex, m_array->GetFormat()));
+		return (m_array == otherArray) && (otherArray->GetVertexDataNoCache(sharedVert.offset)->Equal(m_vertex, m_array->GetFormat()));
 	}
 };
 

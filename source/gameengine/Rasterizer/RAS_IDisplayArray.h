@@ -125,7 +125,12 @@ public:
 	virtual RAS_Vertex GetVertexNoCache(const unsigned int index) = 0;
 
 	/// Return vertex data without using pointer cache.
-	virtual RAS_IVertexData *GetVertexData(const unsigned int index) = 0;
+	virtual RAS_IVertexData *GetVertexDataNoCache(const unsigned int index) = 0;
+
+	inline RAS_IVertexData *GetVertexData(const unsigned int index) const
+	{
+		return m_vertexDataPtrs[index];
+	}
 
 	inline RAS_Vertex GetVertex(const unsigned int index)
 	{
@@ -137,9 +142,19 @@ public:
 		return m_primitiveIndices[index];
 	}
 
+	inline const IndexList& GetPrimitiveIndexList() const
+	{
+		return m_primitiveIndices;
+	}
+
 	inline unsigned int GetTriangleIndex(const unsigned int index) const
 	{
 		return m_triangleIndices[index];
+	}
+
+	inline const IndexList& GetTriangleIndexList() const
+	{
+		return m_triangleIndices;
 	}
 
 	inline const RAS_VertexInfo& GetVertexInfo(const unsigned int index) const
@@ -150,6 +165,11 @@ public:
 	inline RAS_VertexInfo& GetVertexInfo(const unsigned int index)
 	{
 		return m_vertexInfos[index];
+	}
+
+	inline const VertexInfoList& GetVertexInfoList() const
+	{
+		return m_vertexInfos;
 	}
 
 	virtual unsigned int AddVertexData(RAS_IVertexData *data) = 0;

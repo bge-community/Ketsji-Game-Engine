@@ -87,7 +87,7 @@ public:
 		return RAS_Vertex(&m_vertexes[index], m_format);
 	}
 
-	virtual RAS_IVertexData *GetVertexData(const unsigned int index)
+	virtual RAS_IVertexData *GetVertexDataNoCache(const unsigned int index)
 	{
 		return &m_vertexes[index];
 	}

@@ -27,6 +27,8 @@ public:
 				const unsigned int *rgba,
 				const float normal[3]) = 0;
 
+	virtual RAS_IVertexData *CopyVertex(RAS_IVertexData *other) = 0;
+
 	virtual void DeleteVertex(RAS_IVertexData *data) = 0;
 };
 
@@ -60,6 +62,12 @@ public:
 				const float normal[3])
 	{
 		VertexData *data = new (m_vertexPool.malloc()) VertexData(xyz, uvs, tangent, rgba, normal);
+		return data;
+	}
+
+	virtual RAS_IVertexData *CopyVertex(RAS_IVertexData *other)
+	{
+		VertexData *data = new (m_vertexPool.malloc()) VertexData(*static_cast<VertexData *>(other));
 		return data;
 	}
 
