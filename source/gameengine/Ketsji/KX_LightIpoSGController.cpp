@@ -48,9 +48,7 @@ bool KX_LightIpoSGController::Update()
 	}
 
 	if (m_modify_color) {
-		lightobj->m_color[0] = m_col_rgb[0];
-		lightobj->m_color[1] = m_col_rgb[1];
-		lightobj->m_color[2] = m_col_rgb[2];
+		lightobj->m_color = m_col_rgb;
 	}
 
 	if (m_modify_dist) {
