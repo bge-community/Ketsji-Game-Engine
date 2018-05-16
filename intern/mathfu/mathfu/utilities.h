@@ -21,6 +21,7 @@
 #include <float.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <cstdlib>
 
 #include <algorithm>
 #include <memory>
@@ -289,12 +290,12 @@ inline bool FuzzyZeroHelper(const T &x) {
 
 template <>
 inline bool FuzzyZeroHelper(const float &x) {
-  return (std::abs(x) < FLT_EPSILON);
+  return (abs(x) < FLT_EPSILON);
 }
 
 template <>
 inline bool FuzzyZeroHelper(const double &x) {
-  return (std::abs(x) < DBL_EPSILON);
+  return (abs(x) < DBL_EPSILON);
 }
 
 template <class T>
@@ -508,8 +509,8 @@ uint32_t RoundUpToTypeBoundary(uint32_t v) {
 inline void *AllocateAligned(size_t n) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900  // MSVC 2015
   return _aligned_malloc(n, MATHFU_ALIGNMENT);
-#elif defined(__GNUC__)
-  return aligned_alloc(MATHFU_ALIGNMENT, n);
+//#elif defined(__GNUC__)
+//  return aligned_alloc(MATHFU_ALIGNMENT, n);
 #else
   // We need to allocate extra bytes to guarantee alignment,
   // and to store the pointer to the original buffer.

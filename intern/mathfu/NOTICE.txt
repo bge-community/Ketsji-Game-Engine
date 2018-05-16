@@ -1,0 +1,19 @@
+In accordance with Apache 2.0
+
+This library has been modified by Dr. Binary as follows:
+
+utilities.h:
+	+#include <cstdlib>
+
+	-return(std::abs(x) < FLT_EPSILON);
+	-return(std::abs(x) < DBL_EPSILON);
+	+return(abs(x) < FLT_EPSILON);
+	+return(abs(x) < DBL_EPSILON);
+
+	-#elif defined(__GNUC__)
+	-	return aligned_alloc(MATHFU_ALIGNMENT, n);
+	+//#elif defined(__GNUC__)
+	+//	return aligned_alloc(MATHFU_ALIGNMENT, n);
+
+This is to allow compilation using Clang's outdated C and C++ compilers.
+05/16/2018
