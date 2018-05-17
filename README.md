@@ -5,7 +5,22 @@
 
 The Ketsji Game Engine is a fork of the Unchronia Project Blender Game Engine (UPBGE): https://upbge.org/ which began as a fork of the Blender Game Engine circa 2015 by Porteries Tristan.
 
-Ketsji is meant to be a stand-alone project seperate from both Blender and UPBGE which have both seeminfly ceased development on the game engine.
+Ketsji is meant to be a stand-alone project seperate from both Blender and UPBGE, we might try to rebase or pick features when possible, but the main idea is to have a repository for a Blender Game Engine where anyone and everyone should be able to contribute. Hopefully owners should not stay below the radar for months in order to give the rights for people to continue the project (via pull requests and reviews).
+
+# Contributing
+
+Feel free to post issues, you can even fix them via Pull Requests (PR) !
+
+You can also ask to join the [bge-community](https://github.com/bge-community). You will then be able to push your branches onto this repository :)
+
+In case you want to make pull requests without being in the little organization, you can fork Ketsji, create a branch and put your new commits there. Then you will be able to create a pull request against your branch, that will be reviewed and eventually merged into `master` !
+
+It is the simpliest process for us to collaborate and aim at a decent quality level.
+
+# Build Instructions
+
+- Windows (todo)
+- [OSX](doc/build/osx.md)
 
 # Back to our Roots
 
@@ -102,7 +117,3 @@ Decision 11. Game objects own a Knapsack that can be filled with type-less
 Properties (Properties are “named Game objects”).
 
 ```
-# Contributing
-
-Send a pull request! Open an issue! Whatever you do -- do something! The BGE was too good to let die and Ketsji is too good to let stagnate!
-
